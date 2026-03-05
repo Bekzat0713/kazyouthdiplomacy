@@ -1,332 +1,665 @@
-/* =========================
-   GLOBAL
-========================= */
-
+/* =================================
+   RESET
+================================= */
 * {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
 body {
-  margin: 0;
-  font-family: 'Inter', Arial, sans-serif;
-  background: #f5f7fa;
-  color: #333;
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #0b1120;
+  color: #ffffff;
+  overflow-x: hidden;
 }
 
-/* =========================
+/* =================================
    HEADER
-========================= */
-
+================================= */
 .header {
-  background: #1f3c88;
-  color: white;
-  padding: 16px 40px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 18px 60px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: rgba(11, 17, 32, 0.75);
+  backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  z-index: 1000;
 }
 
-.logo {
-  font-size: 20px;
-  font-weight: 700;
-}
-
-.nav a {
-  color: white;
-  margin-left: 24px;
+.logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   text-decoration: none;
-  font-size: 15px;
+  font-weight: 800;
+  font-size: 20px;
+  color: #a78bfa;
 }
 
-.nav a:hover {
-  text-decoration: underline;
+.logo-wrap img {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
 }
 
-/* =========================
-   HERO (MAIN PAGE)
-========================= */
-
-.hero {
-  background: linear-gradient(180deg, #f8fafc, #eef2ff);
-  padding: 120px 20px 100px;
-  text-align: center;
+.header nav a {
+  text-decoration: none;
+  color: #cbd5e1;
+  font-weight: 500;
+  transition: 0.3s;
 }
 
-.hero-content {
-  max-width: 900px;
-  margin: 0 auto;
+.header nav a:hover {
+  color: #a78bfa;
 }
 
-.hero-badge {
+/* =================================
+   GLOBAL BUTTON SYSTEM
+================================= */
+.btn {
+  padding: 16px 42px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 16px;
+  text-decoration: none;
+  cursor: pointer;
   display: inline-block;
-  background: rgba(31, 60, 136, 0.1);
-  color: #1f3c88;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 14px;
-  margin-bottom: 20px;
+  transition: 0.35s ease;
 }
 
-.hero h2 {
-  font-size: 44px;
-  font-weight: 700;
-  margin-bottom: 20px;
-  color: #1f3c88;
+.btn.primary {
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  color: #ffffff;
+  box-shadow: 0 20px 50px rgba(124, 58, 237, 0.4);
+}
+
+.btn.primary:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 30px 70px rgba(124, 58, 237, 0.6);
+}
+
+.btn.secondary {
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+.btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+/* =================================
+   HERO (MAIN PAGE)
+================================= */
+.hero {
+  min-height: 100vh;
+  padding: 220px 10% 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 25% 30%, rgba(124, 58, 237, 0.35), transparent 55%),
+    linear-gradient(180deg, #0b1120 0%, #0f172a 100%);
+}
+
+.hero h1 {
+  font-size: 78px;
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 35px;
+  max-width: 900px;
 }
 
 .hero p {
-  font-size: 20px;
-  color: #444;
-  max-width: 720px;
-  margin: 0 auto 40px;
+  font-size: 22px;
+  color: #cbd5e1;
+  margin-bottom: 50px;
+  max-width: 650px;
 }
 
-/* =========================
-   BUTTONS (UNIFIED)
-========================= */
-
-.buttons {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
+.hero-note {
   margin-top: 30px;
-  flex-wrap: wrap;
+  font-size: 16px;
+  color: #94a3b8;
+  max-width: 650px;
 }
 
-.btn {
-  padding: 20px 44px;
-  font-size: 18px;
-  font-weight: 600;
-  border-radius: 14px;
-  border: none;
-  cursor: pointer;
-  min-width: 260px;
-  transition: all 0.25s ease;
+/* =================================
+   ABOUT PAGE WITH BACKGROUND
+================================= */
+.about-clean {
+  position: relative;
+  padding: 200px 10% 140px;
+  min-height: 100vh;
+  background:
+    linear-gradient(to right, rgba(11, 17, 32, 0.95), rgba(11, 17, 32, 0.8)),
+    url('/about.png') center/cover no-repeat;
 }
 
-.btn-primary {
-  background: #1f3c88;
-  color: white;
+.about-clean h1 {
+  font-size: 64px;
+  margin-bottom: 40px;
 }
 
-.btn-secondary {
-  background: #0ea5e9;
-  color: white;
+.about-clean p {
+  font-size: 20px;
+  line-height: 1.8;
+  margin-bottom: 24px;
+  color: #e2e8f0;
+  max-width: 850px;
 }
 
-.btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 30px rgba(31, 60, 136, 0.25);
+.about-buttons {
+  margin-top: 40px;
+  display: flex;
+  gap: 20px;
 }
 
-/* =========================
-   HERO STATS
-========================= */
+/* =================================
+   ACHIEVEMENTS
+================================= */
+.about-achievements-clean {
+  padding: 120px 10%;
+  background: #0f172a;
+}
 
-.hero-stats {
+.about-achievements-clean h2 {
+  font-size: 44px;
+  margin-bottom: 60px;
+}
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 40px;
+}
+
+.achievement-card {
+  padding: 35px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: 0.4s;
+}
+
+.achievement-card:hover {
+  transform: translateY(-10px);
+  border-color: #7c3aed;
+}
+
+.achievement-card h3 {
+  margin-bottom: 10px;
+}
+
+.achievement-card p {
+  margin-bottom: 20px;
+  color: #94a3b8;
+}
+
+.achievement-card img {
+  width: 100%;
+  border-radius: 18px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* =================================
+   AUTH PAGES
+================================= */
+.register-page,
+.login-page {
+  min-height: 100vh;
+  padding-top: 140px;
   display: flex;
   justify-content: center;
-  gap: 40px;
-  margin-top: 50px;
-  flex-wrap: wrap;
+  align-items: center;
 }
 
-.hero-stats div {
+.login-page {
+  background:
+    radial-gradient(circle at 70% 30%, rgba(124, 58, 237, 0.3), transparent 55%),
+    linear-gradient(180deg, #0b1120 0%, #0f172a 100%);
+}
+
+.register-card,
+.login-card {
+  width: 420px;
+  padding: 60px 50px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   text-align: center;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  transition: 0.4s;
 }
 
-.hero-stats strong {
-  display: block;
-  font-size: 26px;
-  color: #1f3c88;
+.register-card:hover,
+.login-card:hover {
+  transform: translateY(-5px);
+  border-color: #7c3aed;
 }
 
-.hero-stats span {
-  font-size: 14px;
-  color: #555;
-}
-
-/* =========================
-   PLATFORM FEATURES
-========================= */
-
-.platform {
-  padding: 80px 40px;
-  background: #ffffff;
-  text-align: center;
-}
-
-.section-title {
+.register-card h1,
+.login-card h1 {
   font-size: 32px;
-  font-weight: 700;
-  color: #1f3c88;
-  margin-bottom: 10px;
-}
-
-.section-subtitle {
-  font-size: 18px;
-  color: #555;
-  max-width: 700px;
-  margin: 0 auto 50px;
-}
-
-.platform-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 30px;
-}
-
-.platform-card {
-  background: white;
-  padding: 36px 28px;
-  border-radius: 18px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-  transition: all 0.25s ease;
-}
-
-.platform-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 20px 40px rgba(31, 60, 136, 0.15);
-}
-
-.platform-card h3 {
-  font-size: 20px;
-  margin: 16px 0 10px;
-  color: #1f3c88;
-}
-
-.platform-card p {
-  font-size: 15px;
-  color: #555;
-  line-height: 1.5;
-}
-
-.icon {
-  font-size: 40px;
-}
-
-/* =========================
-   STUDENT PAGE
-========================= */
-
-.student-hero {
-  padding: 80px 20px;
-  text-align: center;
-  background: #f8fafc;
-}
-
-.student-hero h2 {
-  font-size: 36px;
-  color: #1f3c88;
-  margin-bottom: 15px;
-}
-
-.student-hero p {
-  font-size: 18px;
-  color: #555;
-  max-width: 700px;
-  margin: 0 auto;
-}
-
-.student-actions {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 30px;
-  padding: 60px 40px;
-}
-
-.action-card {
-  background: white;
-  border-radius: 18px;
-  padding: 32px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-  transition: all 0.25s ease;
-}
-
-.action-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 20px 40px rgba(31,60,136,0.15);
-}
-
-.action-card h3 {
-  color: #1f3c88;
-  margin-bottom: 10px;
-}
-
-.action-card p {
-  color: #555;
-  font-size: 15px;
   margin-bottom: 20px;
-}
-
-.action-card button {
-  background: #1f3c88;
-  color: white;
-  border: none;
-  padding: 14px 22px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-/* =========================
-   LOGIN PAGE
-========================= */
-
-.login {
-  padding: 100px 20px;
   text-align: center;
-  background: #f8fafc;
 }
 
-.login h2 {
-  font-size: 32px;
-  color: #1f3c88;
-  margin-bottom: 10px;
-}
-
-.login p {
-  color: #555;
-  margin-bottom: 30px;
-}
-
-.login-box {
-  max-width: 380px;
-  margin: 0 auto;
-  background: white;
-  padding: 32px;
-  border-radius: 20px;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
-}
-
-.login-box input {
+.register-card input,
+.login-card input {
   width: 100%;
-  padding: 14px;
-  margin-bottom: 16px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  font-size: 16px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 20px;
+  font-size: 15px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  transition: 0.3s;
 }
 
-.login-box button {
+.register-card input::placeholder,
+.login-card input::placeholder {
+  color: #94a3b8;
+}
+
+.register-card input:focus,
+.login-card input:focus {
+  outline: none;
+  border-color: #a855f7;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
+}
+
+.register-card .btn,
+.login-card .btn {
   width: 100%;
-  padding: 14px;
-  border-radius: 10px;
-  border: none;
-  background: #1f3c88;
-  color: white;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-bottom: 10px;
-}
-
-.login-note {
-  font-size: 12px;
-  color: #888;
   margin-top: 10px;
 }
 
-.hidden {
-  display: none;
+.register-card p,
+.login-card p {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+.form-error {
+  margin-top: 14px;
+  font-size: 14px;
+  color: #fca5a5;
+  text-align: center;
+}
+
+/* =================================
+   SUBSCRIBE PAGE (PREMIUM WOW)
+================================= */
+.subscribe-page {
+  min-height: 100vh;
+  padding-top: 180px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(124, 58, 237, 0.45), transparent 55%),
+    linear-gradient(180deg, #0b1120 0%, #1e1b4b 100%);
+}
+
+.subscribe-card {
+  width: 520px;
+  padding: 70px 60px;
+  border-radius: 36px;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(30, 27, 75, 0.6));
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.5);
+}
+
+.subscribe-card h1 {
+  font-size: 40px;
+  margin-bottom: 20px;
+}
+
+.subscribe-price {
+  font-size: 54px;
+  font-weight: 900;
+  margin: 30px 0;
+  color: #c084fc;
+}
+
+.subscribe-card ul {
+  list-style: none;
+  margin: 30px 0;
+}
+
+.subscribe-card li {
+  margin-bottom: 14px;
+  font-size: 16px;
+  color: #e2e8f0;
+}
+
+.subscribe-note {
+  margin-top: 25px;
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+/* =================================
+   DASHBOARD PAGE
+================================= */
+.dashboard-page {
+  min-height: 100vh;
+  padding: 220px 10% 120px;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(124, 58, 237, 0.3), transparent 55%),
+    linear-gradient(180deg, #0b1120 0%, #0f172a 100%);
+  display: flex;
+  justify-content: center;
+}
+
+.dashboard-container {
+  max-width: 800px;
+}
+
+.dashboard-container h1 {
+  font-size: 56px;
+  margin-bottom: 50px;
+}
+
+.dashboard-card {
+  padding: 40px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 40px;
+  transition: 0.4s;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-6px);
+  border-color: #7c3aed;
+}
+
+.dashboard-card h3 {
+  margin-bottom: 15px;
+  font-size: 20px;
+}
+
+.dashboard-card p {
+  color: #cbd5e1;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  color: #cbd5e1;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.nav-btn:hover {
+  color: #a78bfa;
+}
+
+/* =================================
+   INTERNSHIPS PAGE
+================================= */
+.internships-page {
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  padding: 220px 10% 120px;
+  background:
+    radial-gradient(circle at 40% 20%, rgba(124, 58, 237, 0.25), transparent 55%),
+    linear-gradient(180deg, #0b1120 0%, #0f172a 100%);
+}
+
+.internships-page::before {
+  content: '';
+  position: absolute;
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.25), transparent 60%);
+  top: -200px;
+  right: -200px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.internships-page > * {
+  position: relative;
+  z-index: 2;
+}
+
+.internships-header h1 {
+  font-size: 64px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  background: linear-gradient(90deg, #a78bfa, #c084fc);
+  background-clip: text;
+  color: transparent;
+}
+
+.internships-header p {
+  color: #94a3b8;
+  font-size: 20px;
+  margin-bottom: 60px;
+  max-width: 600px;
+}
+
+.filters-modern {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-bottom: 70px;
+}
+
+.filter {
+  padding: 10px 22px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter:hover {
+  border-color: #7c3aed;
+  transform: translateY(-3px);
+}
+
+.filter.active {
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  border: none;
+  color: #ffffff;
+  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.5);
+}
+
+.internships-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 40px;
+}
+
+.internship-modern {
+  padding: 35px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.4s ease;
+  cursor: pointer;
+}
+
+.internship-modern:hover {
+  transform: translateY(-12px) scale(1.02);
+  border-color: #a855f7;
+  box-shadow: 0 30px 80px rgba(124, 58, 237, 0.4);
+}
+
+.internship-modern h3 {
+  margin: 15px 0;
+}
+
+.internship-modern p {
+  color: #cbd5e1;
+  margin-bottom: 20px;
+}
+
+.internship-modern .btn {
+  width: 100%;
+}
+
+.meta {
+  display: flex;
+  gap: 20px;
+  font-size: 14px;
+  color: #94a3b8;
+  margin-bottom: 20px;
+}
+
+.meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: rgba(124, 58, 237, 0.2);
+  color: #c084fc;
+}
+
+.badge.blue {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+}
+
+.badge.purple {
+  background: rgba(168, 85, 247, 0.2);
+  color: #c084fc;
+}
+
+/* =================================
+   CTA MODERN BLOCK
+================================= */
+.cta-modern {
+  padding: 140px 10%;
+  display: flex;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(124, 58, 237, 0.35), transparent 60%),
+    linear-gradient(180deg, #0f172a 0%, #0b1120 100%);
+}
+
+.cta-box {
+  max-width: 900px;
+  width: 100%;
+  padding: 70px;
+  border-radius: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: center;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+  transition: 0.4s;
+}
+
+.cta-box:hover {
+  transform: translateY(-6px);
+  border-color: #7c3aed;
+}
+
+.cta-box h2 {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.cta-box p {
+  font-size: 18px;
+  color: #94a3b8;
+  margin-bottom: 35px;
+}
+
+/* =================================
+   RESPONSIVE
+================================= */
+@media (max-width: 1024px) {
+  .header {
+    padding: 16px 28px;
+  }
+
+  .hero h1 {
+    font-size: 56px;
+  }
+
+  .about-clean h1,
+  .dashboard-container h1,
+  .cta-box h2 {
+    font-size: 42px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 14px 18px;
+  }
+
+  .hero,
+  .about-clean,
+  .dashboard-page,
+  .internships-page,
+  .cta-modern {
+    padding-left: 6%;
+    padding-right: 6%;
+  }
+
+  .hero {
+    padding-top: 170px;
+  }
+
+  .hero h1 {
+    font-size: 42px;
+  }
+
+  .hero p {
+    font-size: 18px;
+  }
+
+  .about-clean h1,
+  .internships-header h1 {
+    font-size: 42px;
+  }
+
+  .internships-grid {
+    gap: 25px;
+  }
+
+  .register-card,
+  .login-card,
+  .subscribe-card {
+    width: 100%;
+    max-width: 520px;
+    padding: 42px 28px;
+  }
+
+  .cta-box {
+    padding: 44px 26px;
+  }
 }

@@ -1,40 +1,84 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Вход для амбассадоров</title>
-    <link rel="stylesheet" href="web.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Вход - KazYouthDiplomacy</title>
+  <link rel="stylesheet" href="/web.css">
 </head>
-<body>
+<body class="login-page">
 
 <header class="header">
-    <div class="logo">KazYouthDiplomacy</div>
-    <nav class="nav">
-        <a href="web.html">Главная</a>
-    </nav>
+  <a href="/" class="logo-wrap">
+    <img src="/logo.png" alt="logo">
+    <span>KazYouthDiplomacy</span>
+  </a>
 </header>
 
-<section class="login">
-    <h2>Вход для амбассадоров</h2>
-    <p>Введите номер телефона, привязанный к вашему профилю</p>
+<div class="login-card">
+  <h1>Вход</h1>
+  <p>Доступ к аккаунту</p>
 
-    <form method="POST" action="/login" class="login-box">
-  <input
-    type="tel"
-    name="phone"
-    placeholder="+7XXXXXXXXXX"
-    required
-  />
-  <button type="submit">Войти</button>
+  <form id="loginForm" method="POST" action="/login">
+    <input
+      type="email"
+      name="email"
+      placeholder="Email адрес"
+      autocomplete="email"
+      required
+    >
 
-  <p class="login-note">
-    Вход доступен только для амбассадоров
+    <input
+      type="password"
+      name="password"
+      placeholder="Пароль"
+      autocomplete="current-password"
+      required
+    >
+
+    <button class="btn primary" type="submit">Войти</button>
+  </form>
+
+  <p id="authError" class="form-error" style="display:none;"></p>
+
+  <p style="margin-top:20px;">
+    Нет аккаунта?
+    <a id="registerLink" href="/register" style="color:#a78bfa; text-decoration:none;">
+      Зарегистрироваться
+    </a>
   </p>
-</form>
+</div>
 
-</section>
+<script>
+  (function () {
+    var form = document.getElementById("loginForm");
+    var registerLink = document.getElementById("registerLink");
+    var mustUseBackendHost =
+      window.location.protocol === "file:" ||
+      (window.location.port && window.location.port !== "3000");
 
-<script src="web.js"></script>
+    if (mustUseBackendHost) {
+      form.action = "http://localhost:3000/login";
+      if (registerLink) registerLink.href = "http://localhost:3000/register";
+    }
+
+    var errorBox = document.getElementById("authError");
+    var error = new URLSearchParams(window.location.search).get("error");
+
+    var messages = {
+      invalid: "Введите корректный email и пароль.",
+      user: "Пользователь с таким email не найден.",
+      password: "Неверный пароль.",
+      session: "Ошибка сессии. Попробуйте снова.",
+      server: "Ошибка сервера или базы данных. Проверьте логи терминала."
+    };
+
+    if (error && errorBox) {
+      errorBox.textContent = messages[error] || "Ошибка входа.";
+      errorBox.style.display = "block";
+    }
+  })();
+</script>
+
 </body>
 </html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Стажировки — KazYouthDiplomacy</title>
+  <link rel="stylesheet" href="/web.css">
+</head>
+<body>
+
+<header class="header">
+  <a href="/dashboard" class="logo-wrap">
+    <img src="/logo.png" alt="">
+    <span>KazYouthDiplomacy</span>
+  </a>
+  <nav>
+    <a href="/dashboard">Кабинет</a>
+    <form method="POST" action="/logout" style="display:inline;">
+      <button class="nav-btn">Выйти</button>
+    </form>
+  </nav>
+</header>
+
+<section class="internships-page">
+
+  <!-- Заголовок -->
+  <div class="internships-header">
+    <h1>Стажировки</h1>
+    <p>Реальный опыт. Реальные кейсы. Реальный старт карьеры.</p>
+  </div>
+
+  <!-- Фильтры -->
+  <div class="filters-modern">
+    <button class="filter active">Все</button>
+    <button class="filter">Министерства</button>
+    <button class="filter">Акиматы</button>
+    <button class="filter">Квазигоссектор</button>
+    <button class="filter">Онлайн</button>
+  </div>
+
+  <!-- Карточки -->
+  <div class="internships-grid">
+
+    <div class="internship-modern">
+      <div class="badge">Министерство</div>
+      <h3>Министерство иностранных дел</h3>
+      <p>Аналитика, международные проекты и подготовка официальных документов.</p>
+      <div class="meta">
+        <span>📍 Астана</span>
+        <span>⏳ 2 месяца</span>
+      </div>
+      <button class="btn primary">Подробнее</button>
+    </div>
+
+    <div class="internship-modern">
+      <div class="badge blue">Акимат</div>
+      <h3>Акимат города Алматы</h3>
+      <p>Работа с городскими программами и молодежными инициативами.</p>
+      <div class="meta">
+        <span>📍 Алматы</span>
+        <span>⏳ 1 месяц</span>
+      </div>
+      <button class="btn primary">Подробнее</button>
+    </div>
+
+    <div class="internship-modern">
+      <div class="badge purple">Квазигоссектор</div>
+      <h3>Национальная компания</h3>
+      <p>Проектная деятельность, цифровые решения и стратегическая аналитика.</p>
+      <div class="meta">
+        <span>🌐 Онлайн</span>
+        <span>⏳ 3 месяца</span>
+      </div>
+      <button class="btn primary">Подробнее</button>
+    </div>
+
+  </div>
+
+</section>
+
+</body>
+</html>

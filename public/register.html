@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Регистрация - KazYouthDiplomacy</title>
+  <link rel="stylesheet" href="/web.css">
+</head>
+<body class="register-page">
+
+<header class="header">
+  <a href="/" class="logo-wrap">
+    <img src="/logo.png" alt="logo">
+    <span>KazYouthDiplomacy</span>
+  </a>
+</header>
+
+<div class="register-card">
+  <h1>Создать аккаунт</h1>
+  <p style="margin-bottom:30px; color:#cbd5e1;">
+    Зарегистрируйтесь, чтобы получить доступ к стажировкам.
+  </p>
+
+  <form id="registerForm" method="POST" action="/register">
+    <input
+      type="email"
+      name="email"
+      placeholder="Email адрес"
+      autocomplete="email"
+      required
+    >
+
+    <input
+      type="password"
+      name="password"
+      placeholder="Пароль (минимум 6 символов)"
+      autocomplete="new-password"
+      required
+      minlength="6"
+    >
+
+    <button class="btn primary" type="submit">Зарегистрироваться</button>
+  </form>
+
+  <p id="authError" class="form-error" style="display:none;"></p>
+
+  <p style="margin-top:25px; font-size:14px; color:#94a3b8;">
+    Уже есть аккаунт?
+    <a id="loginLink" href="/login" style="color:#a78bfa; text-decoration:none;">
+      Войти
+    </a>
+  </p>
+</div>
+
+<script>
+  (function () {
+    var form = document.getElementById("registerForm");
+    var loginLink = document.getElementById("loginLink");
+    var mustUseBackendHost =
+      window.location.protocol === "file:" ||
+      (window.location.port && window.location.port !== "3000");
+
+    if (mustUseBackendHost) {
+      form.action = "http://localhost:3000/register";
+      if (loginLink) loginLink.href = "http://localhost:3000/login";
+    }
+
+    var errorBox = document.getElementById("authError");
+    var error = new URLSearchParams(window.location.search).get("error");
+
+    var messages = {
+      invalid: "Введите корректный email и пароль (минимум 6 символов).",
+      exists: "Пользователь с таким email уже существует.",
+      server: "Ошибка сервера или базы данных. Проверьте логи терминала."
+    };
+
+    if (error && errorBox) {
+      errorBox.textContent = messages[error] || "Ошибка регистрации.";
+      errorBox.style.display = "block";
+    }
+  })();
+</script>
+
+</body>
+</html>

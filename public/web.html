@@ -1,98 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KazYouthDiplomacy — стажировки для студентов</title>
-    <link rel="stylesheet" href="web.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <title>KazYouthDiplomacy</title>
+  <link rel="stylesheet" href="/web.css" />
 </head>
 <body>
-    <header class="header">
-        <div class="logo">KazYouthDiplomacy</div>
-        <nav class="nav">
-            <a href="#">Войти</a>            
-            <a href="#">Стажировки</a>
-            <a href="#">Инициативы</a> 
-        </nav>
-    </header>
-   <section class="hero">
-    <div class="hero-content">
-        <span class="hero-badge">Национальная платформа возможностей</span>
 
-        <h2>Твоя карьера начинается здесь</h2>
+<header class="header">
+  <a href="/about" class="logo-wrap">
+    <img src="/logo.png" alt="KazYouthDiplomacy logo">
+    <span>KazYouthDiplomacy</span>
+  </a>
+  <nav>
+    <a href="/login">Войти</a>
+  </nav>
+</header>
 
-        <p>
-            Государственные стажировки, молодежные инициативы  
-            и поддержка молодых лидеров Казахстана
-        </p>
-        <a href="login.html">
-            <button class="btn btn-primary">Я амбассадор</button>
-        </a>
+<!-- HERO -->
+<section class="hero">
+  <h1>Возможности<br>для молодежи</h1>
+  <p>
+    Международные стажировки, дипломатические программы
+    и карьерные возможности в сфере международных отношений.
+  </p>
 
-        <a href="apply.html">
-             <button class="btn btn-secondary">Хочу стать амбассадором</button>
-        </a>
+  <div class="hero-actions">
+    <a href="/login" class="btn primary">Войти</a>
+    <a href="/subscribe" class="btn secondary">Получить доступ</a>
+  </div>
 
+  <p class="hero-note">
+    Платформа для амбассадоров и молодых лидеров.
+  </p>
+</section>
+<!-- CTA SECTION -->
+<section class="cta-modern">
 
-        <div class="hero-stats">
-            <div>
-                <strong>100+</strong>
-                <span>стажировок</span>
-            </div>
-            <div>
-                <strong>17</strong>
-                <span>регионов</span>
-            </div>
-            <div>
-                <strong>1 платформа</strong>
-                <span>для молодежи</span>
-            </div>
-        </div>
-    </div>
+  <div class="cta-box">
+    <h2>Начните свой путь<br>в международной среде</h2>
+    <p>Получите доступ к стажировкам и дипломатическим программам уже сегодня.</p>
+    <a href="/subscribe" class="btn primary">Присоединиться</a>
+  </div>
+
 </section>
 
-    <section class="platform">
-    <h2 class="section-title">Возможности платформы</h2>
-    <p class="section-subtitle">
-        Мы объединяем карьеру, инициативы и лидерство молодежи Казахстана
-    </p>
-
-    <div class="platform-grid">
-        <div class="platform-card">
-            <span class="icon">🏛</span>
-            <h3>Государственные стажировки</h3>
-            <p>
-                Министерства, акиматы и квазигосударственные компании
-            </p>
-        </div>
-
-        <div class="platform-card">
-            <span class="icon">📨</span>
-            <h3>Молодёжные инициативы</h3>
-            <p>
-                Подача идей и предложений напрямую государственным органам
-            </p>
-        </div>
-
-        <div class="platform-card">
-            <span class="icon">✨</span>
-            <h3>Jas Arman</h3>
-            <p>
-                Мечты, истории и проекты молодых казахстанцев
-            </p>
-        </div>
-
-        <div class="platform-card">
-            <span class="icon">⭐</span>
-            <h3>100 молодых лидеров</h3>
-            <p>
-                Те, кто уже сегодня формирует будущее страны
-            </p>
-        </div>
-    </div>
-</section>
-
-    <script src="web.js"></script>
 </body>
 </html>
