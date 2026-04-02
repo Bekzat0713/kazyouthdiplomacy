@@ -2,14 +2,14 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Стажировки — KazYouthDiplomacy</title>
+  <title>Стажировки - KazYouthDiplomacy</title>
   <link rel="stylesheet" href="/web.css">
 </head>
 <body>
 
 <header class="header">
   <a href="/dashboard" class="logo-wrap">
-    <img src="/logo.png" alt="">
+    <img src="/logo.png" alt="KazYouthDiplomacy">
     <span>KazYouthDiplomacy</span>
   </a>
   <nav>
@@ -21,61 +21,50 @@
 </header>
 
 <section class="internships-page">
-
-  <!-- Заголовок -->
   <div class="internships-header">
     <h1>Стажировки</h1>
-    <p>Реальный опыт. Реальные кейсы. Реальный старт карьеры.</p>
+    <p>Актуальные объявления и быстрый способ добавить новое предложение на платформу.</p>
   </div>
 
-  <!-- Фильтры -->
-  <div class="filters-modern">
-    <button class="filter active">Все</button>
-    <button class="filter">Министерства</button>
-    <button class="filter">Акиматы</button>
-    <button class="filter">Квазигоссектор</button>
-    <button class="filter">Онлайн</button>
+  <div class="internships-controls">
+    <div class="filters-modern" id="internshipFilters">
+      <button class="filter active" type="button" data-category="all">Все</button>
+      <button class="filter" type="button" data-category="ministries">Министерства</button>
+      <button class="filter" type="button" data-category="akimats">Акиматы</button>
+      <button class="filter" type="button" data-category="quasi">Квазигоссектор</button>
+      <button class="filter" type="button" data-category="online">Онлайн</button>
+      <button class="filter" type="button" data-category="other">Другое</button>
+    </div>
+    <button id="toggleInternshipForm" class="btn secondary small-btn" type="button">+ Добавить объявление</button>
   </div>
 
-  <!-- Карточки -->
-  <div class="internships-grid">
-
-    <div class="internship-modern">
-      <div class="badge">Министерство</div>
-      <h3>Министерство иностранных дел</h3>
-      <p>Аналитика, международные проекты и подготовка официальных документов.</p>
-      <div class="meta">
-        <span>📍 Астана</span>
-        <span>⏳ 2 месяца</span>
-      </div>
-      <button class="btn primary">Подробнее</button>
+  <form id="internshipForm" class="internship-form" hidden>
+    <h2>Новое объявление</h2>
+    <div class="internship-form-grid">
+      <input type="text" name="title" placeholder="Название стажировки" required maxlength="140">
+      <input type="text" name="organization" placeholder="Организация" required maxlength="120">
+      <select name="category" required>
+        <option value="ministries">Министерства</option>
+        <option value="akimats">Акиматы</option>
+        <option value="quasi">Квазигоссектор</option>
+        <option value="online">Онлайн</option>
+        <option value="other">Другое</option>
+      </select>
+      <input type="text" name="location" placeholder="Локация (например, Астана)" required maxlength="80">
+      <input type="text" name="duration" placeholder="Срок (например, 2 месяца)" required maxlength="60">
+      <input type="url" name="applyUrl" placeholder="Ссылка для отклика (https://...)">
     </div>
-
-    <div class="internship-modern">
-      <div class="badge blue">Акимат</div>
-      <h3>Акимат города Алматы</h3>
-      <p>Работа с городскими программами и молодежными инициативами.</p>
-      <div class="meta">
-        <span>📍 Алматы</span>
-        <span>⏳ 1 месяц</span>
-      </div>
-      <button class="btn primary">Подробнее</button>
+    <textarea name="description" rows="4" placeholder="Краткое описание задач и требований" required maxlength="1000"></textarea>
+    <div class="internship-form-actions">
+      <button type="submit" class="btn primary">Опубликовать</button>
+      <p id="internshipFormStatus" class="internship-form-status" aria-live="polite"></p>
     </div>
+  </form>
 
-    <div class="internship-modern">
-      <div class="badge purple">Квазигоссектор</div>
-      <h3>Национальная компания</h3>
-      <p>Проектная деятельность, цифровые решения и стратегическая аналитика.</p>
-      <div class="meta">
-        <span>🌐 Онлайн</span>
-        <span>⏳ 3 месяца</span>
-      </div>
-      <button class="btn primary">Подробнее</button>
-    </div>
-
-  </div>
-
+  <div id="internshipsGrid" class="internships-grid"></div>
+  <p id="internshipsEmpty" class="internships-empty" hidden>По выбранному фильтру пока нет объявлений.</p>
 </section>
 
+<script src="/internships.js" defer></script>
 </body>
 </html>

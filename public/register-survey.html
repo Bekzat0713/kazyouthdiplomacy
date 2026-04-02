@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Опрос перед регистрацией - KazYouthDiplomacy</title>
+  <link rel="stylesheet" href="/web.css">
+</head>
+<body class="register-survey-page">
+
+<header class="header">
+  <a href="/" class="logo-wrap">
+    <img src="/logo.png" alt="logo">
+    <span>KazYouthDiplomacy</span>
+  </a>
+</header>
+
+<main class="survey-card">
+  <h1>Небольшой опрос перед регистрацией</h1>
+  <p class="survey-lead">
+    Отвечайте в удобном темпе: мы показываем по одному вопросу за раз.
+  </p>
+
+  <form id="preRegisterSurveyForm" class="survey-form" novalidate>
+    <section class="survey-progress">
+      <div class="survey-progress-top">
+        <span id="surveyStepLabel">Шаг 1</span>
+        <span class="survey-progress-note">Короткий вопрос за раз</span>
+      </div>
+      <div class="survey-progress-track" aria-hidden="true">
+        <span id="surveyProgressFill" class="survey-progress-fill"></span>
+      </div>
+    </section>
+
+    <section class="survey-section survey-step" data-field="current_status" data-kind="radio">
+      <h2>Сейчас я:</h2>
+      <div class="survey-options">
+        <label class="survey-option"><input type="radio" name="current_status" value="school" required> Учусь в школе</label>
+        <label class="survey-option"><input type="radio" name="current_status" value="university"> Учусь в университете</label>
+        <label class="survey-option"><input type="radio" name="current_status" value="working"> Уже работаю</label>
+        <label class="survey-option"><input type="radio" name="current_status" value="study_and_work"> И учусь, и работаю</label>
+      </div>
+    </section>
+
+    <section class="survey-section survey-step" data-field="age_group" data-kind="radio" hidden>
+      <h2>Мой возраст:</h2>
+      <div class="survey-options">
+        <label class="survey-option"><input type="radio" name="age_group" value="under_17" required> До 17</label>
+        <label class="survey-option"><input type="radio" name="age_group" value="18_20"> 18-20</label>
+        <label class="survey-option"><input type="radio" name="age_group" value="21_23"> 21-23</label>
+        <label class="survey-option"><input type="radio" name="age_group" value="24_30"> 24-30</label>
+        <label class="survey-option"><input type="radio" name="age_group" value="30_plus"> 30+</label>
+      </div>
+    </section>
+
+    <section class="survey-section survey-step" data-field="main_goal" data-kind="radio" hidden>
+      <h2>Моя главная цель:</h2>
+      <div class="survey-options">
+        <label class="survey-option"><input type="radio" name="main_goal" value="study_abroad" required> Поступить за границу</label>
+        <label class="survey-option"><input type="radio" name="main_goal" value="masters"> Поступить в магистратуру</label>
+        <label class="survey-option"><input type="radio" name="main_goal" value="civil_service"> Попасть на госслужбу</label>
+        <label class="survey-option"><input type="radio" name="main_goal" value="international_org"> Работать в международной организации</label>
+        <label class="survey-option"><input type="radio" name="main_goal" value="national_company"> Устроиться в нацкомпанию</label>
+        <label class="survey-option"><input type="radio" name="main_goal" value="private_sector"> Работать в частном секторе</label>
+        <label class="survey-option"><input type="radio" name="main_goal" value="undecided"> Пока не определился</label>
+      </div>
+    </section>
+
+    <section class="survey-section survey-step" data-field="goal_clarity" data-kind="radio" hidden>
+      <h2>Сейчас я понимаю, как достичь своей цели:</h2>
+      <div class="survey-options">
+        <label class="survey-option"><input type="radio" name="goal_clarity" value="none" required> Вообще не понимаю</label>
+        <label class="survey-option"><input type="radio" name="goal_clarity" value="roughly"> Примерно понимаю</label>
+        <label class="survey-option"><input type="radio" name="goal_clarity" value="partially"> Частично знаю шаги</label>
+        <label class="survey-option"><input type="radio" name="goal_clarity" value="clear"> Четко знаю, что делать</label>
+      </div>
+    </section>
+
+    <section class="survey-section survey-step" data-field="main_blocker" data-kind="radio" hidden>
+      <h2>Больше всего мне сейчас мешает:</h2>
+      <div class="survey-options">
+        <label class="survey-option"><input type="radio" name="main_blocker" value="dont_know_start" required> Я не знаю, с чего начать</label>
+        <label class="survey-option"><input type="radio" name="main_blocker" value="too_much_info"> Слишком много информации</label>
+        <label class="survey-option"><input type="radio" name="main_blocker" value="no_experience"> У меня нет опыта</label>
+        <label class="survey-option"><input type="radio" name="main_blocker" value="lack_skills"> Мне не хватает навыков</label>
+        <label class="survey-option"><input type="radio" name="main_blocker" value="low_confidence"> Я не уверен(а) в себе</label>
+        <label class="survey-option"><input type="radio" name="main_blocker" value="procrastination"> Я откладываю / прокрастинирую</label>
+      </div>
+    </section>
+
+    <section class="survey-section survey-step" data-field="current_experience" data-kind="radio" hidden>
+      <h2>Мой текущий опыт:</h2>
+      <div class="survey-options">
+        <label class="survey-option"><input type="radio" name="current_experience" value="none" required> У меня нет опыта</label>
+        <label class="survey-option"><input type="radio" name="current_experience" value="little"> Есть небольшой опыт</label>
+        <label class="survey-option"><input type="radio" name="current_experience" value="internships_or_projects"> Есть стажировки / проекты</label>
+        <label class="survey-option"><input type="radio" name="current_experience" value="already_working_in_field"> Я уже работаю по направлению</label>
+      </div>
+    </section>
+
+    <section class="survey-section survey-step" data-field="english_level" data-kind="radio" hidden>
+      <h2>Мой уровень английского:</h2>
+      <div class="survey-options">
+        <label class="survey-option"><input type="radio" name="english_level" value="a1_a2" required> A1-A2</label>
+        <label class="survey-option"><input type="radio" name="english_level" value="b1_b2"> B1-B2</label>
+        <label class="survey-option"><input type="radio" name="english_level" value="c1_plus"> C1 и выше</label>
+      </div>
+    </section>
+
+    <section class="survey-section survey-step" data-field="discovery_channels" data-kind="checkbox" hidden>
+      <h2>Обычно я ищу возможности через:</h2>
+      <p class="survey-hint">Можно выбрать несколько вариантов</p>
+      <div class="survey-options">
+        <label class="survey-option"><input type="checkbox" name="discovery_channels" value="telegram"> Telegram</label>
+        <label class="survey-option"><input type="checkbox" name="discovery_channels" value="instagram"> Instagram</label>
+        <label class="survey-option"><input type="checkbox" name="discovery_channels" value="tiktok"> TikTok</label>
+        <label class="survey-option"><input type="checkbox" name="discovery_channels" value="google_sites"> Google / сайты</label>
+        <label class="survey-option"><input type="checkbox" name="discovery_channels" value="friends"> Через знакомых</label>
+      </div>
+    </section>
+
+    <section class="survey-section survey-step" data-field="needs_action_plan" data-kind="radio" hidden>
+      <h2>Мне был бы полезен сервис с понятным планом действий:</h2>
+      <div class="survey-options">
+        <label class="survey-option"><input type="radio" name="needs_action_plan" value="yes_very" required> Да, очень</label>
+        <label class="survey-option"><input type="radio" name="needs_action_plan" value="rather_yes"> Скорее да</label>
+        <label class="survey-option"><input type="radio" name="needs_action_plan" value="not_sure"> Не уверен(а)</label>
+        <label class="survey-option"><input type="radio" name="needs_action_plan" value="no"> Нет</label>
+      </div>
+    </section>
+
+    <p id="surveyError" class="form-error" style="display:none;"></p>
+
+    <div class="survey-actions">
+      <button id="surveyPrevBtn" class="btn secondary" type="button" hidden>Назад</button>
+      <button id="surveyNextBtn" class="btn primary" type="button">Далее</button>
+      <button id="surveySubmitBtn" class="btn primary" type="submit" hidden>Отправить и продолжить</button>
+    </div>
+  </form>
+</main>
+
+<script>
+  (function () {
+    var form = document.getElementById("preRegisterSurveyForm");
+    var submitBtn = document.getElementById("surveySubmitBtn");
+    var nextBtn = document.getElementById("surveyNextBtn");
+    var prevBtn = document.getElementById("surveyPrevBtn");
+    var errorBox = document.getElementById("surveyError");
+    var stepLabel = document.getElementById("surveyStepLabel");
+    var progressFill = document.getElementById("surveyProgressFill");
+    var steps = Array.prototype.slice.call(form.querySelectorAll(".survey-step"));
+    var currentStep = 0;
+
+    var mustUseBackendHost =
+      window.location.protocol === "file:" ||
+      (window.location.port && window.location.port !== "3000");
+    var apiUrl = mustUseBackendHost
+      ? "http://localhost:3000/api/register-survey"
+      : "/api/register-survey";
+    var registerUrl = mustUseBackendHost
+      ? "http://localhost:3000/register"
+      : "/register";
+
+    function getRadioValue(name) {
+      var selected = form.querySelector('input[name="' + name + '"]:checked');
+      return selected ? selected.value : "";
+    }
+
+    function getCheckedValues(name) {
+      return Array.prototype.slice.call(
+        form.querySelectorAll('input[name="' + name + '"]:checked')
+      ).map(function (input) {
+        return input.value;
+      });
+    }
+
+    function showError(message) {
+      errorBox.textContent = message;
+      errorBox.style.display = "block";
+    }
+
+    function hideError() {
+      errorBox.textContent = "";
+      errorBox.style.display = "none";
+    }
+
+    function isStepAnswered(stepIndex) {
+      var step = steps[stepIndex];
+      if (!step) return false;
+
+      var fieldName = step.dataset.field;
+      var kind = step.dataset.kind || "radio";
+      if (!fieldName) return true;
+
+      if (kind === "checkbox") {
+        return form.querySelectorAll('input[name="' + fieldName + '"]:checked').length > 0;
+      }
+
+      return Boolean(form.querySelector('input[name="' + fieldName + '"]:checked'));
+    }
+
+    function goToStep(stepIndex) {
+      currentStep = Math.max(0, Math.min(stepIndex, steps.length - 1));
+
+      steps.forEach(function (step, index) {
+        step.hidden = index !== currentStep;
+      });
+
+      prevBtn.hidden = currentStep === 0;
+      nextBtn.hidden = currentStep === steps.length - 1;
+      submitBtn.hidden = currentStep !== steps.length - 1;
+
+      stepLabel.textContent = "Шаг " + (currentStep + 1);
+      progressFill.style.width = ((currentStep + 1) / steps.length) * 100 + "%";
+    }
+
+    function validatePayload(payload) {
+      if (!payload.current_status || !payload.age_group || !payload.main_goal) return false;
+      if (!payload.goal_clarity || !payload.main_blocker || !payload.current_experience) return false;
+      if (!payload.english_level || !payload.needs_action_plan) return false;
+      if (!Array.isArray(payload.discovery_channels) || payload.discovery_channels.length === 0) return false;
+      return true;
+    }
+
+    function findFirstIncompleteStep() {
+      for (var i = 0; i < steps.length; i += 1) {
+        if (!isStepAnswered(i)) {
+          return i;
+        }
+      }
+      return -1;
+    }
+
+    nextBtn.addEventListener("click", function () {
+      if (!isStepAnswered(currentStep)) {
+        showError("Выберите вариант ответа, чтобы продолжить.");
+        return;
+      }
+
+      hideError();
+      goToStep(currentStep + 1);
+    });
+
+    prevBtn.addEventListener("click", function () {
+      hideError();
+      goToStep(currentStep - 1);
+    });
+
+    form.addEventListener("change", function (event) {
+      var input = event.target;
+      if (!(input instanceof HTMLInputElement)) return;
+      if (!steps[currentStep].contains(input)) return;
+
+      hideError();
+
+      // Радио-вопросы переключаются мягко на следующий шаг.
+      if (steps[currentStep].dataset.kind === "radio" && input.type === "radio" && currentStep < steps.length - 1) {
+        var stepAtChange = currentStep;
+        window.setTimeout(function () {
+          if (currentStep === stepAtChange) {
+            goToStep(stepAtChange + 1);
+          }
+        }, 120);
+      }
+    });
+
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      hideError();
+
+      if (!isStepAnswered(currentStep)) {
+        showError("Выберите вариант ответа, чтобы продолжить.");
+        return;
+      }
+
+      var firstIncompleteStep = findFirstIncompleteStep();
+      if (firstIncompleteStep !== -1) {
+        goToStep(firstIncompleteStep);
+        if (steps[firstIncompleteStep].dataset.kind === "checkbox") {
+          showError("Выберите хотя бы один вариант, чтобы продолжить.");
+        } else {
+          showError("Выберите вариант ответа, чтобы продолжить.");
+        }
+        return;
+      }
+
+      var payload = {
+        current_status: getRadioValue("current_status"),
+        age_group: getRadioValue("age_group"),
+        main_goal: getRadioValue("main_goal"),
+        goal_clarity: getRadioValue("goal_clarity"),
+        main_blocker: getRadioValue("main_blocker"),
+        current_experience: getRadioValue("current_experience"),
+        english_level: getRadioValue("english_level"),
+        discovery_channels: getCheckedValues("discovery_channels"),
+        needs_action_plan: getRadioValue("needs_action_plan")
+      };
+
+      if (!validatePayload(payload)) {
+        showError("Пожалуйста, ответьте на все вопросы перед отправкой.");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Сохраняем...";
+
+      try {
+        var response = await fetch(apiUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          credentials: "include",
+          body: JSON.stringify(payload)
+        });
+
+        var result = await response.json().catch(function () {
+          return {};
+        });
+
+        if (!response.ok) {
+          showError(result.error || "Не удалось отправить опрос. Попробуйте еще раз.");
+          return;
+        }
+
+        window.location.href = result.redirect || registerUrl;
+      } catch (err) {
+        showError("Проблема с сетью или сервером. Попробуйте еще раз.");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Отправить и продолжить";
+      }
+    });
+
+    var errorCode = new URLSearchParams(window.location.search).get("error");
+    if (errorCode === "required") {
+      showError("Сначала заполните опрос, затем откроется регистрация.");
+    }
+
+    goToStep(0);
+  })();
+</script>
+
+</body>
+</html>

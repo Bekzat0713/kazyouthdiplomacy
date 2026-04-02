@@ -5,7 +5,7 @@
   <title>Подписка — KazYouthDiplomacy</title>
   <link rel="stylesheet" href="/web.css">
 </head>
-<body class="subscribe-page">
+<body class="subscribe-page route-page">
 
 <header class="header">
   <a href="/" class="logo-wrap">
@@ -13,23 +13,67 @@
   </a>
 </header>
 
-<div class="subscribe-card">
-  <h1>Доступ к возможностям</h1>
+<a
+  href="/"
+  class="page-home-arrow route-link"
+  data-transition-direction="left"
+  aria-label="Вернуться на главную"
+>
+  <span class="hero-arrow-icon" aria-hidden="true"></span>
+</a>
 
-  <div class="subscribe-price">990 ₸ / месяц</div>
+<main class="subscribe-layout">
+  <section class="subscribe-head">
+    <h1>Выберите удобный тариф</h1>
+    <p>Доступ ко всем возможностям платформы, стажировкам и вакансиям.</p>
+  </section>
 
-  <ul>
-    <li> Просмотр всех возможностей</li>
-    <li> Актуальные вакансии</li>
-    <li> Доступ к стажировкам</li>
-  </ul>
+  <section class="plans-grid">
+    <article class="plan-card">
+      <span class="plan-badge">1 месяц</span>
+      <h2>Старт</h2>
+      <div class="plan-price">1090 ₸</div>
+      <ul class="plan-features">
+        <li>Полный доступ ко всем возможностям</li>
+        <li>Актуальные вакансии и стажировки</li>
+        <li>Быстрый вход без долгих обязательств</li>
+      </ul>
+      <a class="btn primary plan-btn" href="https://pay.kaspi.kz/pay/7tul3afi" target="_blank" rel="noopener noreferrer">Попробовать</a>
+    </article>
 
-  <a href="#" class="btn primary">Оплатить подписку</a>
+    <article class="plan-card featured">
+      <span class="plan-badge">🔥 3 месяца — ХИТ</span>
+      <h2>Оптимальный</h2>
+      <div class="plan-price">2790 ₸</div>
+      <ul class="plan-features">
+        <li>Лучшее соотношение цены и срока</li>
+        <li>Полный доступ и приоритет по новым возможностям</li>
+        <li>Идеально для активного поиска</li>
+      </ul>
+      <a id="pay-button" class="btn primary plan-btn" href="https://pay.kaspi.kz/pay/7tul3afi" target="_blank" rel="noopener noreferrer">Лучший выбор</a>
+    </article>
+
+    <article class="plan-card">
+      <span class="plan-badge">6 месяцев</span>
+      <h2>Максимум</h2>
+      <div class="plan-price">5990 ₸</div>
+      <ul class="plan-features">
+        <li>Долгий доступ с максимальной выгодой</li>
+        <li>Комфортный запас времени на поступление</li>
+        <li>Для тех, кто уверен в результате</li>
+      </ul>
+      <a class="btn primary plan-btn" href="https://pay.kaspi.kz/pay/7tul3afi" target="_blank" rel="noopener noreferrer">Для тех, кто уверен</a>
+    </article>
+  </section>
+
+  <div id="subscription-status" class="subscribe-status"></div>
 
   <div class="subscribe-note">
-    Амбассадорам доступ предоставляется бесплатно
+    Амбассадорам доступ предоставляется бесплатно.
   </div>
-</div>
+</main>
 
+<script src="/page-transitions.js" defer></script>
+<script src="/subscribe.js"></script>
 </body>
 </html>

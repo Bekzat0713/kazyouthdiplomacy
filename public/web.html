@@ -2,48 +2,83 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KazYouthDiplomacy</title>
   <link rel="stylesheet" href="/web.css" />
 </head>
-<body>
+<body class="home-page route-page">
+<div class="site-splash" id="site-splash" aria-hidden="true">
+  <div class="site-splash-inner">
+    <div class="splash-bowl" aria-hidden="true">
+      <img src="/intro-logo.png" alt="" class="site-splash-logo-base" />
+      <div class="site-splash-water-fill">
+        <img src="/intro-logo.png" alt="" class="site-splash-logo-water" />
+      </div>
+      <span class="site-splash-shine"></span>
+    </div>
+    <p class="site-splash-title">Kazakh Carreer</p>
+  </div>
+</div>
 
 <header class="header">
-  <a href="/about" class="logo-wrap">
-    <img src="/logo.png" alt="KazYouthDiplomacy logo">
+  <div class="logo-wrap logo-intro" aria-label="KazYouthDiplomacy">
+    <img src="/logo.png" alt="KazYouthDiplomacy logo" />
     <span>KazYouthDiplomacy</span>
-  </a>
+  </div>
   <nav>
+    <a href="/opportunities">Гранты и новости</a>
     <a href="/login">Войти</a>
   </nav>
 </header>
 
-<!-- HERO -->
 <section class="hero">
+  <div class="hero-logo-backdrop" aria-hidden="true">
+    <img src="/logo.png" alt="" class="hero-logo-art" />
+  </div>
   <h1>Возможности<br>для молодежи</h1>
   <p>
-    Международные стажировки, дипломатические программы
-    и карьерные возможности в сфере международных отношений.
+    Международные стажировки, дипломатические программы и карьерные возможности
+    в сфере международных отношений.
   </p>
 
   <div class="hero-actions">
     <a href="/login" class="btn primary">Войти</a>
-    <a href="/subscribe" class="btn secondary">Получить доступ</a>
+    <a href="/opportunities" class="btn secondary">Перейти к публикациям</a>
   </div>
 
   <p class="hero-note">
     Платформа для амбассадоров и молодых лидеров.
   </p>
-</section>
-<!-- CTA SECTION -->
-<section class="cta-modern">
 
+  <div class="hero-arrow-nav" aria-label="Навигация по разделам">
+    <a
+      href="/about"
+      class="hero-arrow hero-arrow-left route-link"
+      data-transition-direction="left"
+      aria-label="Перейти на страницу О нас"
+    >
+      <span class="hero-arrow-icon" aria-hidden="true"></span>
+    </a>
+
+    <a
+      href="/subscribe"
+      class="hero-arrow hero-arrow-right route-link"
+      data-transition-direction="right"
+      aria-label="Перейти на страницу Подписка"
+    >
+      <span class="hero-arrow-icon" aria-hidden="true"></span>
+    </a>
+  </div>
+</section>
+
+<section class="cta-modern" data-scroll-reveal>
   <div class="cta-box">
     <h2>Начните свой путь<br>в международной среде</h2>
-    <p>Получите доступ к стажировкам и дипломатическим программам уже сегодня.</p>
-    <a href="/subscribe" class="btn primary">Присоединиться</a>
+    <p>Откройте доступ к стажировкам, грантам и сильному комьюнити уже сегодня.</p>
   </div>
-
 </section>
 
+<script src="/web.js" defer></script>
+<script src="/page-transitions.js" defer></script>
 </body>
 </html>

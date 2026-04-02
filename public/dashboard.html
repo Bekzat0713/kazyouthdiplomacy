@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Личный кабинет — KazYouthDiplomacy</title>
   <link rel="stylesheet" href="/web.css">
 </head>
@@ -9,7 +10,7 @@
 
 <header class="header">
   <a href="/" class="logo-wrap">
-    <img src="/logo.png" alt="">
+    <img src="/logo.png" alt="KazYouthDiplomacy">
     <span>KazYouthDiplomacy</span>
   </a>
   <nav>
@@ -21,27 +22,28 @@
 </header>
 
 <section class="dashboard-page">
-
   <div class="dashboard-container">
-
     <h1>Личный кабинет</h1>
 
-    <div class="dashboard-card">
-      <h3>Статус доступа</h3>
-      <p>
-        Ты амбассадор платформы.
-        Полный доступ открыт.
-        <strong>Добро пожаловать в систему.</strong>
-      </p>
+    <div class="dashboard-tabs">
+      <a href="/internships" class="dashboard-tab">Стажировки</a>
+      <a id="dashboardPublicationsTab" href="/opportunities" class="dashboard-tab" hidden>Публикации</a>
     </div>
 
-    <a href="/internships" class="btn primary">
-      Смотреть стажировки
-    </a>
+    <div class="dashboard-card">
+      <h3>Раздел стажировок</h3>
+      <p>Смотрите актуальные объявления и откликайтесь на подходящие варианты.</p>
+      <a href="/internships" class="btn primary">Перейти в стажировки</a>
+    </div>
 
+    <div id="dashboardPublicationsCard" class="dashboard-card" hidden>
+      <h3>Публикации администратора</h3>
+      <p>Здесь вы можете публиковать гранты, статьи и новости с фото для всех пользователей.</p>
+      <a href="/opportunities" class="btn primary">Открыть публикации</a>
+    </div>
   </div>
-
 </section>
 
+<script src="/dashboard.js" defer></script>
 </body>
 </html>

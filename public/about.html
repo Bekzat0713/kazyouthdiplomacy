@@ -6,7 +6,7 @@
   <title>О нас — KazYouthDiplomacy</title>
   <link rel="stylesheet" href="/web.css" />
 </head>
-<body>
+<body class="route-page">
 
 <header class="header">
   <a href="/" class="logo-wrap">
@@ -14,6 +14,15 @@
     <span>KazYouthDiplomacy</span>
   </a>
 </header>
+
+<a
+  href="/"
+  class="page-home-arrow route-link"
+  data-transition-direction="left"
+  aria-label="Вернуться на главную"
+>
+  <span class="hero-arrow-icon" aria-hidden="true"></span>
+</a>
 
 <section class="about-clean">
 
@@ -73,5 +82,6 @@
 
 </section>
 
+<script src="/page-transitions.js" defer></script>
 </body>
 </html>

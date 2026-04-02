@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Гранты и публикации - KazYouthDiplomacy</title>
+  <link rel="stylesheet" href="/web.css" />
+</head>
+<body>
+
+<header class="header">
+  <a href="/" class="logo-wrap">
+    <img src="/logo.png" alt="KazYouthDiplomacy" />
+    <span>KazYouthDiplomacy</span>
+  </a>
+  <nav>
+    <a href="/internships">Стажировки</a>
+    <a href="/login">Войти</a>
+  </nav>
+</header>
+
+<section class="opportunities-page">
+  <div class="opportunities-header">
+    <h1>Гранты, стипендии, новости, статьи</h1>
+    <p>
+      Отдельная витрина международных возможностей. Админ может публиковать новые материалы,
+      а пользователи быстро находят нужный формат через фильтры.
+    </p>
+  </div>
+
+  <div class="opportunities-controls">
+    <div class="filters-modern" id="opportunityFilters">
+      <button class="filter active" type="button" data-type="all">Все</button>
+      <button class="filter" type="button" data-type="grants">Гранты</button>
+      <button class="filter" type="button" data-type="scholarships">Стипендии</button>
+      <button class="filter" type="button" data-type="news">Новости</button>
+      <button class="filter" type="button" data-type="articles">Статьи</button>
+    </div>
+    <button id="toggleOpportunityForm" class="btn secondary small-btn" type="button">
+      + Добавить публикацию
+    </button>
+  </div>
+
+  <form id="opportunityForm" class="opportunity-form" hidden>
+    <h2>Новая публикация</h2>
+    <div class="opportunity-form-grid">
+      <input type="text" name="title" placeholder="Название" required maxlength="160" />
+      <input type="text" name="organization" placeholder="Организация / источник" required maxlength="120" />
+      <select name="contentType" required>
+        <option value="grants">Грант</option>
+        <option value="scholarships">Стипендия</option>
+        <option value="news">Новость</option>
+        <option value="articles">Статья</option>
+      </select>
+      <input type="text" name="country" placeholder="Страна / регион" required maxlength="100" />
+      <input type="text" name="deadline" placeholder="Дедлайн или дата (необязательно)" maxlength="100" />
+      <input type="url" name="sourceUrl" placeholder="Ссылка на источник (https://...)" />
+      <input type="url" name="imageUrl" placeholder="Ссылка на фото (https://...)" />
+    </div>
+    <textarea
+      name="summary"
+      rows="4"
+      required
+      maxlength="1200"
+      placeholder="Короткое описание публикации"
+    ></textarea>
+    <div class="opportunity-form-actions">
+      <button type="submit" class="btn primary">Опубликовать</button>
+      <p id="opportunityFormStatus" class="opportunity-form-status" aria-live="polite"></p>
+    </div>
+  </form>
+
+  <div id="opportunitiesGrid" class="opportunities-grid"></div>
+  <p id="opportunitiesEmpty" class="opportunities-empty" hidden>
+    По выбранному фильтру публикаций пока нет.
+  </p>
+</section>
+
+<script src="/opportunities.js" defer></script>
+</body>
+</html>
+
+
+
