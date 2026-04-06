@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Материалы - KazYouthDiplomacy</title>
+  <link rel="stylesheet" href="/web.css">
+</head>
+<body>
+
+<header class="header">
+  <a href="/dashboard" class="logo-wrap">
+    <img src="/logo.png" alt="KazYouthDiplomacy">
+    <span>KazYouthDiplomacy</span>
+  </a>
+  <nav>
+    <a href="/dashboard">Кабинет</a>
+    <a href="/internships">Стажировки</a>
+    <a href="/opportunities">Возможности</a>
+    <a href="/subscribe">Подписка</a>
+  </nav>
+</header>
+
+<section class="resources-page">
+  <div class="resources-header">
+    <h1>Материалы и шаблоны</h1>
+    <p>
+      Практические чеклисты, гайды и заготовки, которые помогают не теряться в откликах,
+      собирать сильные заявки и двигаться по карьерному маршруту быстрее.
+    </p>
+  </div>
+
+  <div class="resources-controls">
+    <div class="filters-modern" id="resourceFilters">
+      <button class="filter active" type="button" data-type="all">Все</button>
+      <button class="filter" type="button" data-type="recommended">Рекомендуемое</button>
+      <button class="filter" type="button" data-type="cv">CV</button>
+      <button class="filter" type="button" data-type="interview">Interview</button>
+      <button class="filter" type="button" data-type="grants">Grants</button>
+      <button class="filter" type="button" data-type="internships">Internships</button>
+      <button class="filter" type="button" data-type="career_start">Career Start</button>
+    </div>
+    <button id="toggleResourceForm" class="btn secondary small-btn" type="button" hidden>+ Добавить материал</button>
+  </div>
+
+  <section id="resourceGoalSection" class="goal-focus" hidden>
+    <div class="goal-focus-head">
+      <div>
+        <p class="dashboard-kicker">Для вашей цели</p>
+        <h2 id="resourceGoalTitle">Подборка материалов</h2>
+      </div>
+      <button id="resourceGoalAction" class="btn secondary" type="button">Открыть рекомендуемое</button>
+    </div>
+    <p id="resourceGoalDescription" class="goal-focus-description"></p>
+    <div id="resourceGoalGrid" class="goal-focus-grid"></div>
+  </section>
+
+  <form id="resourceForm" class="resource-form" hidden>
+    <h2>Новый материал</h2>
+    <div class="resource-form-grid">
+      <input type="text" name="title" placeholder="Название материала" required maxlength="160">
+      <select name="resourceType" required>
+        <option value="cv">CV</option>
+        <option value="interview">Interview</option>
+        <option value="grants">Grants</option>
+        <option value="internships">Internships</option>
+        <option value="career_start">Career Start</option>
+      </select>
+      <input type="url" name="sourceUrl" placeholder="Ссылка на источник (https://...)">
+      <select name="targetGoals" multiple size="5">
+        <option value="study_abroad">Поступить за границу</option>
+        <option value="masters">Магистратура</option>
+        <option value="civil_service">Госслужба</option>
+        <option value="international_org">Международные организации</option>
+        <option value="national_company">Национальные компании</option>
+        <option value="private_sector">Частный сектор</option>
+        <option value="undecided">Пока не определился</option>
+      </select>
+      <select name="requiredEnglishLevel">
+        <option value="any">Английский: любой</option>
+        <option value="a1_a2">Английский: A1-A2</option>
+        <option value="b1_b2">Английский: B1-B2</option>
+        <option value="c1_plus">Английский: C1+</option>
+      </select>
+      <select name="experienceLevel">
+        <option value="any">Опыт: любой</option>
+        <option value="none">Без опыта</option>
+        <option value="little">Небольшой опыт</option>
+        <option value="internships_or_projects">Стажировки или проекты</option>
+        <option value="already_working_in_field">Работа по профилю</option>
+      </select>
+      <select name="regionType">
+        <option value="any">Регион: любой</option>
+        <option value="kazakhstan">Казахстан</option>
+        <option value="international">Международный трек</option>
+        <option value="online">Онлайн</option>
+        <option value="hybrid">Гибрид</option>
+      </select>
+    </div>
+    <textarea name="summary" rows="3" placeholder="Коротко: чем полезен этот материал" required maxlength="700"></textarea>
+    <textarea name="body" rows="5" placeholder="Дополнительные детали, структура, основные шаги" maxlength="2500"></textarea>
+    <div class="resource-form-actions">
+      <button type="submit" class="btn primary">Опубликовать</button>
+      <p id="resourceFormStatus" class="opportunity-form-status" aria-live="polite"></p>
+    </div>
+  </form>
+
+  <div id="resourcesGrid" class="resources-grid"></div>
+  <p id="resourcesEmpty" class="opportunities-empty" hidden>По выбранному фильтру материалов пока нет.</p>
+</section>
+
+<script src="/resources.js" defer></script>
+</body>
+</html>

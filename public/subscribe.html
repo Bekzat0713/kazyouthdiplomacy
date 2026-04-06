@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Подписка — KazYouthDiplomacy</title>
   <link rel="stylesheet" href="/web.css">
 </head>
@@ -14,66 +15,188 @@
 </header>
 
 <a
-  href="/"
+  href="/dashboard"
   class="page-home-arrow route-link"
   data-transition-direction="left"
-  aria-label="Вернуться на главную"
+  aria-label="Вернуться в кабинет"
 >
   <span class="hero-arrow-icon" aria-hidden="true"></span>
 </a>
 
 <main class="subscribe-layout">
   <section class="subscribe-head">
-    <h1>Выберите удобный тариф</h1>
-    <p>Доступ ко всем возможностям платформы, стажировкам и вакансиям.</p>
+    <h1>Free, Plus и будущий Mentor</h1>
+    <p>
+      Free даёт мягкий вход в платформу: часть возможностей, часть материалов и знакомство с продуктом.
+      Plus открывает полный каталог, персональный roadmap, подборки, сохранения и рабочие инструменты.
+      Mentor мы добавим позже как слой сопровождения для тех, кому нужен разбор профиля и прицельная помощь.
+    </p>
+  </section>
+
+  <section class="subscribe-value-strip" aria-label="Что меняется между тарифами">
+    <article class="subscribe-value-pill">
+      <strong>Free</strong>
+      <span>Попробовать платформу и понять формат</span>
+    </article>
+    <article class="subscribe-value-pill">
+      <strong>Plus</strong>
+      <span>Получить персонализацию, полный доступ и трекинг прогресса</span>
+    </article>
+    <article class="subscribe-value-pill">
+      <strong>Mentor</strong>
+      <span>Выйти на сопровождение и приоритетные разборы позже</span>
+    </article>
+  </section>
+
+  <section class="subscribe-flow-card" aria-label="Как работает оплата">
+    <div class="subscribe-flow-step">
+      <span>1</span>
+      <strong>Нажмите «Оплатить Plus»</strong>
+      <p>Система сама подготовит точную сумму и откроет Kaspi QR.</p>
+    </div>
+    <div class="subscribe-flow-step">
+      <span>2</span>
+      <strong>После оплаты нажмите «Я оплатил»</strong>
+      <p>Дальше заявка уйдёт на проверку, а доступ включится автоматически после подтверждения.</p>
+    </div>
   </section>
 
   <section class="plans-grid">
-    <article class="plan-card">
-      <span class="plan-badge">1 месяц</span>
-      <h2>Старт</h2>
-      <div class="plan-price">1090 ₸</div>
+    <article class="plan-card plan-card-free">
+      <span class="plan-badge">Free</span>
+      <h2>Базовый доступ</h2>
+      <div class="plan-price">0 ₸</div>
+      <div class="plan-payment-info plan-payment-static">
+        Доступен сразу после регистрации. Можно спокойно посмотреть платформу без оплаты.
+      </div>
       <ul class="plan-features">
-        <li>Полный доступ ко всем возможностям</li>
-        <li>Актуальные вакансии и стажировки</li>
-        <li>Быстрый вход без долгих обязательств</li>
+        <li>Часть стажировок, грантов и карьерных материалов</li>
+        <li>Базовый просмотр платформы без жёсткой стены</li>
+        <li>Понимание, подходит ли вам формат Career GPS</li>
       </ul>
-      <a class="btn primary plan-btn" href="https://pay.kaspi.kz/pay/7tul3afi" target="_blank" rel="noopener noreferrer">Попробовать</a>
+      <a class="btn secondary plan-btn" href="/dashboard">Остаться на Free</a>
     </article>
 
-    <article class="plan-card featured">
-      <span class="plan-badge">🔥 3 месяца — ХИТ</span>
-      <h2>Оптимальный</h2>
-      <div class="plan-price">2790 ₸</div>
+    <article class="plan-card" data-plan-card="monthly">
+      <span class="plan-badge">Plus • 1 месяц</span>
+      <h2>Plus Start</h2>
+      <div class="plan-price" data-plan-price="monthly">1090 ₸</div>
+      <div class="plan-payment-info" data-payment-info="monthly">
+        Нажмите «Оплатить Plus», и мы сразу подготовим точную сумму и откроем QR.
+      </div>
       <ul class="plan-features">
-        <li>Лучшее соотношение цены и срока</li>
-        <li>Полный доступ и приоритет по новым возможностям</li>
-        <li>Идеально для активного поиска</li>
+        <li>Полный доступ ко всей базе возможностей, стажировок и материалов</li>
+        <li>Персональный roadmap и подборки под вашу цель</li>
+        <li>Избранное, статусы откликов и контроль дедлайнов</li>
       </ul>
-      <a id="pay-button" class="btn primary plan-btn" href="https://pay.kaspi.kz/pay/7tul3afi" target="_blank" rel="noopener noreferrer">Лучший выбор</a>
+      <button class="btn primary plan-btn" type="button" data-prepare-plan="monthly">
+        Оплатить Plus
+      </button>
+      <div class="plan-followup" data-plan-actions="monthly" hidden>
+        <button class="btn secondary plan-btn" type="button" data-submit-plan="monthly" disabled>
+          Я оплатил
+        </button>
+        <a class="plan-inline-link" data-kaspi-link="monthly" href="#" target="_blank" rel="noopener noreferrer" hidden>
+          Открыть Kaspi QR ещё раз
+        </a>
+      </div>
+    </article>
+
+    <article class="plan-card featured" data-plan-card="quarterly">
+      <span class="plan-badge">Plus • 3 месяца</span>
+      <h2>Plus Growth</h2>
+      <div class="plan-price" data-plan-price="quarterly">2790 ₸</div>
+      <div class="plan-payment-info" data-payment-info="quarterly">
+        Лучший вариант, если хотите не просто посмотреть базу, а системно выстроить карьерный трек.
+      </div>
+      <ul class="plan-features">
+        <li>Самый удобный баланс цены и времени на карьерный цикл</li>
+        <li>Хватает, чтобы пройти несколько откликов и дедлайнов подряд</li>
+        <li>Подходит для системной работы с roadmap, подборками и материалами</li>
+      </ul>
+      <button class="btn primary plan-btn" type="button" data-prepare-plan="quarterly">
+        Оплатить Plus
+      </button>
+      <div class="plan-followup" data-plan-actions="quarterly" hidden>
+        <button class="btn secondary plan-btn" type="button" data-submit-plan="quarterly" disabled>
+          Я оплатил
+        </button>
+        <a class="plan-inline-link" data-kaspi-link="quarterly" href="#" target="_blank" rel="noopener noreferrer" hidden>
+          Открыть Kaspi QR ещё раз
+        </a>
+      </div>
+    </article>
+
+    <article class="plan-card" data-plan-card="halfyear">
+      <span class="plan-badge">Plus • 6 месяцев</span>
+      <h2>Plus Long Run</h2>
+      <div class="plan-price" data-plan-price="halfyear">5990 ₸</div>
+      <div class="plan-payment-info" data-payment-info="halfyear">
+        Для длинной дистанции: меньше отвлечений на продление и больше фокуса на результате.
+      </div>
+      <ul class="plan-features">
+        <li>Выгоднее, если вы ведёте длинный карьерный трек</li>
+        <li>Удобно для охоты за международными программами и стажировками</li>
+        <li>Подходит тем, кто хочет пользоваться платформой как рабочим инструментом</li>
+      </ul>
+      <button class="btn primary plan-btn" type="button" data-prepare-plan="halfyear">
+        Оплатить Plus
+      </button>
+      <div class="plan-followup" data-plan-actions="halfyear" hidden>
+        <button class="btn secondary plan-btn" type="button" data-submit-plan="halfyear" disabled>
+          Я оплатил
+        </button>
+        <a class="plan-inline-link" data-kaspi-link="halfyear" href="#" target="_blank" rel="noopener noreferrer" hidden>
+          Открыть Kaspi QR ещё раз
+        </a>
+      </div>
     </article>
 
     <article class="plan-card">
-      <span class="plan-badge">6 месяцев</span>
-      <h2>Максимум</h2>
-      <div class="plan-price">5990 ₸</div>
+      <span class="plan-badge">Mentor / Pro</span>
+      <h2>Скоро</h2>
+      <div class="plan-price">Coming soon</div>
+      <div class="plan-payment-info plan-payment-static">
+        Этот слой мы откроем позже, когда соберём mentor-формат и сопровождение внутри продукта.
+      </div>
       <ul class="plan-features">
-        <li>Долгий доступ с максимальной выгодой</li>
-        <li>Комфортный запас времени на поступление</li>
-        <li>Для тех, кто уверен в результате</li>
+        <li>Разбор профиля и приоритетные подборки</li>
+        <li>Шаблоны, прицельные рекомендации и сопровождение</li>
+        <li>Закрытый чат или mentor layer для роста</li>
       </ul>
-      <a class="btn primary plan-btn" href="https://pay.kaspi.kz/pay/7tul3afi" target="_blank" rel="noopener noreferrer">Для тех, кто уверен</a>
+      <button class="btn secondary plan-btn" type="button" disabled>
+        Скоро будет доступно
+      </button>
+    </article>
+  </section>
+
+  <section class="subscribe-compare" aria-label="Сравнение уровней доступа">
+    <article class="subscribe-compare-card">
+      <h3>Что остаётся на Free</h3>
+      <ul class="plan-features">
+        <li>Часть базы, чтобы оценить качество контента</li>
+        <li>Часть материалов, чтобы почувствовать пользу продукта</li>
+        <li>Без жёсткой блокировки после регистрации</li>
+      </ul>
+    </article>
+    <article class="subscribe-compare-card subscribe-compare-highlight">
+      <h3>Что открывает Plus</h3>
+      <ul class="plan-features">
+        <li>Полный каталог возможностей и стажировок</li>
+        <li>Персональный roadmap и рекомендации по цели</li>
+        <li>Сохранения, статусы откликов и контроль дедлайнов</li>
+      </ul>
     </article>
   </section>
 
   <div id="subscription-status" class="subscribe-status"></div>
-
-  <div class="subscribe-note">
-    Амбассадорам доступ предоставляется бесплатно.
+  <div id="subscription-note" class="subscribe-note">
+    После оплаты Plus заявка автоматически попадает в очередь проверки с точной суммой.
+    Как только платёж подтверждён, полный доступ открывается автоматически.
   </div>
 </main>
 
 <script src="/page-transitions.js" defer></script>
-<script src="/subscribe.js"></script>
+<script src="/subscribe.js" defer></script>
 </body>
 </html>

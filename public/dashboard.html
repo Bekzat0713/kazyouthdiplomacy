@@ -15,6 +15,8 @@
   </a>
   <nav>
     <a href="/internships">Стажировки</a>
+    <a href="/opportunities">Возможности</a>
+    <a href="/resources">Материалы</a>
     <form method="POST" action="/logout" style="display:inline;">
       <button class="nav-btn">Выйти</button>
     </form>
@@ -27,7 +29,89 @@
 
     <div class="dashboard-tabs">
       <a href="/internships" class="dashboard-tab">Стажировки</a>
+      <a href="/opportunities" class="dashboard-tab">Возможности</a>
+      <a href="/resources" class="dashboard-tab">Материалы</a>
+      <a href="/subscribe" class="dashboard-tab">Подписка</a>
       <a id="dashboardPublicationsTab" href="/opportunities" class="dashboard-tab" hidden>Публикации</a>
+      <a id="dashboardSubscriptionReviewTab" href="/subscriptions-review" class="dashboard-tab" hidden>Проверка оплат</a>
+    </div>
+
+    <div class="dashboard-card">
+      <div class="dashboard-profile-head">
+        <div>
+          <p class="dashboard-kicker">Профиль</p>
+          <h3 id="dashboardProfileName">Профиль загружается...</h3>
+        </div>
+        <span id="dashboardVerifyBadge" class="dashboard-badge">Проверяем почту</span>
+      </div>
+
+      <div class="dashboard-profile-grid">
+        <div class="dashboard-profile-item">
+          <span>Email</span>
+          <strong id="dashboardProfileEmail">-</strong>
+        </div>
+        <div class="dashboard-profile-item">
+          <span>Дата рождения</span>
+          <strong id="dashboardProfileBirthDate">-</strong>
+        </div>
+        <div class="dashboard-profile-item dashboard-profile-item-wide">
+          <span>Учебное заведение</span>
+          <strong id="dashboardProfileUniversity">-</strong>
+        </div>
+        <div class="dashboard-profile-item dashboard-profile-item-wide">
+          <span>Место работы</span>
+          <strong id="dashboardProfileWorkplace">-</strong>
+        </div>
+      </div>
+    </div>
+
+    <div id="dashboardRoadmapCard" class="dashboard-card" hidden>
+      <div class="dashboard-profile-head">
+        <div>
+          <p class="dashboard-kicker">Career GPS</p>
+          <h3>Мой карьерный маршрут</h3>
+        </div>
+        <span class="dashboard-badge">Персонально</span>
+      </div>
+
+      <p id="dashboardRoadmapSummary">Собираем персональный маршрут на основе вашей анкеты.</p>
+
+      <div class="dashboard-roadmap-grid">
+        <div class="dashboard-roadmap-item">
+          <span>Главная цель</span>
+          <strong id="dashboardRoadmapGoal">-</strong>
+        </div>
+        <div class="dashboard-roadmap-item">
+          <span>Главный барьер</span>
+          <strong id="dashboardRoadmapBlocker">-</strong>
+        </div>
+        <div class="dashboard-roadmap-item">
+          <span>Английский</span>
+          <strong id="dashboardRoadmapEnglish">-</strong>
+        </div>
+        <div class="dashboard-roadmap-item">
+          <span>Опыт</span>
+          <strong id="dashboardRoadmapExperience">-</strong>
+        </div>
+      </div>
+
+      <div class="dashboard-roadmap-next">
+        <p class="dashboard-kicker">Следующий шаг</p>
+        <h4 id="dashboardRoadmapNextTitle">-</h4>
+        <p id="dashboardRoadmapNextDescription">-</p>
+        <a id="dashboardRoadmapNextLink" href="/opportunities" class="btn primary">Открыть рекомендации</a>
+      </div>
+
+      <div class="dashboard-roadmap-steps-wrap">
+        <p class="dashboard-kicker">Маршрут на ближайшее время</p>
+        <div id="dashboardRoadmapSteps" class="dashboard-roadmap-steps"></div>
+      </div>
+    </div>
+
+    <div class="dashboard-card">
+      <h3>Доступ</h3>
+      <p id="dashboardSubscriptionText">Проверяем ваш текущий уровень доступа...</p>
+      <a href="/subscribe" class="btn primary">Сравнить Free и Plus</a>
     </div>
 
     <div class="dashboard-card">
@@ -36,10 +120,54 @@
       <a href="/internships" class="btn primary">Перейти в стажировки</a>
     </div>
 
+    <div class="dashboard-card">
+      <h3>Материалы</h3>
+      <p>Открывайте CV checklists, interview guides, шаблоны и практические материалы под ваш карьерный трек.</p>
+      <a href="/resources" class="btn primary">Открыть материалы</a>
+    </div>
+
+    <div id="dashboardSavedCard" class="dashboard-card">
+      <div class="dashboard-profile-head">
+        <div>
+          <p class="dashboard-kicker">Retention</p>
+          <h3>Мои сохранения и дедлайны</h3>
+        </div>
+        <span id="dashboardSavedBadge" class="dashboard-badge">0 сохранений</span>
+      </div>
+
+      <div class="dashboard-roadmap-grid">
+        <div class="dashboard-roadmap-item">
+          <span>Сохранено</span>
+          <strong id="dashboardSavedCountSaved">0</strong>
+        </div>
+        <div class="dashboard-roadmap-item">
+          <span>Хочу податься</span>
+          <strong id="dashboardSavedCountWant">0</strong>
+        </div>
+        <div class="dashboard-roadmap-item">
+          <span>Подался</span>
+          <strong id="dashboardSavedCountApplied">0</strong>
+        </div>
+        <div class="dashboard-roadmap-item">
+          <span>Дедлайны 14 дней</span>
+          <strong id="dashboardSavedCountDeadlines">0</strong>
+        </div>
+      </div>
+
+      <p id="dashboardSavedText">Здесь появятся ваши сохранённые стажировки и возможности.</p>
+      <div id="dashboardSavedDeadlines" class="dashboard-saved-list"></div>
+    </div>
+
     <div id="dashboardPublicationsCard" class="dashboard-card" hidden>
       <h3>Публикации администратора</h3>
-      <p>Здесь вы можете публиковать гранты, статьи и новости с фото для всех пользователей.</p>
+      <p>Здесь можно публиковать гранты, статьи и новости с фото для всех пользователей.</p>
       <a href="/opportunities" class="btn primary">Открыть публикации</a>
+    </div>
+
+    <div id="dashboardSubscriptionReviewCard" class="dashboard-card" hidden>
+      <h3>Проверка оплат</h3>
+      <p>Подтверждайте заявки пользователей, которые оплатили подписку через Kaspi QR.</p>
+      <a href="/subscriptions-review" class="btn primary">Открыть очередь проверок</a>
     </div>
   </div>
 </section>

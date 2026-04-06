@@ -14,8 +14,10 @@
     <span>KazYouthDiplomacy</span>
   </a>
   <nav>
+    <a href="/dashboard">Кабинет</a>
     <a href="/internships">Стажировки</a>
-    <a href="/login">Войти</a>
+    <a href="/resources">Материалы</a>
+    <a href="/subscribe">Подписка</a>
   </nav>
 </header>
 
@@ -31,15 +33,29 @@
   <div class="opportunities-controls">
     <div class="filters-modern" id="opportunityFilters">
       <button class="filter active" type="button" data-type="all">Все</button>
+      <button class="filter" type="button" data-type="recommended">Рекомендуемое</button>
       <button class="filter" type="button" data-type="grants">Гранты</button>
       <button class="filter" type="button" data-type="scholarships">Стипендии</button>
       <button class="filter" type="button" data-type="news">Новости</button>
       <button class="filter" type="button" data-type="articles">Статьи</button>
     </div>
-    <button id="toggleOpportunityForm" class="btn secondary small-btn" type="button">
+    <button id="toggleOpportunityForm" class="btn secondary small-btn" type="button" hidden>
       + Добавить публикацию
     </button>
   </div>
+  <p id="opportunityPageStatus" class="opportunity-form-status" aria-live="polite"></p>
+
+  <section id="opportunityGoalSection" class="goal-focus" hidden>
+    <div class="goal-focus-head">
+      <div>
+        <p class="dashboard-kicker">Для вашей цели</p>
+        <h2 id="opportunityGoalTitle">Персональная витрина</h2>
+      </div>
+      <button id="opportunityGoalAction" class="btn secondary" type="button">Смотреть рекомендуемое</button>
+    </div>
+    <p id="opportunityGoalDescription" class="goal-focus-description"></p>
+    <div id="opportunityGoalGrid" class="goal-focus-grid"></div>
+  </section>
 
   <form id="opportunityForm" class="opportunity-form" hidden>
     <h2>Новая публикация</h2>
@@ -54,8 +70,38 @@
       </select>
       <input type="text" name="country" placeholder="Страна / регион" required maxlength="100" />
       <input type="text" name="deadline" placeholder="Дедлайн или дата (необязательно)" maxlength="100" />
+      <input type="date" name="deadlineDate" />
       <input type="url" name="sourceUrl" placeholder="Ссылка на источник (https://...)" />
       <input type="url" name="imageUrl" placeholder="Ссылка на фото (https://...)" />
+      <select name="targetGoals" multiple size="5">
+        <option value="study_abroad">Поступить за границу</option>
+        <option value="masters">Магистратура</option>
+        <option value="civil_service">Госслужба</option>
+        <option value="international_org">Международные организации</option>
+        <option value="national_company">Национальные компании</option>
+        <option value="private_sector">Частный сектор</option>
+        <option value="undecided">Пока не определился</option>
+      </select>
+      <select name="requiredEnglishLevel">
+        <option value="any">Английский: любой</option>
+        <option value="a1_a2">Английский: A1-A2</option>
+        <option value="b1_b2">Английский: B1-B2</option>
+        <option value="c1_plus">Английский: C1+</option>
+      </select>
+      <select name="experienceLevel">
+        <option value="any">Опыт: любой</option>
+        <option value="none">Без опыта</option>
+        <option value="little">Небольшой опыт</option>
+        <option value="internships_or_projects">Стажировки или проекты</option>
+        <option value="already_working_in_field">Работа по профилю</option>
+      </select>
+      <select name="regionType">
+        <option value="any">Регион: любой</option>
+        <option value="kazakhstan">Казахстан</option>
+        <option value="international">Международный трек</option>
+        <option value="online">Онлайн</option>
+        <option value="hybrid">Гибрид</option>
+      </select>
     </div>
     <textarea
       name="summary"

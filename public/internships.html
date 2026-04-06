@@ -14,6 +14,8 @@
   </a>
   <nav>
     <a href="/dashboard">Кабинет</a>
+    <a href="/opportunities">Возможности</a>
+    <a href="/resources">Материалы</a>
     <form method="POST" action="/logout" style="display:inline;">
       <button class="nav-btn">Выйти</button>
     </form>
@@ -29,14 +31,28 @@
   <div class="internships-controls">
     <div class="filters-modern" id="internshipFilters">
       <button class="filter active" type="button" data-category="all">Все</button>
+      <button class="filter" type="button" data-category="recommended">Рекомендуемое</button>
       <button class="filter" type="button" data-category="ministries">Министерства</button>
       <button class="filter" type="button" data-category="akimats">Акиматы</button>
       <button class="filter" type="button" data-category="quasi">Квазигоссектор</button>
       <button class="filter" type="button" data-category="online">Онлайн</button>
       <button class="filter" type="button" data-category="other">Другое</button>
     </div>
-    <button id="toggleInternshipForm" class="btn secondary small-btn" type="button">+ Добавить объявление</button>
+    <button id="toggleInternshipForm" class="btn secondary small-btn" type="button" hidden>+ Добавить объявление</button>
   </div>
+  <p id="internshipPageStatus" class="internship-form-status" aria-live="polite"></p>
+
+  <section id="internshipGoalSection" class="goal-focus" hidden>
+    <div class="goal-focus-head">
+      <div>
+        <p class="dashboard-kicker">Для вашей цели</p>
+        <h2 id="internshipGoalTitle">Персональная подборка</h2>
+      </div>
+      <button id="internshipGoalAction" class="btn secondary" type="button">Смотреть рекомендуемое</button>
+    </div>
+    <p id="internshipGoalDescription" class="goal-focus-description"></p>
+    <div id="internshipGoalGrid" class="goal-focus-grid"></div>
+  </section>
 
   <form id="internshipForm" class="internship-form" hidden>
     <h2>Новое объявление</h2>
@@ -52,7 +68,37 @@
       </select>
       <input type="text" name="location" placeholder="Локация (например, Астана)" required maxlength="80">
       <input type="text" name="duration" placeholder="Срок (например, 2 месяца)" required maxlength="60">
+      <input type="date" name="deadlineDate" placeholder="Дедлайн">
       <input type="url" name="applyUrl" placeholder="Ссылка для отклика (https://...)">
+      <select name="targetGoals" multiple size="5">
+        <option value="study_abroad">Поступить за границу</option>
+        <option value="masters">Магистратура</option>
+        <option value="civil_service">Госслужба</option>
+        <option value="international_org">Международные организации</option>
+        <option value="national_company">Национальные компании</option>
+        <option value="private_sector">Частный сектор</option>
+        <option value="undecided">Пока не определился</option>
+      </select>
+      <select name="requiredEnglishLevel">
+        <option value="any">Английский: любой</option>
+        <option value="a1_a2">Английский: A1-A2</option>
+        <option value="b1_b2">Английский: B1-B2</option>
+        <option value="c1_plus">Английский: C1+</option>
+      </select>
+      <select name="experienceLevel">
+        <option value="any">Опыт: любой</option>
+        <option value="none">Без опыта</option>
+        <option value="little">Небольшой опыт</option>
+        <option value="internships_or_projects">Стажировки или проекты</option>
+        <option value="already_working_in_field">Работа по профилю</option>
+      </select>
+      <select name="regionType">
+        <option value="any">Регион: любой</option>
+        <option value="kazakhstan">Казахстан</option>
+        <option value="international">Международный трек</option>
+        <option value="online">Онлайн</option>
+        <option value="hybrid">Гибрид</option>
+      </select>
     </div>
     <textarea name="description" rows="4" placeholder="Краткое описание задач и требований" required maxlength="1000"></textarea>
     <div class="internship-form-actions">

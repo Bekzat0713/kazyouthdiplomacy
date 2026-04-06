@@ -1,6 +1,6 @@
 (function () {
   var TRANSITION_KEY = "kyd_route_transition_v1";
-  var TRANSITION_DURATION_MS = 620;
+  var TRANSITION_DURATION_MS = 740;
   var TRANSITION_TTL_MS = 4500;
 
   function safeParse(value) {

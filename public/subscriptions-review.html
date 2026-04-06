@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Проверка подписок — KazYouthDiplomacy</title>
+  <link rel="stylesheet" href="/web.css">
+</head>
+<body class="opportunities-page route-page">
+
+<header class="header">
+  <a href="/dashboard" class="logo-wrap">
+    <span>KazYouthDiplomacy</span>
+  </a>
+  <nav>
+    <a href="/dashboard">Кабинет</a>
+    <form method="POST" action="/logout" style="display:inline;">
+      <button class="nav-btn">Выйти</button>
+    </form>
+  </nav>
+</header>
+
+<section class="opportunities-page">
+  <div class="opportunities-header">
+    <h1>Проверка подписок</h1>
+    <p>Ищите в Kaspi платёж по точной сумме из заявки. После подтверждения система сразу открывает пользователю доступ к стажировкам и возможностям.</p>
+  </div>
+
+  <div id="subscriptionReviewStatus" class="subscribe-status"></div>
+  <div id="subscriptionReviewGrid" class="opportunities-grid"></div>
+  <p id="subscriptionReviewEmpty" class="opportunities-empty" hidden>Новых заявок на проверку пока нет.</p>
+</section>
+
+<script src="/subscriptions-review.js" defer></script>
+</body>
+</html>

@@ -15,29 +15,91 @@
   </a>
 </header>
 
-<div class="register-card">
+<div class="register-card register-card-wide">
   <h1>Создать аккаунт</h1>
-  <p style="margin-bottom:30px; color:#cbd5e1;">
-    Зарегистрируйтесь, чтобы получить доступ к стажировкам.
+  <p class="register-intro">
+    Заполните профиль, чтобы мы сразу понимали ваш бэкграунд и учебную среду.
   </p>
 
-  <form id="registerForm" method="POST" action="/register">
-    <input
-      type="email"
-      name="email"
-      placeholder="Email адрес"
-      autocomplete="email"
-      required
-    >
+  <form id="registerForm" method="POST" action="/register" class="register-form-extended">
+    <div class="register-form-grid">
+      <input
+        type="text"
+        name="firstName"
+        placeholder="Имя"
+        autocomplete="given-name"
+        maxlength="80"
+        required
+      >
 
-    <input
-      type="password"
-      name="password"
-      placeholder="Пароль (минимум 6 символов)"
-      autocomplete="new-password"
-      required
-      minlength="6"
-    >
+      <input
+        type="text"
+        name="lastName"
+        placeholder="Фамилия"
+        autocomplete="family-name"
+        maxlength="80"
+        required
+      >
+
+      <input
+        id="birthDateInput"
+        type="date"
+        name="birthDate"
+        autocomplete="bday"
+        required
+      >
+
+      <input
+        id="universityInput"
+        type="text"
+        name="university"
+        placeholder="Учебное заведение"
+        list="kazakhstanUniversities"
+        autocomplete="organization"
+        maxlength="180"
+        required
+      >
+
+      <input
+        type="text"
+        name="workplace"
+        placeholder="Место работы (если есть)"
+        autocomplete="organization-title"
+        maxlength="180"
+      >
+
+      <input
+        type="email"
+        name="email"
+        placeholder="Email адрес"
+        autocomplete="email"
+        required
+      >
+
+      <input
+        type="password"
+        name="password"
+        placeholder="Пароль (минимум 10 символов, буквы и цифры)"
+        autocomplete="new-password"
+        minlength="10"
+        required
+      >
+
+      <input
+        type="password"
+        name="confirmPassword"
+        placeholder="Повторите пароль"
+        autocomplete="new-password"
+        minlength="10"
+        required
+      >
+    </div>
+
+    <datalist id="kazakhstanUniversities"></datalist>
+
+    <p class="register-note">
+      В списке собраны вузы Казахстана. Если название не подсказалось, его можно ввести вручную.
+    </p>
 
     <button class="btn primary" type="submit">Зарегистрироваться</button>
   </form>
@@ -52,27 +114,71 @@
   </p>
 </div>
 
+<script src="/kazakhstan-universities.js"></script>
 <script>
   (function () {
     var form = document.getElementById("registerForm");
     var loginLink = document.getElementById("loginLink");
-    var mustUseBackendHost =
-      window.location.protocol === "file:" ||
-      (window.location.port && window.location.port !== "3000");
+    var birthDateInput = document.getElementById("birthDateInput");
+    var universityInput = document.getElementById("universityInput");
+    var universitiesDatalist = document.getElementById("kazakhstanUniversities");
+    var mustUseBackendHost = window.location.protocol === "file:";
+    var backendBase = mustUseBackendHost ? "http://localhost:3000" : window.location.origin;
 
     if (mustUseBackendHost) {
-      form.action = "http://localhost:3000/register";
-      if (loginLink) loginLink.href = "http://localhost:3000/login";
+      form.action = backendBase + "/register";
+      if (loginLink) loginLink.href = backendBase + "/login";
+    }
+
+    if (birthDateInput) {
+      var today = new Date();
+      var yyyy = today.getFullYear();
+      var mm = String(today.getMonth() + 1).padStart(2, "0");
+      var dd = String(today.getDate()).padStart(2, "0");
+      birthDateInput.max = yyyy + "-" + mm + "-" + dd;
+    }
+
+    if (universitiesDatalist && Array.isArray(window.KAZAKHSTAN_UNIVERSITIES)) {
+      window.KAZAKHSTAN_UNIVERSITIES.forEach(function (universityName) {
+        var option = document.createElement("option");
+        option.value = universityName;
+        universitiesDatalist.appendChild(option);
+      });
     }
 
     var errorBox = document.getElementById("authError");
     var error = new URLSearchParams(window.location.search).get("error");
 
     var messages = {
-      invalid: "Введите корректный email и пароль (минимум 6 символов).",
+      invalid: "Проверьте все поля: имя, фамилию, дату рождения, вуз, место работы, email и пароль.",
       exists: "Пользователь с таким email уже существует.",
+      "password-weak": "Пароль должен быть не короче 10 символов и содержать буквы и цифры.",
+      "password-match": "Пароль и повтор пароля должны совпадать.",
+      "rate-limit": "Слишком много попыток регистрации. Подождите немного и попробуйте снова.",
       server: "Ошибка сервера или базы данных. Проверьте логи терминала."
     };
+
+    form.addEventListener("submit", function (event) {
+      var passwordField = form.elements.password;
+      var confirmPasswordField = form.elements.confirmPassword;
+
+      if (passwordField && confirmPasswordField && passwordField.value !== confirmPasswordField.value) {
+        event.preventDefault();
+        if (errorBox) {
+          errorBox.textContent = messages["password-match"];
+          errorBox.style.display = "block";
+        }
+        return;
+      }
+
+      if (universityInput && !universityInput.value.trim()) {
+        event.preventDefault();
+        if (errorBox) {
+          errorBox.textContent = "Укажите учебное заведение.";
+          errorBox.style.display = "block";
+        }
+      }
+    });
 
     if (error && errorBox) {
       errorBox.textContent = messages[error] || "Ошибка регистрации.";

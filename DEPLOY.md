@@ -22,7 +22,21 @@
 
 - `NODE_ENV=production`
 - `DATABASE_URL=<your render postgres url>`
-- `SESSION_SECRET=<long random secret>`
+- `SESSION_SECRET=<64+ random characters>`
+- `APP_BASE_URL=https://<your-domain>`
+- `EMAIL_VERIFICATION_ENABLED=true`
+- `AUTH_MIN_PASSWORD_LENGTH=10`
+- `LOGIN_RATE_LIMIT_WINDOW_MINUTES=15`
+- `LOGIN_RATE_LIMIT_MAX_ATTEMPTS=7`
+- `REGISTER_RATE_LIMIT_WINDOW_MINUTES=30`
+- `REGISTER_RATE_LIMIT_MAX_ATTEMPTS=5`
+- `RESEND_RATE_LIMIT_WINDOW_MINUTES=30`
+- `RESEND_RATE_LIMIT_MAX_ATTEMPTS=5`
+- `FORGOT_RATE_LIMIT_WINDOW_MINUTES=30`
+- `FORGOT_RATE_LIMIT_MAX_ATTEMPTS=5`
+- `RESET_RATE_LIMIT_WINDOW_MINUTES=30`
+- `RESET_RATE_LIMIT_MAX_ATTEMPTS=10`
+- `PASSWORD_RESET_TOKEN_TTL_MINUTES=60`
 - `INTERNSHIP_MANAGER_EMAILS=bmuftahiden@gmail.com,alibiayap@gmail.com`
 - `KASPI_MERCHANT_ID=<your kaspi merchant id>`
 - `KASPI_API_KEY=<your kaspi private API key>`
@@ -41,4 +55,7 @@ Do not store real secrets in repo.
 1. Rotate `DATABASE_URL` password and `SESSION_SECRET` if they were ever committed.
 2. Keep `NODE_ENV=production`.
 3. Verify session cookie is `Secure` and `HttpOnly` in browser devtools.
-4. Verify `/api/internships/access` returns expected `can_manage` for manager emails.
+4. Verify login rate limits trigger after repeated bad attempts.
+5. Verify email confirmation is required before login.
+6. Verify forgot password sends a reset link and the reset flow updates the password.
+7. Verify `/api/internships/access` returns expected `can_manage` for manager emails.

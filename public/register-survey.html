@@ -151,14 +151,13 @@
     var steps = Array.prototype.slice.call(form.querySelectorAll(".survey-step"));
     var currentStep = 0;
 
-    var mustUseBackendHost =
-      window.location.protocol === "file:" ||
-      (window.location.port && window.location.port !== "3000");
+    var mustUseBackendHost = window.location.protocol === "file:";
+    var backendBase = mustUseBackendHost ? "http://localhost:3000" : window.location.origin;
     var apiUrl = mustUseBackendHost
-      ? "http://localhost:3000/api/register-survey"
+      ? backendBase + "/api/register-survey"
       : "/api/register-survey";
     var registerUrl = mustUseBackendHost
-      ? "http://localhost:3000/register"
+      ? backendBase + "/register"
       : "/register";
 
     function getRadioValue(name) {
