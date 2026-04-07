@@ -22,6 +22,7 @@
 
 - `NODE_ENV=production`
 - `DATABASE_URL=<your render postgres url>`
+- `PGSSLMODE=require`
 - `SESSION_SECRET=<64+ random characters>`
 - `APP_BASE_URL=https://<your-domain>`
 - `EMAIL_VERIFICATION_ENABLED=true`

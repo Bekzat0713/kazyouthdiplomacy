@@ -16,10 +16,14 @@ const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 const isProduction = process.env.NODE_ENV === "production";
 const databaseUrl = String(process.env.DATABASE_URL || "");
+const pgSslMode = String(process.env.PGSSLMODE || "").trim().toLowerCase();
+const pgSslRootCertPath = String(process.env.PGSSLROOTCERT || "").trim();
 const shouldUseDbSsl =
-  isProduction ||
-  String(process.env.PGSSLMODE || "").toLowerCase() === "require" ||
-  databaseUrl.includes("render.com");
+  pgSslMode === "require" ||
+  pgSslMode === "verify-ca" ||
+  pgSslMode === "verify-full" ||
+  pgSslMode === "no-verify" ||
+  (!pgSslMode && (isProduction || databaseUrl.includes("render.com")));
 
 const KASPI_MERCHANT_ID = String(process.env.KASPI_MERCHANT_ID || "");
 const KASPI_API_KEY = String(process.env.KASPI_API_KEY || "");
@@ -68,6 +72,65 @@ const FREE_PREVIEW_LIMITS = {
   opportunities: FREE_OPPORTUNITY_PREVIEW_LIMIT,
   resources: FREE_RESOURCE_PREVIEW_LIMIT,
 };
+const SENSITIVE_LOG_QUERY_PARAMS = new Set([
+  "token",
+  "email",
+  "password",
+  "confirmPassword",
+  "code",
+]);
+
+function getPgSslConfig() {
+  if (!shouldUseDbSsl) {
+    return undefined;
+  }
+
+  const sslConfig = {
+    rejectUnauthorized: pgSslMode !== "no-verify",
+  };
+
+  if (pgSslRootCertPath) {
+    sslConfig.ca = fs.readFileSync(path.resolve(pgSslRootCertPath), "utf8");
+  }
+
+  return sslConfig;
+}
+
+function redactUrlForLogs(value) {
+  const input = String(value || "");
+  if (!input) {
+    return input;
+  }
+
+  try {
+    const parsed = new URL(input, APP_BASE_URL);
+    for (const key of SENSITIVE_LOG_QUERY_PARAMS) {
+      if (parsed.searchParams.has(key)) {
+        parsed.searchParams.set(key, "[REDACTED]");
+      }
+    }
+    return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+  } catch (err) {
+    return input;
+  }
+}
+
+const cspDirectives = {
+  defaultSrc: ["'self'"],
+  baseUri: ["'self'"],
+  connectSrc: ["'self'"],
+  fontSrc: ["'self'", "data:"],
+  formAction: ["'self'"],
+  frameAncestors: ["'none'"],
+  imgSrc: ["'self'", "data:", "https:"],
+  objectSrc: ["'none'"],
+  scriptSrc: ["'self'"],
+  styleSrc: ["'self'", "'unsafe-inline'"],
+};
+
+if (isProduction) {
+  cspDirectives.upgradeInsecureRequests = [];
+}
 
 const SUBSCRIPTION_PLANS = {
   monthly: {
@@ -194,7 +257,12 @@ if (isProduction && !EMAIL_VERIFICATION_ENABLED) {
   console.warn("EMAIL_VERIFICATION_ENABLED is false in production. Turn it on before public launch.");
 }
 
+if (isProduction && pgSslMode === "no-verify") {
+  console.warn("PGSSLMODE=no-verify disables PostgreSQL certificate validation in production.");
+}
+
 let mailTransporter;
+const pgSslConfig = getPgSslConfig();
 
 /* ======================
    PostgreSQL
@@ -202,7 +270,7 @@ let mailTransporter;
 
 const pool = new Pool({
   connectionString: databaseUrl,
-  ssl: shouldUseDbSsl ? { rejectUnauthorized: false } : undefined,
+  ssl: pgSslConfig,
 });
 
 /* ======================
@@ -216,8 +284,10 @@ if (isProduction) {
 
 app.use(
   helmet({
-    // Keep CSP off for now to avoid breaking inline styles/scripts in existing HTML.
-    contentSecurityPolicy: false,
+    contentSecurityPolicy: {
+      useDefaults: false,
+      directives: cspDirectives,
+    },
   })
 );
 
@@ -249,7 +319,7 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} ${req.method} ${req.originalUrl}`);
+  console.log(`${new Date().toISOString()} ${req.method} ${redactUrlForLogs(req.originalUrl)}`);
   next();
 });
 
@@ -1904,7 +1974,7 @@ async function sendVerificationEmail(email, token) {
   const verifyUrl = buildAppUrl(`/verify-email?token=${encodeURIComponent(token)}`);
   const transporter = getMailTransporter();
 
-  const info = await transporter.sendMail({
+  await transporter.sendMail({
     from: MAIL_FROM,
     to: email,
     subject: "Подтвердите ваш аккаунт",
@@ -1933,12 +2003,14 @@ async function sendVerificationEmail(email, token) {
   });
 
   if (!isEmailDeliveryConfigured()) {
-    console.warn("SMTP is not configured. Verification link for %s: %s", email, verifyUrl);
-    console.warn("Local email preview payload: %s", info.message);
+    console.warn(
+      "SMTP is not configured. Verification email preview suppressed for %s: %s",
+      email,
+      redactUrlForLogs(verifyUrl)
+    );
   }
 
   return {
-    verifyUrl,
     delivered: isEmailDeliveryConfigured(),
   };
 }
@@ -1947,7 +2019,7 @@ async function sendPasswordResetEmail(email, token) {
   const resetUrl = buildAppUrl(`/reset-password?token=${encodeURIComponent(token)}`);
   const transporter = getMailTransporter();
 
-  const info = await transporter.sendMail({
+  await transporter.sendMail({
     from: MAIL_FROM,
     to: email,
     subject: "Сброс пароля KazYouthDiplomacy",
@@ -1977,12 +2049,14 @@ async function sendPasswordResetEmail(email, token) {
   });
 
   if (!isEmailDeliveryConfigured()) {
-    console.warn("SMTP is not configured. Password reset link for %s: %s", email, resetUrl);
-    console.warn("Local password reset preview payload: %s", info.message);
+    console.warn(
+      "SMTP is not configured. Password reset preview suppressed for %s: %s",
+      email,
+      redactUrlForLogs(resetUrl)
+    );
   }
 
   return {
-    resetUrl,
     delivered: isEmailDeliveryConfigured(),
   };
 }
@@ -2987,7 +3061,7 @@ app.post("/resend-verification", resendVerificationRateLimiter, async (req, res)
     const delivery = await sendVerificationEmail(user.email, token);
     const message = delivery.delivered
       ? "Письмо отправлено повторно. Проверьте входящие и папку Спам."
-      : "SMTP пока не настроен. Ссылка для подтверждения выведена в логах сервера.";
+      : "SMTP пока не настроен на этом сервере. Обратитесь к администратору.";
 
     if (respondWithJson) {
       return res.json({ ok: true, message, delivered: delivery.delivered });
@@ -3033,7 +3107,7 @@ app.post("/forgot-password", forgotPasswordRateLimiter, async (req, res) => {
           ok: true,
           message: delivery.delivered
             ? genericMessage
-            : "SMTP пока не настроен. Ссылка для сброса выведена в логах сервера.",
+            : "SMTP пока не настроен на этом сервере. Обратитесь к администратору.",
           delivered: delivery.delivered,
         });
       }

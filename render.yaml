@@ -10,9 +10,65 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: PGSSLMODE
+        value: require
+      - key: APP_BASE_URL
+        sync: false
       - key: SESSION_SECRET
         generateValue: true
       - key: DATABASE_URL
         sync: false
+      - key: EMAIL_VERIFICATION_ENABLED
+        value: true
+      - key: AUTH_MIN_PASSWORD_LENGTH
+        value: 10
+      - key: LOGIN_RATE_LIMIT_WINDOW_MINUTES
+        value: 15
+      - key: LOGIN_RATE_LIMIT_MAX_ATTEMPTS
+        value: 7
+      - key: REGISTER_RATE_LIMIT_WINDOW_MINUTES
+        value: 30
+      - key: REGISTER_RATE_LIMIT_MAX_ATTEMPTS
+        value: 5
+      - key: RESEND_RATE_LIMIT_WINDOW_MINUTES
+        value: 30
+      - key: RESEND_RATE_LIMIT_MAX_ATTEMPTS
+        value: 5
+      - key: FORGOT_RATE_LIMIT_WINDOW_MINUTES
+        value: 30
+      - key: FORGOT_RATE_LIMIT_MAX_ATTEMPTS
+        value: 5
+      - key: RESET_RATE_LIMIT_WINDOW_MINUTES
+        value: 30
+      - key: RESET_RATE_LIMIT_MAX_ATTEMPTS
+        value: 10
+      - key: PASSWORD_RESET_TOKEN_TTL_MINUTES
+        value: 60
+      - key: MAIL_FROM
+        sync: false
+      - key: SMTP_URL
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_SECURE
+        value: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: KASPI_MERCHANT_ID
+        sync: false
+      - key: KASPI_API_KEY
+        sync: false
+      - key: KASPI_CALLBACK_URL
+        sync: false
+      - key: KASPI_QR_URL
+        sync: false
       - key: INTERNSHIP_MANAGER_EMAILS
+        sync: false
+      - key: SUBSCRIPTION_MANAGER_EMAILS
+        sync: false
+      - key: OPPORTUNITIES_ADMIN_EMAIL
         sync: false
