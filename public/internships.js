@@ -62,6 +62,16 @@ const regionBadgeClass = {
   any: "gray",
 };
 
+const listingTypeLabels = {
+  internship: "Стажировка",
+  vacancy: "Вакансия",
+};
+
+const listingTypeBadgeClass = {
+  internship: "blue",
+  vacancy: "purple",
+};
+
 const savedStatusLabels = {
   saved: "Сохранено",
   want_to_apply: "Хочу податься",
@@ -218,6 +228,7 @@ function matchesSearch(item, query) {
   }
 
   const haystack = [
+    listingTypeLabels[item.listing_type],
     item.title,
     item.organization,
     item.description,
@@ -272,6 +283,10 @@ function getVisibleInternships() {
     return searchableItems;
   }
 
+  if (state.category === "internship" || state.category === "vacancy") {
+    return searchableItems.filter((item) => item.listing_type === state.category);
+  }
+
   if (state.category === "kazakhstan") {
     return searchableItems.filter((item) => item.region_type === "kazakhstan");
   }
@@ -293,6 +308,8 @@ function updateFilterCounts(searchableItems, searchableGoalItems) {
     recommended: state.featureAccess.recommendations
       ? searchableItems.filter((item) => item.is_recommended).length
       : searchableGoalItems.length,
+    internship: searchableItems.filter((item) => item.listing_type === "internship").length,
+    vacancy: searchableItems.filter((item) => item.listing_type === "vacancy").length,
     kazakhstan: searchableItems.filter((item) => item.region_type === "kazakhstan").length,
     international: searchableItems.filter((item) => item.region_type === "international").length,
     online: searchableItems.filter((item) => item.region_type === "online" || item.region_type === "hybrid").length,
@@ -435,6 +452,13 @@ function createInternshipCard(internship) {
 
   const badges = document.createElement("div");
   badges.className = "card-badges";
+  badges.appendChild(
+    createBadge(
+      listingTypeLabels[internship.listing_type] || "Стажировка",
+      listingTypeBadgeClass[internship.listing_type] || listingTypeBadgeClass.internship
+    )
+  );
+
   badges.appendChild(
     createBadge(
       regionLabels[internship.region_type] || regionLabels.any,
@@ -778,6 +802,7 @@ async function handleFormSubmit(event) {
   const payload = {
     title: String(formData.get("title") || "").trim(),
     organization: String(formData.get("organization") || "").trim(),
+    listingType: String(formData.get("listingType") || "internship").trim(),
     location: String(formData.get("location") || "").trim(),
     duration: String(formData.get("duration") || "").trim(),
     sector: String(formData.get("sector") || "").trim(),

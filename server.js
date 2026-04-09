@@ -551,6 +551,7 @@ async function initDB() {
 
     await pool.query(`
       ALTER TABLE internships
+      ADD COLUMN IF NOT EXISTS listing_type TEXT DEFAULT 'internship',
       ADD COLUMN IF NOT EXISTS target_goals TEXT[] DEFAULT ARRAY[]::TEXT[],
       ADD COLUMN IF NOT EXISTS required_english_level TEXT DEFAULT 'any',
       ADD COLUMN IF NOT EXISTS experience_level TEXT DEFAULT 'any',
@@ -1214,6 +1215,11 @@ function normalizeRegionType(value) {
 function normalizeWorkFormat(value) {
   const normalized = String(value || "offline").trim().toLowerCase();
   return normalized === "online" ? "online" : "offline";
+}
+
+function normalizeInternshipListingType(value) {
+  const normalized = String(value || "internship").trim().toLowerCase();
+  return normalized === "vacancy" ? "vacancy" : "internship";
 }
 
 function deriveInternshipCategory({ regionType, workFormat }) {
@@ -4588,6 +4594,8 @@ app.get("/api/internships", requireAuth, async (req, res) => {
   const allowedCategories = new Set([
     "all",
     "recommended",
+    "internship",
+    "vacancy",
     "ministries",
     "akimats",
     "quasi",
@@ -4611,6 +4619,7 @@ app.get("/api/internships", requireAuth, async (req, res) => {
       ? `
         SELECT
           id,
+          listing_type,
           title,
           organization,
           description,
@@ -4633,6 +4642,7 @@ app.get("/api/internships", requireAuth, async (req, res) => {
       : `
         SELECT
           id,
+          listing_type,
           title,
           organization,
           description,
@@ -4650,7 +4660,7 @@ app.get("/api/internships", requireAuth, async (req, res) => {
           created_at,
           created_by
         FROM internships
-        WHERE category = $1
+        WHERE ${category === "internship" || category === "vacancy" ? "listing_type" : "category"} = $1
         ORDER BY created_at DESC, id DESC
       `;
 
@@ -4670,6 +4680,7 @@ app.get("/api/internships", requireAuth, async (req, res) => {
 
       return {
         id: row.id,
+        listing_type: normalizeInternshipListingType(row.listing_type),
         title: row.title,
         organization: row.organization,
         description: row.description,
@@ -5678,6 +5689,7 @@ app.post("/api/internships", requireAuth, async (req, res) => {
 
   const title = String(req.body.title || "").trim();
   const organization = String(req.body.organization || "").trim();
+  const listingType = normalizeInternshipListingType(req.body.listingType);
   const description = String(req.body.description || "").trim();
   const location = String(req.body.location || "").trim();
   const duration = String(req.body.duration || "").trim();
@@ -5710,6 +5722,7 @@ app.post("/api/internships", requireAuth, async (req, res) => {
     const result = await pool.query(
       `
       INSERT INTO internships (
+        listing_type,
         title,
         organization,
         description,
@@ -5725,9 +5738,10 @@ app.post("/api/internships", requireAuth, async (req, res) => {
         sector,
         work_format,
         created_by
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::text[], $10, $11, $12, $13, $14, $15)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::text[], $11, $12, $13, $14, $15, $16)
       RETURNING
         id,
+        listing_type,
         title,
         organization,
         description,
@@ -5745,6 +5759,7 @@ app.post("/api/internships", requireAuth, async (req, res) => {
         created_at
       `,
       [
+        listingType,
         title,
         organization,
         description,

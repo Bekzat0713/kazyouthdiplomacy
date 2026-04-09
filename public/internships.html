@@ -46,7 +46,7 @@
             id="internshipSearchInput"
             class="internships-search-input"
             type="search"
-            placeholder="Поиск стажировок..."
+            placeholder="Поиск стажировок и вакансий..."
             autocomplete="off"
           >
         </label>
@@ -73,6 +73,14 @@
           <button class="filter internships-filter-chip active" type="button" data-category="all">
             <span class="internships-filter-chip-label">Все</span>
             <span class="internships-filter-chip-count" data-filter-count="all">0</span>
+          </button>
+          <button class="filter internships-filter-chip" type="button" data-category="internship">
+            <span class="internships-filter-chip-label">Стажировки</span>
+            <span class="internships-filter-chip-count" data-filter-count="internship">0</span>
+          </button>
+          <button class="filter internships-filter-chip" type="button" data-category="vacancy">
+            <span class="internships-filter-chip-label">Вакансии</span>
+            <span class="internships-filter-chip-count" data-filter-count="vacancy">0</span>
           </button>
           <button class="filter internships-filter-chip" type="button" data-category="kazakhstan">
             <span class="internships-filter-chip-label">Казахстан</span>
@@ -104,7 +112,7 @@
               id="internshipSectorFilter"
               class="internships-advanced-input"
               type="search"
-              placeholder="Например: аналитика, право, госслужба"
+              placeholder="Например: аналитика, право, маркетинг"
               autocomplete="off"
             >
           </label>
@@ -139,8 +147,12 @@
   <form id="internshipForm" class="internship-form" hidden>
     <h2>Новое объявление</h2>
     <div class="internship-form-grid">
-      <input type="text" name="title" placeholder="Название стажировки" required maxlength="140">
+      <input type="text" name="title" placeholder="Название стажировки или вакансии" required maxlength="140">
       <input type="text" name="organization" placeholder="Организация" required maxlength="120">
+      <select name="listingType" required>
+        <option value="internship">Тип: Стажировка</option>
+        <option value="vacancy">Тип: Вакансия</option>
+      </select>
       <select name="regionType" required>
         <option value="kazakhstan">Локация: Казахстан</option>
         <option value="international">Локация: Зарубеж</option>
