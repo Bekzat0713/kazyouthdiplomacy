@@ -62,6 +62,9 @@ const state = {
   canManage: false,
   accessTier: "free",
   searchQuery: "",
+  experienceFilter: "all",
+  sectorQuery: "",
+  formatFilter: "all",
   viewMode: "grid",
   featureAccess: {
     saved_items: false,
@@ -85,6 +88,9 @@ const filtersWrap = document.getElementById("internshipFiltersWrap");
 const filterToggleButton = document.getElementById("internshipsFilterToggle");
 const gridViewButton = document.getElementById("internshipsGridViewBtn");
 const listViewButton = document.getElementById("internshipsListViewBtn");
+const levelFilter = document.getElementById("internshipLevelFilter");
+const sectorFilter = document.getElementById("internshipSectorFilter");
+const formatFilter = document.getElementById("internshipFormatFilter");
 const goalSection = document.getElementById("internshipGoalSection");
 const goalTitle = document.getElementById("internshipGoalTitle");
 const goalDescription = document.getElementById("internshipGoalDescription");
@@ -146,6 +152,71 @@ function normalizeSearchValue(value) {
   return String(value || "").trim().toLowerCase();
 }
 
+function matchesExperienceFilter(item, experienceFilter) {
+  if (!experienceFilter || experienceFilter === "all") {
+    return true;
+  }
+
+  const level = String(item.experience_level || "any").trim().toLowerCase();
+
+  if (experienceFilter === "no_experience") {
+    return level === "none" || level === "any";
+  }
+
+  if (experienceFilter === "with_experience") {
+    return level !== "none" && level !== "any";
+  }
+
+  return true;
+}
+
+function matchesSectorFilter(item, sectorQuery) {
+  const query = normalizeSearchValue(sectorQuery);
+  if (!query) {
+    return true;
+  }
+
+  const sectorHaystack = [
+    item.title,
+    item.organization,
+    item.description,
+    categoryLabels[item.category],
+    ...(item.target_goals || []).map((goal) => goalLabels[goal] || goal),
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  return sectorHaystack.includes(query);
+}
+
+function inferItemFormat(item) {
+  const regionType = String(item.region_type || "").trim().toLowerCase();
+  const location = String(item.location || "").trim().toLowerCase();
+  const description = String(item.description || "").trim().toLowerCase();
+  const combined = `${location} ${description}`;
+
+  if (
+    regionType === "online" ||
+    combined.includes("онлайн") ||
+    combined.includes("online") ||
+    combined.includes("remote") ||
+    combined.includes("удален")
+  ) {
+    return "online";
+  }
+
+  return "offline";
+}
+
+function matchesFormatFilter(item, selectedFormat) {
+  if (!selectedFormat || selectedFormat === "all") {
+    return true;
+  }
+
+  return inferItemFormat(item) === selectedFormat;
+}
+
 function matchesSearch(item, query) {
   if (!query) {
     return true;
@@ -171,22 +242,21 @@ function matchesSearch(item, query) {
   return haystack.includes(query);
 }
 
-function getSearchFilteredInternships() {
-  const query = normalizeSearchValue(state.searchQuery);
-  if (!query) {
-    return state.internships.slice();
-  }
+function matchesAllFilters(item) {
+  return (
+    matchesSearch(item, normalizeSearchValue(state.searchQuery)) &&
+    matchesExperienceFilter(item, state.experienceFilter) &&
+    matchesSectorFilter(item, state.sectorQuery) &&
+    matchesFormatFilter(item, state.formatFilter)
+  );
+}
 
-  return state.internships.filter((item) => matchesSearch(item, query));
+function getSearchFilteredInternships() {
+  return state.internships.filter((item) => matchesAllFilters(item));
 }
 
 function getSearchFilteredGoalItems() {
-  const query = normalizeSearchValue(state.searchQuery);
-  if (!query) {
-    return state.goalItems.slice();
-  }
-
-  return state.goalItems.filter((item) => matchesSearch(item, query));
+  return state.goalItems.filter((item) => matchesAllFilters(item));
 }
 
 function getVisibleInternships() {
@@ -205,7 +275,19 @@ function getVisibleInternships() {
     return searchableItems;
   }
 
-  return searchableItems.filter((item) => item.category === state.category);
+  if (state.category === "kazakhstan") {
+    return searchableItems.filter((item) => item.region_type === "kazakhstan");
+  }
+
+  if (state.category === "international") {
+    return searchableItems.filter((item) => item.region_type === "international");
+  }
+
+  if (state.category === "online") {
+    return searchableItems.filter((item) => item.region_type === "online" || item.region_type === "hybrid");
+  }
+
+  return searchableItems;
 }
 
 function updateFilterCounts(searchableItems, searchableGoalItems) {
@@ -214,11 +296,9 @@ function updateFilterCounts(searchableItems, searchableGoalItems) {
     recommended: state.featureAccess.recommendations
       ? searchableItems.filter((item) => item.is_recommended).length
       : searchableGoalItems.length,
-    ministries: searchableItems.filter((item) => item.category === "ministries").length,
-    akimats: searchableItems.filter((item) => item.category === "akimats").length,
-    quasi: searchableItems.filter((item) => item.category === "quasi").length,
-    online: searchableItems.filter((item) => item.category === "online").length,
-    other: searchableItems.filter((item) => item.category === "other").length,
+    kazakhstan: searchableItems.filter((item) => item.region_type === "kazakhstan").length,
+    international: searchableItems.filter((item) => item.region_type === "international").length,
+    online: searchableItems.filter((item) => item.region_type === "online" || item.region_type === "hybrid").length,
   };
 
   filterCountElements.forEach((element) => {
@@ -768,6 +848,21 @@ function handleSearchInput(event) {
   applyCurrentFilters();
 }
 
+function handleLevelFilterChange(event) {
+  state.experienceFilter = event.target.value || "all";
+  applyCurrentFilters();
+}
+
+function handleSectorFilterChange(event) {
+  state.sectorQuery = event.target.value || "";
+  applyCurrentFilters();
+}
+
+function handleFormatFilterChange(event) {
+  state.formatFilter = event.target.value || "all";
+  applyCurrentFilters();
+}
+
 function handleFiltersToggle() {
   if (!discoveryPanel || !filterToggleButton) {
     return;
@@ -800,6 +895,15 @@ function init() {
   }
   if (searchInput) {
     searchInput.addEventListener("input", handleSearchInput);
+  }
+  if (levelFilter) {
+    levelFilter.addEventListener("change", handleLevelFilterChange);
+  }
+  if (sectorFilter) {
+    sectorFilter.addEventListener("input", handleSectorFilterChange);
+  }
+  if (formatFilter) {
+    formatFilter.addEventListener("change", handleFormatFilterChange);
   }
   if (filterToggleButton) {
     filterToggleButton.addEventListener("click", handleFiltersToggle);

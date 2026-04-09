@@ -1,7 +1,6 @@
 const statusContainer = document.getElementById("subscription-status");
 const noteContainer = document.getElementById("subscription-note");
 const prepareButtons = Array.from(document.querySelectorAll("[data-prepare-plan]"));
-const submitButtons = Array.from(document.querySelectorAll("[data-submit-plan]"));
 const kaspiLinks = Array.from(document.querySelectorAll("[data-kaspi-link]"));
 const paymentInfoMap = new Map(
   Array.from(document.querySelectorAll("[data-payment-info]")).map((node) => [node.getAttribute("data-payment-info"), node])
@@ -12,8 +11,22 @@ const planCardMap = new Map(
 const planActionMap = new Map(
   Array.from(document.querySelectorAll("[data-plan-actions]")).map((node) => [node.getAttribute("data-plan-actions"), node])
 );
+
+const kaspiWidget = document.getElementById("kaspi-widget");
+const kaspiWidgetBackdrop = document.getElementById("kaspi-widget-backdrop");
+const kaspiWidgetFrame = document.getElementById("kaspi-widget-frame");
+const kaspiWidgetMeta = document.getElementById("kaspi-widget-meta");
+const kaspiWidgetTitle = document.getElementById("kaspi-widget-title");
+const kaspiWidgetOpenLink = document.getElementById("kaspi-widget-open-link");
+const kaspiWidgetClose = document.getElementById("kaspi-widget-close");
+
 const FALLBACK_KASPI_QR_URL = "https://pay.kaspi.kz/pay/7tul3afi";
-const DEFAULT_PLAN_HINT = "Нажмите «Оплатить Plus», и мы сразу подготовим точную сумму и откроем QR.";
+const DEFAULT_PLAN_HINT = "Нажмите «Оплатить Plus», и мы сразу подготовим точную сумму, откроем QR и отправим заявку на проверку.";
+const PLAN_WIDGET_LABELS = {
+  monthly: "Kaspi QR • Plus Start",
+  quarterly: "Kaspi QR • Plus Growth",
+  halfyear: "Kaspi QR • Plus Long Run",
+};
 
 function formatDate(value) {
   if (!value) {
@@ -21,7 +34,7 @@ function formatDate(value) {
   }
 
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString();
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString("ru-RU");
 }
 
 function formatAmount(value) {
@@ -55,13 +68,6 @@ function setNote(message) {
   noteContainer.textContent = message;
 }
 
-function setPlanSubmitAvailability(activePlan, enabled) {
-  submitButtons.forEach((button) => {
-    const plan = button.getAttribute("data-submit-plan");
-    button.disabled = !enabled || plan !== activePlan;
-  });
-}
-
 function setPrepareButtonsDisabled(disabled) {
   prepareButtons.forEach((button) => {
     button.disabled = disabled;
@@ -74,13 +80,76 @@ function setPlanActionsVisibility(activePlan, visible) {
   });
 }
 
-function applyKaspiLink(url, activePlan) {
+function updateKaspiWidgetLink(url) {
   const href = String(url || "").trim() || FALLBACK_KASPI_QR_URL;
+  if (kaspiWidgetOpenLink) {
+    kaspiWidgetOpenLink.href = href;
+  }
+  return href;
+}
+
+function applyKaspiLink(url, activePlan) {
+  const href = updateKaspiWidgetLink(url);
+
   kaspiLinks.forEach((link) => {
     const plan = link.getAttribute("data-kaspi-link");
     link.href = href;
     link.hidden = !activePlan || plan !== activePlan;
   });
+}
+
+function setKaspiWidgetOpen(isOpen) {
+  if (!kaspiWidget || !kaspiWidgetBackdrop) {
+    return;
+  }
+
+  kaspiWidget.hidden = !isOpen;
+  kaspiWidgetBackdrop.hidden = !isOpen;
+  kaspiWidget.setAttribute("aria-hidden", String(!isOpen));
+  document.body.classList.toggle("kaspi-widget-open", isOpen);
+
+  window.requestAnimationFrame(() => {
+    kaspiWidget.classList.toggle("active", isOpen);
+    kaspiWidgetBackdrop.classList.toggle("active", isOpen);
+  });
+}
+
+function closeKaspiWidget() {
+  setKaspiWidgetOpen(false);
+}
+
+function openKaspiWidget(url, options = {}) {
+  if (!kaspiWidget || !kaspiWidgetFrame) {
+    return;
+  }
+
+  const href = updateKaspiWidgetLink(url);
+  const title = PLAN_WIDGET_LABELS[options.plan] || "Kaspi QR • Plus";
+  const metaParts = [];
+
+  if (options.amount) {
+    metaParts.push(`Сумма к оплате: ${formatAmount(options.amount)}.`);
+  }
+
+  if (options.paymentCode) {
+    metaParts.push(`Код заявки: ${options.paymentCode}.`);
+  }
+
+  metaParts.push("Заявка уже отправлена в очередь проверки. После оплаты просто дождитесь подтверждения.");
+
+  if (kaspiWidgetTitle) {
+    kaspiWidgetTitle.textContent = title;
+  }
+
+  if (kaspiWidgetMeta) {
+    kaspiWidgetMeta.textContent = metaParts.join(" ");
+  }
+
+  if (kaspiWidgetFrame.src !== href) {
+    kaspiWidgetFrame.src = href;
+  }
+
+  setKaspiWidgetOpen(true);
 }
 
 function resetPlanCards() {
@@ -93,7 +162,6 @@ function resetPlanCards() {
     card.classList.remove("plan-card-active");
   });
 
-  setPlanSubmitAvailability(null, false);
   setPlanActionsVisibility(null, false);
   applyKaspiLink();
 }
@@ -111,15 +179,16 @@ function renderPreparedPayment(subscription) {
 
   if (info) {
     const parts = [`Оплатите ровно ${formatAmount(subscription.amount || subscription.base_amount || 0)}.`];
+
     if (subscription.payment_code) {
       parts.push(`Код заявки: ${subscription.payment_code}.`);
     }
-    parts.push("После оплаты вернитесь сюда и нажмите «Я оплатил».");
+
+    parts.push("Kaspi QR откроется справа на этой странице, а заявка уже стоит в очереди на проверку.");
     info.textContent = parts.join(" ");
     info.classList.add("ready");
   }
 
-  setPlanSubmitAvailability(planId, true);
   setPlanActionsVisibility(planId, true);
   applyKaspiLink(FALLBACK_KASPI_QR_URL, planId);
 }
@@ -136,17 +205,22 @@ function renderSubscriptionState(payload) {
   setPrepareButtonsDisabled(false);
 
   if (!subscription) {
-    setStatus(accessPolicy && accessPolicy.access_message
-      ? accessPolicy.access_message
-      : "Сейчас у вас Free. Можно смотреть часть базы и часть материалов, а Plus откроет полный каталог, roadmap, подборки и сохранения.");
-    setNote((limitsText ? limitsText + " " : "") + "Клиентский сценарий простой: выберите Plus, оплатите QR и после оплаты нажмите только одну кнопку «Я оплатил».");
+    closeKaspiWidget();
+    setStatus(
+      accessPolicy && accessPolicy.access_message
+        ? accessPolicy.access_message
+        : "Сейчас у вас Free. Можно смотреть часть базы и часть материалов, а Plus откроет полный каталог, roadmap, подборки и сохранения."
+    );
+    setNote(
+      `${limitsText ? `${limitsText} ` : ""}Сценарий простой: выберите Plus, оплатите точную сумму по QR и дождитесь подтверждения.`
+    );
     return;
   }
 
   if (subscription.active) {
+    closeKaspiWidget();
     setStatus(`Сейчас у вас Plus до ${formatDate(subscription.expires_at)}.`);
     setPrepareButtonsDisabled(true);
-    setPlanSubmitAvailability(null, false);
     setPlanActionsVisibility(null, false);
     setNote("Полный каталог, roadmap, рекомендации и сохранения уже открыты. Когда срок закончится, здесь можно будет продлить доступ.");
     return;
@@ -155,46 +229,57 @@ function renderSubscriptionState(payload) {
   if (subscription.status === "payment_pending") {
     renderPreparedPayment(subscription);
     applyKaspiLink(kaspiUrl, subscription.plan);
-    setStatus("QR уже подготовлен. Оплатите точную сумму и потом нажмите «Я оплатил».");
-    setNote("Повторно ничего создавать не нужно: система уже сохранила вашу заявку. До подтверждения оплаты у вас остаётся Free-доступ. " + limitsText);
+    setStatus("Kaspi QR уже подготовлен. После оплаты заявка автоматически попадёт на проверку.");
+    setNote(`Ничего дополнительно нажимать не нужно. После поступления оплаты админ увидит заявку и подтвердит доступ. ${limitsText}`.trim());
     return;
   }
 
   if (subscription.status === "pending_manual_review") {
     renderPreparedPayment(subscription);
     setPrepareButtonsDisabled(true);
-    setPlanSubmitAvailability(null, false);
     setPlanActionsVisibility(subscription.plan, true);
     applyKaspiLink(kaspiUrl, subscription.plan);
-    setStatus(accessPolicy && accessPolicy.access_message
-      ? accessPolicy.access_message
-      : "Оплата отправлена на проверку. Как только платёж подтвердят, Plus включится автоматически.");
-    setNote("С вашей стороны всё сделано. Дальше заявку видит админ и подтверждает платёж по точной сумме. До этого момента действует только Free. " + limitsText);
+    setStatus(
+      accessPolicy && accessPolicy.access_message
+        ? accessPolicy.access_message
+        : "Заявка уже отправлена на проверку. Как только платёж подтвердят, Plus включится автоматически."
+    );
+    setNote(`С вашей стороны всё сделано: QR уже доступен, а заявка стоит в очереди проверки. После оплаты остаётся только дождаться подтверждения. ${limitsText}`.trim());
     return;
   }
 
   if (subscription.status === "rejected") {
+    closeKaspiWidget();
     setStatus(`Заявка отклонена. ${subscription.review_note || "Проверьте оплату и создайте новую заявку."}`, true);
     setNote("Если оплата не совпала с подготовленной суммой, просто нажмите «Оплатить Plus» ещё раз и получите новую сумму.");
     return;
   }
 
   if (subscription.status === "expired") {
-    setStatus(accessPolicy && accessPolicy.access_message
-      ? accessPolicy.access_message
-      : "Срок Plus закончился. Можно снова нажать «Оплатить Plus» и продлить доступ.");
-    setNote((limitsText ? limitsText + " " : "") + "Полный каталог, roadmap и сохранения вернутся после повторной активации Plus.");
+    closeKaspiWidget();
+    setStatus(
+      accessPolicy && accessPolicy.access_message
+        ? accessPolicy.access_message
+        : "Срок Plus закончился. Можно снова нажать «Оплатить Plus» и продлить доступ."
+    );
+    setNote(`${limitsText ? `${limitsText} ` : ""}Полный каталог, roadmap и сохранения вернутся после повторной активации Plus.`);
     return;
   }
 
   if (accessTier === "free") {
-    setStatus(accessPolicy && accessPolicy.access_message
-      ? accessPolicy.access_message
-      : "Сейчас у вас Free. Можно смотреть часть базы и часть материалов, а Plus откроет полный каталог, roadmap, подборки и сохранения.");
-    setNote((limitsText ? limitsText + " " : "") + "Клиентский сценарий простой: выберите Plus, оплатите QR и после оплаты нажмите только одну кнопку «Я оплатил».");
+    closeKaspiWidget();
+    setStatus(
+      accessPolicy && accessPolicy.access_message
+        ? accessPolicy.access_message
+        : "Сейчас у вас Free. Можно смотреть часть базы и часть материалов, а Plus откроет полный каталог, roadmap, подборки и сохранения."
+    );
+    setNote(
+      `${limitsText ? `${limitsText} ` : ""}Сценарий простой: выберите Plus, оплатите точную сумму по QR и дождитесь подтверждения.`
+    );
     return;
   }
 
+  closeKaspiWidget();
   setStatus(`Текущий статус подписки: ${subscription.status}.`);
   setNote("Если статус выглядит странно, обновите страницу или создайте новую заявку на оплату.");
 }
@@ -214,6 +299,7 @@ async function refreshSubscriptionStatus() {
     renderSubscriptionState(payload);
   } catch (error) {
     resetPlanCards();
+    closeKaspiWidget();
     setStatus(error.message || "Не удалось получить статус подписки.", true);
     console.error("Subscription status error:", error);
   }
@@ -221,9 +307,8 @@ async function refreshSubscriptionStatus() {
 
 async function preparePayment(plan) {
   setPrepareButtonsDisabled(true);
-  setPlanSubmitAvailability(null, false);
   setPlanActionsVisibility(null, false);
-  setStatus("Готовим оплату и открываем Kaspi QR...");
+  setStatus("Готовим оплату, открываем Kaspi QR и отправляем заявку на проверку...");
 
   try {
     const response = await fetch("/api/subscription/prepare", {
@@ -247,52 +332,26 @@ async function preparePayment(plan) {
 
     applyKaspiLink(payload.kaspi_qr_url, plan);
     setPrepareButtonsDisabled(false);
+    openKaspiWidget(payload.kaspi_qr_url, {
+      plan,
+      amount: payload.exact_amount,
+      paymentCode: payload.payment_code,
+    });
 
     const paymentMessage = [
       `Оплатите ровно ${formatAmount(payload.exact_amount)}.`,
       payload.payment_code ? `Код заявки: ${payload.payment_code}.` : "",
-      "Kaspi QR уже открыт в новой вкладке.",
-    ].filter(Boolean).join(" ");
+      "Kaspi QR уже открыт справа, а заявка сразу ушла на проверку.",
+    ]
+      .filter(Boolean)
+      .join(" ");
 
     setStatus(paymentMessage);
-    setNote("После оплаты возвращайтесь сюда и нажмите только одну кнопку: «Я оплатил».");
-    window.open(payload.kaspi_qr_url || FALLBACK_KASPI_QR_URL, "_blank", "noopener");
+    setNote("После оплаты ничего дополнительно нажимать не нужно. Доступ включится после подтверждения.");
   } catch (error) {
     setPrepareButtonsDisabled(false);
     setStatus(error.message || "Не удалось подготовить оплату.", true);
     console.error("Subscription prepare error:", error);
-  }
-}
-
-async function submitManualRequest(plan) {
-  setPrepareButtonsDisabled(true);
-  setPlanSubmitAvailability(null, false);
-  setStatus("Отправляем заявку на проверку оплаты...");
-
-  try {
-    const response = await fetch("/api/subscription/manual-request", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({ plan }),
-    });
-    const payload = await response.json();
-
-    if (!response.ok) {
-      throw new Error(payload.error || "Не удалось отправить заявку.");
-    }
-
-    setStatus(payload.message || "Заявка отправлена.");
-    setNote("Дальше клиенту ничего делать не нужно. Админ увидит заявку в очереди и подтвердит оплату по точной сумме. Пока заявка не подтверждена, у пользователя остаётся только Free-доступ.");
-    await refreshSubscriptionStatus();
-  } catch (error) {
-    setPrepareButtonsDisabled(false);
-    setStatus(error.message || "Не удалось отправить заявку.", true);
-    console.error("Manual request error:", error);
-    await refreshSubscriptionStatus();
   }
 }
 
@@ -307,14 +366,22 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  submitButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const plan = button.getAttribute("data-submit-plan");
-      if (!plan) {
-        return;
-      }
-      void submitManualRequest(plan);
+  kaspiLinks.forEach((link) => {
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      openKaspiWidget(link.href, {
+        plan: link.getAttribute("data-kaspi-link"),
+      });
     });
+  });
+
+  kaspiWidgetClose?.addEventListener("click", closeKaspiWidget);
+  kaspiWidgetBackdrop?.addEventListener("click", closeKaspiWidget);
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && kaspiWidget && !kaspiWidget.hidden) {
+      closeKaspiWidget();
+    }
   });
 
   void refreshSubscriptionStatus();

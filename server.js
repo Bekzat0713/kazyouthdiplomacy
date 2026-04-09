@@ -28,7 +28,7 @@ const shouldUseDbSsl =
 const KASPI_MERCHANT_ID = String(process.env.KASPI_MERCHANT_ID || "");
 const KASPI_API_KEY = String(process.env.KASPI_API_KEY || "");
 const KASPI_CALLBACK_URL = String(process.env.KASPI_CALLBACK_URL || "");
-const KASPI_QR_URL = String(process.env.KASPI_QR_URL || "https://pay.kaspi.kz/pay/7tul3afi").trim();
+const KASPI_QR_URL = "https://pay.kaspi.kz/pay/7tul3afi";
 const OPENAI_API_KEY = String(process.env.OPENAI_API_KEY || "").trim();
 const OPENAI_MODEL = String(process.env.OPENAI_MODEL || "gpt-5.4-mini").trim() || "gpt-5.4-mini";
 const OPENAI_API_BASE = String(process.env.OPENAI_API_BASE || "https://api.openai.com/v1")
@@ -5213,13 +5213,43 @@ app.post("/api/subscription/prepare", requireAuth, async (req, res) => {
       existingSubscription.plan === planConfig.id &&
       Number.isInteger(Number(existingSubscription.amount))
     ) {
+      const transitionedResult = await client.query(
+        `
+        UPDATE subscriptions
+        SET status = 'pending_manual_review',
+            submitted_at = CURRENT_TIMESTAMP,
+            reviewed_at = NULL,
+            review_note = NULL
+        WHERE id = $1
+        RETURNING
+          id,
+          user_id,
+          plan,
+          active,
+          status,
+          order_id,
+          started_at,
+          expires_at,
+          amount,
+          base_amount,
+          access_days,
+          payment_method,
+          payment_code,
+          prepared_at,
+          submitted_at,
+          reviewed_at,
+          review_note
+        `,
+        [existingSubscription.id]
+      );
+
       await client.query("COMMIT");
       return res.json({
         ok: true,
         kaspi_qr_url: KASPI_QR_URL,
         exact_amount: Number(existingSubscription.amount),
         payment_code: existingSubscription.payment_code,
-        subscription: serializeSubscription(existingSubscription),
+        subscription: serializeSubscription(transitionedResult.rows[0]),
         reused: true,
       });
     }
@@ -5234,7 +5264,7 @@ app.post("/api/subscription/prepare", requireAuth, async (req, res) => {
         UPDATE subscriptions
         SET plan = $1,
             active = false,
-            status = 'payment_pending',
+            status = 'pending_manual_review',
             order_id = NULL,
             started_at = NULL,
             expires_at = NULL,
@@ -5244,7 +5274,7 @@ app.post("/api/subscription/prepare", requireAuth, async (req, res) => {
             payment_method = 'kaspi_qr',
             payment_code = $5,
             prepared_at = CURRENT_TIMESTAMP,
-            submitted_at = NULL,
+            submitted_at = CURRENT_TIMESTAMP,
             reviewed_at = NULL,
             review_note = NULL
         WHERE id = $6
@@ -5301,7 +5331,7 @@ app.post("/api/subscription/prepare", requireAuth, async (req, res) => {
           $1,
           $2,
           false,
-          'payment_pending',
+          'pending_manual_review',
           NULL,
           NULL,
           NULL,
@@ -5311,7 +5341,7 @@ app.post("/api/subscription/prepare", requireAuth, async (req, res) => {
           'kaspi_qr',
           $6,
           CURRENT_TIMESTAMP,
-          NULL,
+          CURRENT_TIMESTAMP,
           NULL,
           NULL
         )

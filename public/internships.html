@@ -74,30 +74,49 @@
             <span class="internships-filter-chip-label">Все</span>
             <span class="internships-filter-chip-count" data-filter-count="all">0</span>
           </button>
-          <button class="filter internships-filter-chip" type="button" data-category="recommended">
-            <span class="internships-filter-chip-label">Рекомендуемое</span>
-            <span class="internships-filter-chip-count" data-filter-count="recommended">0</span>
+          <button class="filter internships-filter-chip" type="button" data-category="kazakhstan">
+            <span class="internships-filter-chip-label">Казахстан</span>
+            <span class="internships-filter-chip-count" data-filter-count="kazakhstan">0</span>
           </button>
-          <button class="filter internships-filter-chip" type="button" data-category="ministries">
-            <span class="internships-filter-chip-label">Министерства</span>
-            <span class="internships-filter-chip-count" data-filter-count="ministries">0</span>
-          </button>
-          <button class="filter internships-filter-chip" type="button" data-category="akimats">
-            <span class="internships-filter-chip-label">Акиматы</span>
-            <span class="internships-filter-chip-count" data-filter-count="akimats">0</span>
-          </button>
-          <button class="filter internships-filter-chip" type="button" data-category="quasi">
-            <span class="internships-filter-chip-label">Квазигоссектор</span>
-            <span class="internships-filter-chip-count" data-filter-count="quasi">0</span>
+          <button class="filter internships-filter-chip" type="button" data-category="international">
+            <span class="internships-filter-chip-label">Зарубеж</span>
+            <span class="internships-filter-chip-count" data-filter-count="international">0</span>
           </button>
           <button class="filter internships-filter-chip" type="button" data-category="online">
             <span class="internships-filter-chip-label">Онлайн</span>
             <span class="internships-filter-chip-count" data-filter-count="online">0</span>
           </button>
-          <button class="filter internships-filter-chip" type="button" data-category="other">
-            <span class="internships-filter-chip-label">Другое</span>
-            <span class="internships-filter-chip-count" data-filter-count="other">0</span>
-          </button>
+        </div>
+
+        <div class="internships-advanced-filters" aria-label="Дополнительные фильтры">
+          <label class="internships-advanced-field">
+            <span>Уровень</span>
+            <select id="internshipLevelFilter" class="internships-advanced-input">
+              <option value="all">Любой</option>
+              <option value="no_experience">Без опыта</option>
+              <option value="with_experience">С опытом</option>
+            </select>
+          </label>
+
+          <label class="internships-advanced-field internships-advanced-field-wide">
+            <span>Сфера деятельности</span>
+            <input
+              id="internshipSectorFilter"
+              class="internships-advanced-input"
+              type="search"
+              placeholder="Например: аналитика, право, госслужба"
+              autocomplete="off"
+            >
+          </label>
+
+          <label class="internships-advanced-field">
+            <span>Формат</span>
+            <select id="internshipFormatFilter" class="internships-advanced-input">
+              <option value="all">Любой</option>
+              <option value="online">Онлайн</option>
+              <option value="offline">Офлайн</option>
+            </select>
+          </label>
         </div>
       </div>
     </section>

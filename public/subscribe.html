@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Подписка — KazYouthDiplomacy</title>
+  <title>Подписка - KazYouthDiplomacy</title>
   <link rel="stylesheet" href="/web.css">
 </head>
 <body class="subscribe-page route-page" data-assistant-page="subscribe">
@@ -52,12 +52,12 @@
     <div class="subscribe-flow-step">
       <span>1</span>
       <strong>Нажмите «Оплатить Plus»</strong>
-      <p>Система сама подготовит точную сумму и откроет Kaspi QR.</p>
+      <p>Система сама подготовит точную сумму, откроет Kaspi QR и сразу отправит заявку в очередь проверки.</p>
     </div>
     <div class="subscribe-flow-step">
       <span>2</span>
-      <strong>После оплаты нажмите «Я оплатил»</strong>
-      <p>Дальше заявка уйдёт на проверку, а доступ включится автоматически после подтверждения.</p>
+      <strong>Оплатите точную сумму по QR</strong>
+      <p>Дальше ничего нажимать не нужно: админ увидит заявку на проверке и включит доступ после подтверждения оплаты.</p>
     </div>
   </section>
 
@@ -82,7 +82,7 @@
       <h2>Plus Start</h2>
       <div class="plan-price" data-plan-price="monthly">1090 ₸</div>
       <div class="plan-payment-info" data-payment-info="monthly">
-        Нажмите «Оплатить Plus», и мы сразу подготовим точную сумму и откроем QR.
+        Нажмите «Оплатить Plus», и мы сразу подготовим точную сумму, откроем QR и отправим заявку на проверку.
       </div>
       <ul class="plan-features">
         <li>Полный доступ ко всей базе возможностей, стажировок и материалов</li>
@@ -93,9 +93,6 @@
         Оплатить Plus
       </button>
       <div class="plan-followup" data-plan-actions="monthly" hidden>
-        <button class="btn secondary plan-btn" type="button" data-submit-plan="monthly" disabled>
-          Я оплатил
-        </button>
         <a class="plan-inline-link" data-kaspi-link="monthly" href="#" target="_blank" rel="noopener noreferrer" hidden>
           Открыть Kaspi QR ещё раз
         </a>
@@ -118,9 +115,6 @@
         Оплатить Plus
       </button>
       <div class="plan-followup" data-plan-actions="quarterly" hidden>
-        <button class="btn secondary plan-btn" type="button" data-submit-plan="quarterly" disabled>
-          Я оплатил
-        </button>
         <a class="plan-inline-link" data-kaspi-link="quarterly" href="#" target="_blank" rel="noopener noreferrer" hidden>
           Открыть Kaspi QR ещё раз
         </a>
@@ -143,9 +137,6 @@
         Оплатить Plus
       </button>
       <div class="plan-followup" data-plan-actions="halfyear" hidden>
-        <button class="btn secondary plan-btn" type="button" data-submit-plan="halfyear" disabled>
-          Я оплатил
-        </button>
         <a class="plan-inline-link" data-kaspi-link="halfyear" href="#" target="_blank" rel="noopener noreferrer" hidden>
           Открыть Kaspi QR ещё раз
         </a>
@@ -195,6 +186,57 @@
     Как только платёж подтверждён, полный доступ открывается автоматически.
   </div>
 </main>
+
+<div class="kaspi-widget-backdrop" id="kaspi-widget-backdrop" hidden></div>
+<aside
+  class="kaspi-widget"
+  id="kaspi-widget"
+  hidden
+  aria-hidden="true"
+  aria-labelledby="kaspi-widget-title"
+>
+  <div class="kaspi-widget-head">
+    <div class="kaspi-widget-copy">
+      <span class="kaspi-widget-kicker">Kaspi QR</span>
+      <h2 id="kaspi-widget-title">Оплата Plus</h2>
+      <p class="kaspi-widget-meta" id="kaspi-widget-meta">
+        QR откроется прямо здесь, чтобы не уводить вас со страницы подписки.
+      </p>
+    </div>
+    <button
+      class="kaspi-widget-close"
+      id="kaspi-widget-close"
+      type="button"
+      aria-label="Закрыть Kaspi виджет"
+    >
+      ×
+    </button>
+  </div>
+
+  <div class="kaspi-widget-frame-wrap">
+    <iframe
+      class="kaspi-widget-frame"
+      id="kaspi-widget-frame"
+      title="Kaspi QR"
+      loading="lazy"
+      referrerpolicy="strict-origin-when-cross-origin"
+    ></iframe>
+    <div class="kaspi-widget-fallback">
+      <p>
+        Если Kaspi не отображается внутри виджета, откройте QR напрямую той же ссылкой.
+      </p>
+      <a
+        class="btn secondary kaspi-widget-open-link"
+        id="kaspi-widget-open-link"
+        href="https://pay.kaspi.kz/pay/7tul3afi"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Открыть Kaspi в новой вкладке
+      </a>
+    </div>
+  </div>
+</aside>
 
 <script src="/page-transitions.js" defer></script>
 <script src="/subscribe.js" defer></script>
