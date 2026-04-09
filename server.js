@@ -1216,6 +1216,14 @@ function normalizeWorkFormat(value) {
   return normalized === "online" ? "online" : "offline";
 }
 
+function deriveInternshipCategory({ regionType, workFormat }) {
+  if (workFormat === "online" || regionType === "online") {
+    return "online";
+  }
+
+  return "other";
+}
+
 function getEnglishRank(level) {
   const levelRanks = {
     a1_a2: 1,
@@ -5671,7 +5679,6 @@ app.post("/api/internships", requireAuth, async (req, res) => {
   const title = String(req.body.title || "").trim();
   const organization = String(req.body.organization || "").trim();
   const description = String(req.body.description || "").trim();
-  const category = String(req.body.category || "").trim().toLowerCase();
   const location = String(req.body.location || "").trim();
   const duration = String(req.body.duration || "").trim();
   const sector = String(req.body.sector || "").trim();
@@ -5682,14 +5689,7 @@ app.post("/api/internships", requireAuth, async (req, res) => {
   const experienceLevel = normalizeExperienceRequirement(req.body.experienceLevel);
   const regionType = normalizeRegionType(req.body.regionType);
   const workFormat = normalizeWorkFormat(req.body.workFormat);
-
-  const allowedCategories = new Set([
-    "ministries",
-    "akimats",
-    "quasi",
-    "online",
-    "other",
-  ]);
+  const category = deriveInternshipCategory({ regionType, workFormat });
 
   if (
     !title ||
@@ -5697,8 +5697,7 @@ app.post("/api/internships", requireAuth, async (req, res) => {
     !description ||
     !location ||
     !duration ||
-    !sector ||
-    !allowedCategories.has(category)
+    !sector
   ) {
     return res.status(400).json({ error: "Invalid internship payload" });
   }

@@ -54,6 +54,14 @@ const workFormatLabels = {
   offline: "Офлайн",
 };
 
+const regionBadgeClass = {
+  kazakhstan: "blue",
+  international: "purple",
+  online: "green",
+  hybrid: "green",
+  any: "gray",
+};
+
 const savedStatusLabels = {
   saved: "Сохранено",
   want_to_apply: "Хочу податься",
@@ -429,10 +437,19 @@ function createInternshipCard(internship) {
   badges.className = "card-badges";
   badges.appendChild(
     createBadge(
-      categoryLabels[internship.category] || categoryLabels.other,
-      categoryBadgeClass[internship.category] || ""
+      regionLabels[internship.region_type] || regionLabels.any,
+      regionBadgeClass[internship.region_type] || regionBadgeClass.any
     )
   );
+
+  if (internship.work_format) {
+    badges.appendChild(
+      createBadge(
+        workFormatLabels[internship.work_format] || internship.work_format,
+        internship.work_format === "online" ? "green" : "gray"
+      )
+    );
+  }
 
   if (internship.is_recommended) {
     badges.appendChild(createBadge("Подходит вам", "match"));
@@ -761,7 +778,6 @@ async function handleFormSubmit(event) {
   const payload = {
     title: String(formData.get("title") || "").trim(),
     organization: String(formData.get("organization") || "").trim(),
-    category: String(formData.get("category") || "").trim(),
     location: String(formData.get("location") || "").trim(),
     duration: String(formData.get("duration") || "").trim(),
     sector: String(formData.get("sector") || "").trim(),
@@ -793,7 +809,7 @@ async function handleFormSubmit(event) {
     }
 
     form.reset();
-    setActiveFilter(payload.category);
+    setActiveFilter("all");
     await loadInternships();
     showFormStatus("Объявление опубликовано.");
   } catch (error) {
