@@ -29,6 +29,8 @@ const PLAN_WIDGET_LABELS = {
 };
 const DEFAULT_SUBSCRIBE_STATUS = "Выберите Plus, оплатите точную сумму по QR и дождитесь подтверждения доступа.";
 const DEFAULT_SUBSCRIBE_NOTE = "Сразу после оплаты заявка попадёт в очередь проверки, а Plus включится после подтверждения.";
+const DEFAULT_PREPARE_LABEL = "Оплатить Plus";
+const OPEN_QR_LABEL = "Открыть Kaspi QR";
 
 function formatDate(value) {
   if (!value) {
@@ -73,6 +75,33 @@ function setNote(message) {
 function setPrepareButtonsDisabled(disabled) {
   prepareButtons.forEach((button) => {
     button.disabled = disabled;
+  });
+}
+
+function resetPrepareButtons() {
+  prepareButtons.forEach((button) => {
+    button.disabled = false;
+    button.textContent = DEFAULT_PREPARE_LABEL;
+    button.dataset.actionMode = "prepare";
+    button.dataset.kaspiUrl = "";
+    button.dataset.amount = "";
+    button.dataset.paymentCode = "";
+  });
+}
+
+function setPreparedPlanButton(plan, options = {}) {
+  const kaspiUrl = String(options.kaspiUrl || "").trim() || FALLBACK_KASPI_QR_URL;
+  const amount = options.amount != null ? String(options.amount) : "";
+  const paymentCode = options.paymentCode != null ? String(options.paymentCode) : "";
+
+  prepareButtons.forEach((button) => {
+    const isActivePlan = button.getAttribute("data-prepare-plan") === plan;
+    button.disabled = !isActivePlan;
+    button.textContent = isActivePlan ? OPEN_QR_LABEL : DEFAULT_PREPARE_LABEL;
+    button.dataset.actionMode = isActivePlan ? "open_qr" : "prepare";
+    button.dataset.kaspiUrl = isActivePlan ? kaspiUrl : "";
+    button.dataset.amount = isActivePlan ? amount : "";
+    button.dataset.paymentCode = isActivePlan ? paymentCode : "";
   });
 }
 
@@ -155,6 +184,8 @@ function openKaspiWidget(url, options = {}) {
 }
 
 function resetPlanCards() {
+  resetPrepareButtons();
+
   paymentInfoMap.forEach((node) => {
     node.textContent = DEFAULT_PLAN_HINT;
     node.classList.remove("ready");
@@ -193,6 +224,11 @@ function renderPreparedPayment(subscription) {
 
   setPlanActionsVisibility(planId, true);
   applyKaspiLink(FALLBACK_KASPI_QR_URL, planId);
+  setPreparedPlanButton(planId, {
+    kaspiUrl: FALLBACK_KASPI_QR_URL,
+    amount: subscription.amount || subscription.base_amount || "",
+    paymentCode: subscription.payment_code || "",
+  });
 }
 
 function renderSubscriptionState(payload) {
@@ -225,6 +261,11 @@ function renderSubscriptionState(payload) {
   if (subscription.status === "payment_pending") {
     renderPreparedPayment(subscription);
     applyKaspiLink(kaspiUrl, subscription.plan);
+    setPreparedPlanButton(subscription.plan, {
+      kaspiUrl,
+      amount: subscription.amount || subscription.base_amount || "",
+      paymentCode: subscription.payment_code || "",
+    });
     setStatus("Kaspi QR уже подготовлен. После оплаты заявка автоматически попадёт на проверку.");
     setNote(`Ничего дополнительно нажимать не нужно. После поступления оплаты админ увидит заявку и подтвердит доступ. ${limitsText}`.trim());
     return;
@@ -232,9 +273,13 @@ function renderSubscriptionState(payload) {
 
   if (subscription.status === "pending_manual_review") {
     renderPreparedPayment(subscription);
-    setPrepareButtonsDisabled(true);
     setPlanActionsVisibility(subscription.plan, true);
     applyKaspiLink(kaspiUrl, subscription.plan);
+    setPreparedPlanButton(subscription.plan, {
+      kaspiUrl,
+      amount: subscription.amount || subscription.base_amount || "",
+      paymentCode: subscription.payment_code || "",
+    });
     setStatus("Заявка уже отправлена на проверку. Как только платёж подтвердят, Plus включится автоматически.");
     setNote(`С вашей стороны всё сделано: QR уже доступен, а заявка стоит в очереди проверки. После оплаты остаётся только дождаться подтверждения. ${limitsText}`.trim());
     return;
@@ -342,6 +387,14 @@ document.addEventListener("DOMContentLoaded", () => {
     button.addEventListener("click", () => {
       const plan = button.getAttribute("data-prepare-plan");
       if (!plan) {
+        return;
+      }
+      if (button.dataset.actionMode === "open_qr") {
+        openKaspiWidget(button.dataset.kaspiUrl, {
+          plan,
+          amount: button.dataset.amount,
+          paymentCode: button.dataset.paymentCode,
+        });
         return;
       }
       void preparePayment(plan);
