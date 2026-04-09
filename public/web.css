@@ -10076,12 +10076,71 @@ body.kaspi-widget-open {
   justify-content: center;
 }
 
+.admin-analytics-body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background:
+    linear-gradient(180deg, #fbfcff 0%, #fdfefe 58%, #ffffff 100%);
+}
+
+.admin-analytics-page {
+  position: relative;
+  isolation: isolate;
+  width: min(1440px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 28px 0 92px;
+  overflow: visible;
+}
+
+.admin-analytics-page::before {
+  content: "";
+  position: absolute;
+  left: -8%;
+  top: 4%;
+  width: min(52vw, 760px);
+  height: min(52vw, 760px);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(circle, rgba(207, 224, 255, 0.72) 0%, rgba(223, 236, 255, 0.4) 32%, rgba(255, 255, 255, 0) 72%);
+  filter: blur(10px);
+}
+
+.admin-analytics-page::after {
+  content: "";
+  position: absolute;
+  right: -12%;
+  top: 18%;
+  width: min(42vw, 620px);
+  height: min(42vw, 620px);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(circle, rgba(244, 223, 213, 0.5) 0%, rgba(248, 235, 227, 0.26) 36%, rgba(255, 255, 255, 0) 74%);
+  filter: blur(12px);
+}
+
+.admin-analytics-page > * {
+  position: relative;
+  z-index: 1;
+}
+
 .admin-analytics-container {
-  width: min(1280px, 100%);
+  width: 100%;
+  max-width: none;
+  display: grid;
+  gap: 28px;
 }
 
 .admin-analytics-hero h1 {
   margin: 0 0 12px;
+  color: #1a2332;
+  text-shadow: none;
+}
+
+.admin-analytics-hero p {
+  color: #64748b;
 }
 
 .admin-analytics-meta {
@@ -10259,6 +10318,12 @@ body.kaspi-widget-open {
 }
 
 @media (max-width: 640px) {
+  .admin-analytics-page {
+    width: calc(100% - 24px);
+    padding-top: 18px;
+    padding-bottom: 68px;
+  }
+
   .kaspi-widget {
     padding: 16px;
     border-radius: 24px;
