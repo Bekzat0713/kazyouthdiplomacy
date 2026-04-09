@@ -6,116 +6,181 @@
   <title>Регистрация - KazYouthDiplomacy</title>
   <link rel="stylesheet" href="/web.css">
 </head>
-<body class="register-page">
+<body class="register-page route-page auth-figma-page">
 
-<header class="header">
-  <a href="/" class="logo-wrap">
-    <img src="/logo.png" alt="logo">
+<header class="header home-figma-header">
+  <a href="/" class="logo-wrap logo-intro" aria-label="KazYouthDiplomacy">
+    <img src="/logo.png" alt="KazYouthDiplomacy logo">
     <span>KazYouthDiplomacy</span>
   </a>
+
+  <nav class="home-figma-nav">
+    <a href="/" class="route-link" data-transition-direction="right">Главная</a>
+    <a href="/register-survey">Опрос</a>
+    <a href="/about" class="route-link" data-transition-direction="left">О нас</a>
+    <a href="/login">Вход</a>
+    <a href="/register" class="nav-btn">Регистрация</a>
+  </nav>
 </header>
 
-<div class="register-card register-card-wide">
-  <h1>Создать аккаунт</h1>
-  <p class="register-intro">
-    Заполните профиль, чтобы мы сразу понимали ваш бэкграунд и учебную среду.
-  </p>
+<main class="auth-figma-main">
+  <div class="auth-figma-shell auth-figma-shell-wide">
+    <section class="auth-figma-panel auth-figma-copy-panel">
+      <span class="home-figma-kicker">Create account</span>
+      <h1>Создайте аккаунт и откройте для себя понятный карьерный маршрут.</h1>
+      <p>
+        После регистрации вы сможете пройти к персональному roadmap, сохранить
+        релевантные возможности и двигаться по более ясному плану.
+      </p>
 
-  <form id="registerForm" method="POST" action="/register" class="register-form-extended">
-    <div class="register-form-grid">
-      <input
-        type="text"
-        name="firstName"
-        placeholder="Имя"
-        autocomplete="given-name"
-        maxlength="80"
-        required
-      >
+      <div class="auth-figma-metric-grid">
+        <article class="auth-figma-metric-card">
+          <strong>2 минуты</strong>
+          <p>Чтобы начать без сложной регистрации.</p>
+        </article>
+        <article class="auth-figma-metric-card">
+          <strong>Личный маршрут</strong>
+          <p>Подбор под ваш уровень и интересы.</p>
+        </article>
+      </div>
 
-      <input
-        type="text"
-        name="lastName"
-        placeholder="Фамилия"
-        autocomplete="family-name"
-        maxlength="80"
-        required
-      >
+      <div class="auth-figma-highlight-card">
+        <strong>Зачем это заполнять</strong>
+        <p>Мы сразу лучше понимаем ваш бэкграунд и можем сделать рекомендации более точными.</p>
+      </div>
+    </section>
 
-      <input
-        id="birthDateInput"
-        type="date"
-        name="birthDate"
-        autocomplete="bday"
-        required
-      >
+    <section class="register-card register-card-wide auth-figma-card auth-figma-card-wide">
+      <div class="auth-figma-card-top">
+        <span class="auth-figma-card-badge">Регистрация</span>
+        <h2>Создать аккаунт</h2>
+        <p class="register-intro">
+          Заполните профиль, чтобы мы сразу понимали ваш бэкграунд и учебную среду.
+        </p>
+      </div>
 
-      <input
-        id="universityInput"
-        type="text"
-        name="university"
-        placeholder="Учебное заведение"
-        list="kazakhstanUniversities"
-        autocomplete="organization"
-        maxlength="180"
-        required
-      >
+      <form id="registerForm" method="POST" action="/register" class="register-form-extended auth-figma-form">
+        <div class="register-form-grid auth-figma-form-grid">
+          <label class="auth-figma-field">
+            <span>Имя</span>
+            <input
+              type="text"
+              name="firstName"
+              placeholder="Ваше имя"
+              autocomplete="given-name"
+              maxlength="80"
+              required
+            >
+          </label>
 
-      <input
-        type="text"
-        name="workplace"
-        placeholder="Место работы (если есть)"
-        autocomplete="organization-title"
-        maxlength="180"
-      >
+          <label class="auth-figma-field">
+            <span>Фамилия</span>
+            <input
+              type="text"
+              name="lastName"
+              placeholder="Ваша фамилия"
+              autocomplete="family-name"
+              maxlength="80"
+              required
+            >
+          </label>
 
-      <input
-        type="email"
-        name="email"
-        placeholder="Email адрес"
-        autocomplete="email"
-        required
-      >
+          <label class="auth-figma-field">
+            <span>Дата рождения</span>
+            <input
+              id="birthDateInput"
+              type="date"
+              name="birthDate"
+              autocomplete="bday"
+              required
+            >
+          </label>
 
-      <input
-        type="password"
-        name="password"
-        placeholder="Пароль (минимум 10 символов, буквы и цифры)"
-        autocomplete="new-password"
-        minlength="10"
-        required
-      >
+          <label class="auth-figma-field">
+            <span>Учебное заведение</span>
+            <input
+              id="universityInput"
+              type="text"
+              name="university"
+              placeholder="Университет или школа"
+              list="kazakhstanUniversities"
+              autocomplete="organization"
+              maxlength="180"
+              required
+            >
+          </label>
 
-      <input
-        type="password"
-        name="confirmPassword"
-        placeholder="Повторите пароль"
-        autocomplete="new-password"
-        minlength="10"
-        required
-      >
-    </div>
+          <label class="auth-figma-field">
+            <span>Место работы</span>
+            <input
+              type="text"
+              name="workplace"
+              placeholder="Если уже работаете"
+              autocomplete="organization-title"
+              maxlength="180"
+            >
+          </label>
 
-    <datalist id="kazakhstanUniversities"></datalist>
+          <label class="auth-figma-field">
+            <span>Email</span>
+            <input
+              type="email"
+              name="email"
+              placeholder="you@example.com"
+              autocomplete="email"
+              required
+            >
+          </label>
 
-    <p class="register-note">
-      В списке собраны вузы Казахстана. Если название не подсказалось, его можно ввести вручную.
-    </p>
+          <label class="auth-figma-field">
+            <span>Пароль</span>
+            <input
+              type="password"
+              name="password"
+              placeholder="Минимум 10 символов"
+              autocomplete="new-password"
+              minlength="10"
+              required
+            >
+          </label>
 
-    <button class="btn primary" type="submit">Зарегистрироваться</button>
-  </form>
+          <label class="auth-figma-field">
+            <span>Повторите пароль</span>
+            <input
+              type="password"
+              name="confirmPassword"
+              placeholder="Введите пароль ещё раз"
+              autocomplete="new-password"
+              minlength="10"
+              required
+            >
+          </label>
+        </div>
 
-  <p id="authError" class="form-error" style="display:none;"></p>
+        <datalist id="kazakhstanUniversities"></datalist>
 
-  <p style="margin-top:25px; font-size:14px; color:#94a3b8;">
-    Уже есть аккаунт?
-    <a id="loginLink" href="/login" style="color:#a78bfa; text-decoration:none;">
-      Войти
-    </a>
-  </p>
-</div>
+        <p class="register-note auth-figma-note">
+          В списке собраны вузы Казахстана. Если название не подсказалось, его можно ввести вручную.
+        </p>
+
+        <button class="btn primary auth-figma-submit" type="submit">Создать аккаунт</button>
+      </form>
+
+      <p id="authError" class="form-error" style="display:none;"></p>
+
+      <div class="auth-figma-links">
+        <p>
+          Уже есть аккаунт?
+          <a id="loginLink" href="/login">Войти</a>
+        </p>
+      </div>
+    </section>
+  </div>
+</main>
 
 <script src="/kazakhstan-universities.js"></script>
 <script src="/register.js" defer></script>
+<script src="/page-transitions.js" defer></script>
 
 </body>
 </html>

@@ -6,63 +6,123 @@
   <title>Вход - KazYouthDiplomacy</title>
   <link rel="stylesheet" href="/web.css">
 </head>
-<body class="login-page">
+<body class="login-page route-page auth-figma-page">
 
-<header class="header">
-  <a href="/" class="logo-wrap">
-    <img src="/logo.png" alt="logo">
+<header class="header home-figma-header">
+  <a href="/" class="logo-wrap logo-intro" aria-label="KazYouthDiplomacy">
+    <img src="/logo.png" alt="KazYouthDiplomacy logo">
     <span>KazYouthDiplomacy</span>
   </a>
+
+  <nav class="home-figma-nav">
+    <a href="/" class="route-link" data-transition-direction="right">Главная</a>
+    <a href="/register-survey">Опрос</a>
+    <a href="/register-survey">Начать регистрацию</a>
+    <a href="/about" class="route-link" data-transition-direction="left">О нас</a>
+    <a href="/login" class="nav-btn">Войти</a>
+  </nav>
 </header>
 
-<div class="login-card">
-  <h1>Вход</h1>
-  <p>Доступ к вашему аккаунту</p>
+<main class="auth-figma-main">
+  <div class="auth-figma-shell">
+    <section class="auth-figma-panel auth-figma-copy-panel">
+      <span class="home-figma-kicker">Career GPS access</span>
+      <h1>Возвращайтесь к своему маршруту без лишних шагов.</h1>
+      <p>
+        Войдите, чтобы открыть сохранённые возможности, личный roadmap и подборку
+        следующего шага под ваши цели.
+      </p>
 
-  <form id="loginForm" method="POST" action="/login">
-    <input
-      id="emailInput"
-      type="email"
-      name="email"
-      placeholder="Email адрес"
-      autocomplete="email"
-      required
-    >
+      <div class="auth-figma-chip-row">
+        <span class="auth-figma-chip">Личный roadmap</span>
+        <span class="auth-figma-chip">Подбор возможностей</span>
+        <span class="auth-figma-chip">Простой вход</span>
+      </div>
 
-    <input
-      type="password"
-      name="password"
-      placeholder="Пароль"
-      autocomplete="current-password"
-      required
-    >
+      <div class="auth-figma-highlight-card">
+        <strong>Что внутри после входа</strong>
+        <p>Сохранённые стажировки, рекомендации под ваш уровень и понятная структура роста.</p>
+      </div>
+    </section>
 
-    <button class="btn primary" type="submit">Войти</button>
-  </form>
+    <section class="login-card auth-figma-card">
+      <div class="auth-figma-card-top">
+        <span class="auth-figma-card-badge">Вход</span>
+        <h2>Доступ к вашему аккаунту</h2>
+        <p>Пара минут и вы снова в своём карьерном пространстве.</p>
+      </div>
 
-  <p id="authError" class="form-error" style="display:none;"></p>
+      <form id="loginForm" method="POST" action="/login" class="auth-figma-form">
+        <label class="auth-figma-field">
+          <span>Email</span>
+          <input
+            id="emailInput"
+            type="email"
+            name="email"
+            placeholder="you@example.com"
+            autocomplete="email"
+            required
+          >
+        </label>
 
-  <div id="resendWrap" style="display:none; margin-top:14px;">
-    <button id="resendButton" class="btn secondary" type="button" style="width:100%;">
-      Отправить письмо ещё раз
-    </button>
+        <label class="auth-figma-field">
+          <span>Пароль</span>
+          <input
+            type="password"
+            name="password"
+            placeholder="Введите пароль"
+            autocomplete="current-password"
+            required
+          >
+        </label>
+
+        <button class="btn primary auth-figma-submit" type="submit">Войти и продолжить</button>
+      </form>
+
+      <p id="authError" class="form-error" style="display:none;"></p>
+
+      <div id="resendWrap" class="auth-figma-inline-action" style="display:none;">
+        <button id="resendButton" class="btn secondary auth-figma-secondary-btn" type="button">
+          Отправить код ещё раз
+        </button>
+      </div>
+
+      <div id="verifyCodeWrap" class="auth-verify-code-wrap" style="display:none;">
+        <form id="verifyCodeForm" class="auth-figma-form" method="POST" action="/verify-email-code">
+          <label class="auth-figma-field">
+            <span>Код подтверждения</span>
+            <input
+              id="verifyCodeInput"
+              type="text"
+              name="code"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              pattern="[0-9]{6}"
+              maxlength="6"
+              placeholder="Введите 6 цифр"
+              required
+            >
+          </label>
+
+          <button id="verifyCodeButton" class="btn primary auth-figma-submit" type="submit">
+            Подтвердить почту
+          </button>
+        </form>
+      </div>
+
+      <div class="auth-figma-links">
+        <a href="/forgot-password">Забыли пароль?</a>
+        <p>
+          Нет аккаунта?
+          <a id="registerLink" href="/register-survey">Начать регистрацию</a>
+        </p>
+      </div>
+    </section>
   </div>
-
-  <p style="margin-top:16px;">
-    <a href="/forgot-password" style="color:#7dd3fc; text-decoration:none;">
-      Забыли пароль?
-    </a>
-  </p>
-
-  <p style="margin-top:20px;">
-    Нет аккаунта?
-    <a id="registerLink" href="/register" style="color:#a78bfa; text-decoration:none;">
-      Зарегистрироваться
-    </a>
-  </p>
-</div>
+</main>
 
 <script src="/login.js" defer></script>
+<script src="/page-transitions.js" defer></script>
 
 </body>
 </html>

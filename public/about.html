@@ -3,85 +3,131 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>О нас — KazYouthDiplomacy</title>
+  <title>О нас - KazYouthDiplomacy</title>
   <link rel="stylesheet" href="/web.css" />
 </head>
-<body class="route-page">
-
-<header class="header">
-  <a href="/" class="logo-wrap">
-    <img src="/logo.png" alt="KazYouthDiplomacy logo">
+<body class="route-page home-figma-page about-figma-page">
+<header class="header home-figma-header">
+  <a href="/" class="logo-wrap logo-intro" aria-label="KazYouthDiplomacy">
+    <img src="/logo.png" alt="KazYouthDiplomacy logo" />
     <span>KazYouthDiplomacy</span>
   </a>
+
+  <nav class="home-figma-nav">
+    <a href="/" class="route-link" data-transition-direction="right">Главная</a>
+    <a href="#features">Преимущества</a>
+    <a href="#impact">Достижения</a>
+    <a href="/subscribe" class="route-link" data-transition-direction="right">Подписка</a>
+    <a href="/login" class="nav-btn">Войти</a>
+  </nav>
 </header>
 
-<a
-  href="/"
-  class="page-home-arrow route-link"
-  data-transition-direction="left"
-  aria-label="Вернуться на главную"
->
-  <span class="hero-arrow-icon" aria-hidden="true"></span>
-</a>
+<main class="about-figma-main">
+  <section class="about-figma-hero" id="mission">
+    <div class="about-figma-shell">
+      <div class="about-figma-copy">
+        <span class="home-figma-kicker">About KazYouthDiplomacy</span>
+        <h1>Мы строим понятный карьерный маршрут для молодежи.</h1>
+        <p>
+          KazYouthDiplomacy — это молодёжная платформа и карьерный навигатор,
+          созданный для развития международного сотрудничества, поддержки молодых
+          лидеров и продвижения дипломатического потенциала Казахстана.
+        </p>
+        <p>
+          Наша идея простая: меньше хаоса, меньше случайного выбора и больше
+          ясных шагов, которые помогают студенту двигаться уверенно.
+        </p>
 
-<section class="about-clean">
+        <div class="about-figma-actions">
+          <a href="https://www.instagram.com/kazyouthdiplomacy" target="_blank" rel="noreferrer" class="btn primary">Instagram</a>
+          <a href="https://t.me/wydaopportunities" target="_blank" rel="noreferrer" class="btn secondary">Telegram</a>
+        </div>
+      </div>
 
-  <div class="about-wrapper">
+      <div class="about-figma-visual" aria-hidden="true">
+        <div class="home-figma-image-frame about-figma-image-frame">
+          <img src="/about.png" alt="KazYouthDiplomacy community" />
+        </div>
 
-    <h1>Об организации</h1>
+        <div class="about-figma-float-card">
+          <strong>11 городов и 130+ участников</strong>
+          <p>Комьюнити, которое помогает молодежи видеть реальный путь роста.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <p>
-      <strong>KazYouthDiplomacy</strong> — молодежная платформа и карьерный навигатор,
-      созданная для развития международного сотрудничества,
-      поддержки молодых лидеров и продвижения дипломатического потенциала Казахстана.
-    </p>
+  <section class="home-figma-section home-figma-features about-figma-features" id="features" data-scroll-reveal>
+    <div class="home-figma-feature-copy">
+      <span class="home-figma-kicker">Features</span>
+      <h2>Career GPS помогает не потеряться в выборе и двигаться увереннее.</h2>
+      <p>Платформа строится вокруг ясности: меньше лишних действий, меньше шумных кнопок и больше понятных решений.</p>
 
-    <p>
-      Наш принцип: <strong>«Молодёжь — новая нефть Казахстана»</strong>.
-      Мы формируем новое поколение международных профессионалов.
-    </p>
-
-    <div class="about-buttons">
-      <a href="https://www.instagram.com/kazyouthdiplomacy" target="_blank" class="btn primary">
-        Instagram
-      </a>
-      <a href="https://t.me/wydaopportunities" target="_blank" class="btn secondary">
-        Telegram
-      </a>
+      <ul class="home-figma-feature-list">
+        <li>Короткий вход через опрос вместо длинной регистрации.</li>
+        <li>Понятная структура возможностей без перегруженной навигации.</li>
+        <li>Чистый визуальный стиль, в котором удобно читать и принимать решения.</li>
+      </ul>
     </div>
 
+    <div class="home-figma-feature-visual">
+      <div class="home-figma-image-frame">
+        <img src="/about.png" alt="KazYouthDiplomacy preview" />
+      </div>
+    </div>
+  </section>
+
+  <section class="home-figma-section about-figma-achievements" id="impact" data-scroll-reveal>
+    <div class="home-figma-section-head">
+      <span class="home-figma-kicker">Impact</span>
+      <h2>Наши достижения уже показывают, что платформа работает не только как идея.</h2>
+      <p>Мы собираем сильное молодёжное сообщество и соединяем локальные инициативы с международной повесткой.</p>
+    </div>
+
+    <div class="about-figma-achievements-grid">
+      <article class="about-figma-achievement-card">
+        <img src="/ambassadors.png" alt="Ambassadors of Kazakhstan" />
+        <div>
+          <strong>Амбассадоры Казахстана</strong>
+          <p>11 городов и более 130 участников по всей стране.</p>
+        </div>
+      </article>
+
+      <article class="about-figma-achievement-card">
+        <img src="/set.png" alt="International network" />
+        <div>
+          <strong>Международная сеть</strong>
+          <p>13 стран в Европе и Азии, где мы выстраиваем связи и диалог.</p>
+        </div>
+      </article>
+
+      <article class="about-figma-achievement-card">
+        <img src="/forums.png" alt="Forums and events" />
+        <div>
+          <strong>Форумы и мероприятия</strong>
+          <p>Проекты и встречи, которые усиливают дипломатическое сообщество молодёжи.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer class="home-figma-footer">
+  <div class="home-figma-footer-shell">
+    <div>
+      <strong>KazYouthDiplomacy</strong>
+      <p>Платформа для молодых лидеров, международных возможностей и карьерных маршрутов.</p>
+    </div>
+
+    <div class="home-figma-footer-links">
+      <a href="/" class="route-link" data-transition-direction="right">Главная</a>
+      <a href="/subscribe" class="route-link" data-transition-direction="right">Подписка</a>
+      <a href="/login">Войти</a>
+    </div>
   </div>
+</footer>
 
-</section>
-
-
-<section class="about-achievements-clean">
-
-  <h2>Наши достижения</h2>
-
-  <div class="achievements-grid">
-
-    <div class="achievement-card">
-      <h3>🇰🇿 Амбассадоры Казахстана</h3>
-      <p>11 городов · 130+ участников</p>
-      <img src="/ambassadors.png" alt="">
-    </div>
-
-    <div class="achievement-card">
-      <h3> Международная сеть</h3>
-      <p>13 стран · Европа и Азия</p>
-      <img src="/set.png" alt="">
-    </div>
-
-    <div class="achievement-card">
-      <h3> Форумы и мероприятия</h3>
-      <img src="/forums.png" alt="">
-    </div>
-
-  </div>
-
-</section>
-
+<script src="/web.js" defer></script>
 <script src="/page-transitions.js" defer></script>
 </body>
 </html>

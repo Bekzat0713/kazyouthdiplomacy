@@ -2,10 +2,11 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Стажировки - KazYouthDiplomacy</title>
   <link rel="stylesheet" href="/web.css">
 </head>
-<body>
+<body data-assistant-page="internships">
 
 <header class="header">
   <a href="/dashboard" class="logo-wrap">
@@ -23,23 +24,85 @@
 </header>
 
 <section class="internships-page">
-  <div class="internships-header">
-    <h1>Стажировки</h1>
-    <p>Актуальные объявления и быстрый способ добавить новое предложение на платформу.</p>
-  </div>
-
-  <div class="internships-controls">
-    <div class="filters-modern" id="internshipFilters">
-      <button class="filter active" type="button" data-category="all">Все</button>
-      <button class="filter" type="button" data-category="recommended">Рекомендуемое</button>
-      <button class="filter" type="button" data-category="ministries">Министерства</button>
-      <button class="filter" type="button" data-category="akimats">Акиматы</button>
-      <button class="filter" type="button" data-category="quasi">Квазигоссектор</button>
-      <button class="filter" type="button" data-category="online">Онлайн</button>
-      <button class="filter" type="button" data-category="other">Другое</button>
+  <section class="internships-hero">
+    <div class="internships-hero-top">
+      <p id="internshipsSummaryPill" class="internships-summary-pill">Стажировки загружаются...</p>
+      <button id="toggleInternshipForm" class="btn primary internships-add-btn" type="button" hidden>
+        <span class="internships-add-btn-icon" aria-hidden="true">+</span>
+        <span>Добавить объявление</span>
+      </button>
     </div>
-    <button id="toggleInternshipForm" class="btn secondary small-btn" type="button" hidden>+ Добавить объявление</button>
-  </div>
+
+    <div class="internships-header">
+      <h1>Стажировки</h1>
+      <p>Актуальные объявления и быстрый способ добавить новое предложение на платформу.</p>
+    </div>
+
+    <section id="internshipsDiscoveryPanel" class="internships-discovery-panel" aria-label="Поиск и фильтры стажировок">
+      <div class="internships-search-row">
+        <label class="internships-search-shell" for="internshipSearchInput">
+          <span class="internships-search-icon" aria-hidden="true"></span>
+          <input
+            id="internshipSearchInput"
+            class="internships-search-input"
+            type="search"
+            placeholder="Поиск стажировок..."
+            autocomplete="off"
+          >
+        </label>
+
+        <div class="internships-search-actions">
+          <button id="internshipsFilterToggle" class="internships-toolbar-btn" type="button" aria-expanded="true">
+            <span class="internships-toolbar-icon internships-toolbar-icon-filter" aria-hidden="true"></span>
+            <span>Фильтры</span>
+          </button>
+
+          <div class="internships-view-switch" aria-label="Вид списка">
+            <button id="internshipsGridViewBtn" class="internships-view-btn active" type="button" aria-label="Вид сеткой" aria-pressed="true">
+              <span class="internships-toolbar-icon internships-toolbar-icon-grid" aria-hidden="true"></span>
+            </button>
+            <button id="internshipsListViewBtn" class="internships-view-btn" type="button" aria-label="Вид списком" aria-pressed="false">
+              <span class="internships-toolbar-icon internships-toolbar-icon-list" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="internshipFiltersWrap" class="internships-filter-wrap">
+        <div class="filters-modern internships-filter-chips" id="internshipFilters">
+          <button class="filter internships-filter-chip active" type="button" data-category="all">
+            <span class="internships-filter-chip-label">Все</span>
+            <span class="internships-filter-chip-count" data-filter-count="all">0</span>
+          </button>
+          <button class="filter internships-filter-chip" type="button" data-category="recommended">
+            <span class="internships-filter-chip-label">Рекомендуемое</span>
+            <span class="internships-filter-chip-count" data-filter-count="recommended">0</span>
+          </button>
+          <button class="filter internships-filter-chip" type="button" data-category="ministries">
+            <span class="internships-filter-chip-label">Министерства</span>
+            <span class="internships-filter-chip-count" data-filter-count="ministries">0</span>
+          </button>
+          <button class="filter internships-filter-chip" type="button" data-category="akimats">
+            <span class="internships-filter-chip-label">Акиматы</span>
+            <span class="internships-filter-chip-count" data-filter-count="akimats">0</span>
+          </button>
+          <button class="filter internships-filter-chip" type="button" data-category="quasi">
+            <span class="internships-filter-chip-label">Квазигоссектор</span>
+            <span class="internships-filter-chip-count" data-filter-count="quasi">0</span>
+          </button>
+          <button class="filter internships-filter-chip" type="button" data-category="online">
+            <span class="internships-filter-chip-label">Онлайн</span>
+            <span class="internships-filter-chip-count" data-filter-count="online">0</span>
+          </button>
+          <button class="filter internships-filter-chip" type="button" data-category="other">
+            <span class="internships-filter-chip-label">Другое</span>
+            <span class="internships-filter-chip-count" data-filter-count="other">0</span>
+          </button>
+        </div>
+      </div>
+    </section>
+  </section>
+
   <p id="internshipPageStatus" class="internship-form-status" aria-live="polite"></p>
 
   <section id="internshipGoalSection" class="goal-focus" hidden>
@@ -112,5 +175,6 @@
 </section>
 
 <script src="/internships.js" defer></script>
+<script src="/assistant-widget.js" defer></script>
 </body>
 </html>

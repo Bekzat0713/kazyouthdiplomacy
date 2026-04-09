@@ -374,11 +374,34 @@ async function loadAccountAccess() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+var dashboardRefreshTimer = null;
+
+function refreshDashboardData() {
+  if (document.visibilityState === "hidden") {
+    return;
+  }
+
   void loadAccountAccess();
   void loadSavedSummary();
-  window.setInterval(function () {
-    void loadAccountAccess();
-    void loadSavedSummary();
+}
+
+function startDashboardPolling() {
+  if (dashboardRefreshTimer !== null) {
+    window.clearInterval(dashboardRefreshTimer);
+  }
+
+  dashboardRefreshTimer = window.setInterval(function () {
+    refreshDashboardData();
   }, 20000);
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  refreshDashboardData();
+  startDashboardPolling();
+
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible") {
+      refreshDashboardData();
+    }
+  });
 });

@@ -29,6 +29,14 @@ const KASPI_MERCHANT_ID = String(process.env.KASPI_MERCHANT_ID || "");
 const KASPI_API_KEY = String(process.env.KASPI_API_KEY || "");
 const KASPI_CALLBACK_URL = String(process.env.KASPI_CALLBACK_URL || "");
 const KASPI_QR_URL = String(process.env.KASPI_QR_URL || "https://pay.kaspi.kz/pay/7tul3afi").trim();
+const OPENAI_API_KEY = String(process.env.OPENAI_API_KEY || "").trim();
+const OPENAI_MODEL = String(process.env.OPENAI_MODEL || "gpt-5.4-mini").trim() || "gpt-5.4-mini";
+const OPENAI_API_BASE = String(process.env.OPENAI_API_BASE || "https://api.openai.com/v1")
+  .trim()
+  .replace(/\/+$/, "");
+const ASSISTANT_HISTORY_LIMIT = Number(process.env.ASSISTANT_HISTORY_LIMIT || 8);
+const ASSISTANT_TOOL_RESULT_LIMIT = Number(process.env.ASSISTANT_TOOL_RESULT_LIMIT || 6);
+const ASSISTANT_MAX_TOOL_ROUNDS = 4;
 const APP_BASE_URL = String(process.env.APP_BASE_URL || `http://localhost:${PORT}`);
 const SESSION_SECRET = String(process.env.SESSION_SECRET || "").trim();
 const SESSION_COOKIE_NAME = String(process.env.SESSION_COOKIE_NAME || "kyd.sid").trim() || "kyd.sid";
@@ -53,11 +61,18 @@ const PASSWORD_RESET_TOKEN_TTL_MINUTES = Number(
 const EMAIL_RESEND_COOLDOWN_SECONDS = Number(
   process.env.EMAIL_RESEND_COOLDOWN_SECONDS || 60
 );
+const EMAIL_VERIFY_CODE_LENGTH = Number(process.env.EMAIL_VERIFY_CODE_LENGTH || 6);
 const AUTH_MIN_PASSWORD_LENGTH = Number(process.env.AUTH_MIN_PASSWORD_LENGTH || 10);
 const LOGIN_RATE_LIMIT_WINDOW_MINUTES = Number(process.env.LOGIN_RATE_LIMIT_WINDOW_MINUTES || 15);
 const LOGIN_RATE_LIMIT_MAX_ATTEMPTS = Number(process.env.LOGIN_RATE_LIMIT_MAX_ATTEMPTS || 7);
 const REGISTER_RATE_LIMIT_WINDOW_MINUTES = Number(process.env.REGISTER_RATE_LIMIT_WINDOW_MINUTES || 30);
 const REGISTER_RATE_LIMIT_MAX_ATTEMPTS = Number(process.env.REGISTER_RATE_LIMIT_MAX_ATTEMPTS || 5);
+const VERIFY_CODE_RATE_LIMIT_WINDOW_MINUTES = Number(
+  process.env.VERIFY_CODE_RATE_LIMIT_WINDOW_MINUTES || 15
+);
+const VERIFY_CODE_RATE_LIMIT_MAX_ATTEMPTS = Number(
+  process.env.VERIFY_CODE_RATE_LIMIT_MAX_ATTEMPTS || 10
+);
 const RESEND_RATE_LIMIT_WINDOW_MINUTES = Number(process.env.RESEND_RATE_LIMIT_WINDOW_MINUTES || 30);
 const RESEND_RATE_LIMIT_MAX_ATTEMPTS = Number(process.env.RESEND_RATE_LIMIT_MAX_ATTEMPTS || 5);
 const FORGOT_RATE_LIMIT_WINDOW_MINUTES = Number(process.env.FORGOT_RATE_LIMIT_WINDOW_MINUTES || 30);
@@ -789,7 +804,7 @@ async function initDB() {
 
 function requireAuth(req, res, next) {
   if (!req.session.userId) {
-    if (req.path.startsWith("/api/") || req.accepts("json")) {
+    if (wantsJson(req)) {
       return res.status(401).json({ error: "Unauthorized" });
     }
     return res.redirect("/login");
@@ -829,6 +844,17 @@ function normalizeEmail(email) {
 
 function normalizeProfileText(value) {
   return String(value || "").trim().replace(/\s+/g, " ");
+}
+
+function generateNumericCode(length) {
+  const safeLength = Math.max(4, Math.min(8, Number(length) || 6));
+  let code = "";
+
+  while (code.length < safeLength) {
+    code += String(Math.floor(Math.random() * 10));
+  }
+
+  return code.slice(0, safeLength);
 }
 
 function validatePasswordStrength(password) {
@@ -1800,14 +1826,64 @@ function getInternshipManagerEmails() {
   return emailSet;
 }
 
+function getOpportunitiesAdminEmails() {
+  const emailSet = new Set();
+  const candidates = [
+    process.env.OPPORTUNITIES_ADMIN_EMAIL,
+    process.env.OPPORTUNITIES_ADMIN_EMAILS,
+    process.env.opportunities_admin_email,
+    process.env.opportunities_admin_emails,
+  ];
+
+  for (const candidate of candidates) {
+    for (const email of parseManagerEmails(candidate)) {
+      emailSet.add(email);
+    }
+  }
+
+  if (emailSet.size === 0 && OPPORTUNITIES_ADMIN_EMAIL) {
+    emailSet.add(OPPORTUNITIES_ADMIN_EMAIL);
+  }
+
+  try {
+    const envPath = path.join(__dirname, ".env");
+    if (fs.existsSync(envPath)) {
+      const envRaw = fs.readFileSync(envPath, "utf8");
+      const parsed = require("dotenv").parse(envRaw);
+      const fileCandidates = [
+        parsed.OPPORTUNITIES_ADMIN_EMAIL,
+        parsed.OPPORTUNITIES_ADMIN_EMAILS,
+        parsed.opportunities_admin_email,
+        parsed.opportunities_admin_emails,
+      ];
+
+      for (const candidate of fileCandidates) {
+        for (const email of parseManagerEmails(candidate)) {
+          emailSet.add(email);
+        }
+      }
+    }
+  } catch (envReadError) {
+    console.warn("Could not read .env for opportunities admin emails:", envReadError.message);
+  }
+
+  return emailSet;
+}
+
 async function canManageInternships(req) {
   const userId = req.session.userId;
   const sessionEmail = normalizeEmail(req.session.email);
   const sessionRole = String(req.session.role || "").toLowerCase();
   const internshipManagerEmails = getInternshipManagerEmails();
 
+  if (sessionRole === "admin") {
+    return true;
+  }
+
   if (internshipManagerEmails.size > 0 && sessionEmail) {
-    return internshipManagerEmails.has(sessionEmail);
+    if (internshipManagerEmails.has(sessionEmail)) {
+      return true;
+    }
   }
 
   const result = await pool.query(
@@ -1822,15 +1898,15 @@ async function canManageInternships(req) {
   const userEmail = normalizeEmail(user.email);
   const userRole = String(user.role || "user").toLowerCase();
 
-  if (internshipManagerEmails.size > 0) {
-    return internshipManagerEmails.has(userEmail);
+  if (internshipManagerEmails.size > 0 && internshipManagerEmails.has(userEmail)) {
+    return true;
   }
 
-  return sessionRole === "admin" || userRole === "admin";
+  return userRole === "admin";
 }
 
 function isOpportunitiesAdminEmail(email) {
-  return normalizeEmail(email) === OPPORTUNITIES_ADMIN_EMAIL;
+  return getOpportunitiesAdminEmails().has(normalizeEmail(email));
 }
 
 function hashVerificationToken(token) {
@@ -1923,8 +1999,6 @@ function getMailTransporter() {
 }
 
 async function createEmailVerificationToken(userId) {
-  const rawToken = crypto.randomBytes(32).toString("hex");
-  const tokenHash = hashVerificationToken(rawToken);
   const expiresAt = new Date(Date.now() + EMAIL_VERIFY_TOKEN_TTL_MINUTES * 60 * 1000);
 
   await pool.query(
@@ -1932,18 +2006,32 @@ async function createEmailVerificationToken(userId) {
     [userId]
   );
 
-  await pool.query(
-    `
-    INSERT INTO email_verification_tokens (user_id, token_hash, expires_at)
-    VALUES ($1, $2, $3)
-    `,
-    [userId, tokenHash, expiresAt.toISOString()]
-  );
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    const rawCode = generateNumericCode(EMAIL_VERIFY_CODE_LENGTH);
+    const tokenHash = hashVerificationToken(rawCode);
 
-  return {
-    token: rawToken,
-    expiresAt,
-  };
+    try {
+      await pool.query(
+        `
+        INSERT INTO email_verification_tokens (user_id, token_hash, expires_at)
+        VALUES ($1, $2, $3)
+        `,
+        [userId, tokenHash, expiresAt.toISOString()]
+      );
+
+      return {
+        code: rawCode,
+        expiresAt,
+      };
+    } catch (err) {
+      if (err && err.code === "23505") {
+        continue;
+      }
+      throw err;
+    }
+  }
+
+  throw new Error("Could not generate a unique verification code");
 }
 
 async function createPasswordResetToken(userId) {
@@ -1971,6 +2059,43 @@ async function createPasswordResetToken(userId) {
 }
 
 async function sendVerificationEmail(email, token) {
+  const mailer = getMailTransporter();
+  const code = String(token || "").trim();
+
+  await mailer.sendMail({
+    from: MAIL_FROM,
+    to: email,
+    subject: "Код подтверждения KazYouthDiplomacy",
+    text: [
+      "Здравствуйте!",
+      "",
+      "Введите этот код на странице входа, чтобы подтвердить аккаунт:",
+      code,
+      "",
+      `Код действует ${EMAIL_VERIFY_TOKEN_TTL_MINUTES} минут.`,
+      "Если вы не запрашивали код, просто проигнорируйте это письмо.",
+    ].join("\n"),
+    html: `
+      <div style="font-family:Arial,sans-serif;line-height:1.6;color:#0f172a;">
+        <h2 style="margin-bottom:16px;">Подтвердите ваш аккаунт</h2>
+        <p style="margin-bottom:16px;">Введите этот код на странице входа, чтобы завершить регистрацию.</p>
+        <div style="margin:24px 0;padding:18px 20px;border-radius:14px;background:#f8fafc;border:1px solid #dbe4f0;text-align:center;">
+          <div style="color:#64748b;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;">Код подтверждения</div>
+          <div style="font-size:34px;font-weight:700;letter-spacing:0.32em;color:#0f172a;">${code}</div>
+        </div>
+        <p style="margin-top:24px;color:#475569;">Код действует ${EMAIL_VERIFY_TOKEN_TTL_MINUTES} минут.</p>
+      </div>
+    `,
+  });
+
+  if (!isEmailDeliveryConfigured()) {
+    console.warn("SMTP is not configured. Verification code email suppressed for %s.", email);
+  }
+
+  return {
+    delivered: isEmailDeliveryConfigured(),
+  };
+
   const verifyUrl = buildAppUrl(`/verify-email?token=${encodeURIComponent(token)}`);
   const transporter = getMailTransporter();
 
@@ -2442,6 +2567,863 @@ function applyCatalogAccessPolicy(items, options = {}) {
   };
 }
 
+function clampNumber(value, min, max, fallback) {
+  const normalized = Number.parseInt(value, 10);
+  if (!Number.isInteger(normalized)) {
+    return fallback;
+  }
+
+  return Math.max(min, Math.min(max, normalized));
+}
+
+function trimAssistantText(value, maxLength = 1200) {
+  return String(value || "").trim().replace(/\s+/g, " ").slice(0, maxLength);
+}
+
+function normalizeAssistantPage(value) {
+  const normalized = String(value || "").trim().toLowerCase();
+  const allowedPages = new Set(["dashboard", "internships", "opportunities", "resources", "subscribe"]);
+  return allowedPages.has(normalized) ? normalized : "dashboard";
+}
+
+function normalizeAssistantMessages(value) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .slice(-Math.max(1, ASSISTANT_HISTORY_LIMIT))
+    .map((message) => ({
+      role: message && message.role === "assistant" ? "assistant" : "user",
+      content: trimAssistantText(message && message.content, 2500),
+    }))
+    .filter((message) => Boolean(message.content));
+}
+
+function buildAssistantSurveySummary(survey) {
+  if (!survey) {
+    return null;
+  }
+
+  return {
+    current_status: getSurveyLabel("current_status", survey.current_status) || null,
+    main_goal: getSurveyLabel("main_goal", survey.main_goal) || null,
+    goal_clarity: getSurveyLabel("goal_clarity", survey.goal_clarity) || null,
+    main_blocker: getSurveyLabel("main_blocker", survey.main_blocker) || null,
+    current_experience: getSurveyLabel("current_experience", survey.current_experience) || null,
+    english_level: getSurveyLabel("english_level", survey.english_level) || null,
+  };
+}
+
+function buildAssistantRoadmapSummary(roadmap) {
+  if (!roadmap) {
+    return null;
+  }
+
+  return {
+    summary: trimAssistantText(roadmap.summary, 320),
+    goal_label: trimAssistantText(roadmap.goal_label, 120),
+    blocker_label: trimAssistantText(roadmap.blocker_label, 120),
+    english_label: trimAssistantText(roadmap.english_label, 60),
+    experience_label: trimAssistantText(roadmap.experience_label, 120),
+    next_step: roadmap.next_step
+      ? {
+          title: trimAssistantText(roadmap.next_step.title, 160),
+          description: trimAssistantText(roadmap.next_step.description, 260),
+          cta_label: trimAssistantText(roadmap.next_step.cta_label, 80),
+          cta_href: trimAssistantText(roadmap.next_step.cta_href, 120),
+        }
+      : null,
+  };
+}
+
+async function getAssistantBootstrapContext(req, page) {
+  const userId = req.session.userId;
+  const userResult = await pool.query(
+    `
+    SELECT
+      id,
+      first_name,
+      last_name,
+      birth_date,
+      university,
+      workplace,
+      email,
+      is_verified
+    FROM users
+    WHERE id = $1
+    LIMIT 1
+    `,
+    [userId]
+  );
+
+  if (userResult.rows.length === 0) {
+    return null;
+  }
+
+  const [canManageInternshipsValue, canManageOpportunitiesValue, canManageSubscriptionsValue, subscription, survey] = await Promise.all([
+    canManageInternships(req),
+    canManageOpportunities(req),
+    canManageSubscriptions(req),
+    getCurrentSubscriptionForUser(userId),
+    getRegistrationSurveyForUser(userId),
+  ]);
+  const hasPlusAccess = Boolean(
+    canManageInternshipsValue ||
+    canManageOpportunitiesValue ||
+    isSubscriptionActiveRecord(subscription)
+  );
+  const roadmap = hasPlusAccess
+    ? buildRoadmapFromSurvey(survey) || buildFallbackRoadmap()
+    : null;
+  const savedPayload = hasPlusAccess
+    ? await getSavedItemsForUser(userId, { limit: 12 })
+    : { items: [], summary: buildSavedSummary([]) };
+
+  return {
+    page: normalizeAssistantPage(page),
+    user_id: userId,
+    profile: buildUserProfile(userResult.rows[0]),
+    survey: buildAssistantSurveySummary(survey),
+    subscription: serializeSubscription(subscription),
+    roadmap: buildAssistantRoadmapSummary(roadmap),
+    access: buildAccessState(hasPlusAccess, subscription),
+    saved_summary: hasPlusAccess ? savedPayload.summary : null,
+    roles: {
+      can_manage_internships: canManageInternshipsValue,
+      can_manage_opportunities: canManageOpportunitiesValue,
+      can_manage_subscriptions: canManageSubscriptionsValue,
+    },
+  };
+}
+
+function assistantQueryMatches(item, query, fields) {
+  const normalizedQuery = trimAssistantText(query, 160).toLowerCase();
+  if (!normalizedQuery) {
+    return true;
+  }
+
+  return fields.some((field) => String(item[field] || "").toLowerCase().includes(normalizedQuery));
+}
+
+function compactAssistantCatalogItem(entityType, item) {
+  const baseItem = {
+    id: Number(item.id),
+    entity_type: entityType,
+    title: item.title,
+    organization: item.organization || null,
+    recommended: Boolean(item.is_recommended),
+    recommendation_reasons: Array.isArray(item.recommendation_reasons)
+      ? item.recommendation_reasons.slice(0, 3)
+      : [],
+  };
+
+  if (entityType === "internship") {
+    return {
+      ...baseItem,
+      category: item.category || null,
+      location: item.location || null,
+      duration: item.duration || null,
+      deadline_date: item.deadline_date || null,
+      apply_url: item.apply_url || null,
+      page_path: "/internships",
+      summary: item.description || null,
+      saved_status: item.saved_status || null,
+    };
+  }
+
+  if (entityType === "opportunity") {
+    return {
+      ...baseItem,
+      content_type: item.content_type || null,
+      country: item.country || null,
+      deadline: item.deadline || null,
+      deadline_date: item.deadline_date || null,
+      source_url: item.source_url || null,
+      page_path: "/opportunities",
+      summary: item.summary || null,
+      saved_status: item.saved_status || null,
+    };
+  }
+
+  return {
+    ...baseItem,
+    resource_type: item.resource_type || null,
+    source_url: item.source_url || null,
+    page_path: "/resources",
+    summary: item.summary || null,
+    body: trimAssistantText(item.body, 400) || null,
+  };
+}
+
+async function assistantSearchInternships(req, args = {}) {
+  const requestedCategory = String(args.category || "all").trim().toLowerCase();
+  const allowedCategories = new Set(["all", "recommended", "ministries", "akimats", "quasi", "online", "other"]);
+  const category = allowedCategories.has(requestedCategory) ? requestedCategory : "all";
+  const query = trimAssistantText(args.query, 160);
+  const limit = clampNumber(args.limit, 1, ASSISTANT_TOOL_RESULT_LIMIT, 4);
+  const recommendedOnly = Boolean(args.recommended_only) || category === "recommended";
+  const [canManage, registrationSurvey, subscription] = await Promise.all([
+    canManageInternships(req),
+    getRegistrationSurveyForUser(req.session.userId),
+    getCurrentSubscriptionForUser(req.session.userId),
+  ]);
+  const hasPlusAccess = Boolean(canManage || isSubscriptionActiveRecord(subscription));
+  const sql = category === "all" || category === "recommended"
+    ? `
+      SELECT
+        id,
+        title,
+        organization,
+        description,
+        category,
+        location,
+        duration,
+        apply_url,
+        deadline_date,
+        target_goals,
+        required_english_level,
+        experience_level,
+        region_type,
+        created_at
+      FROM internships
+      ORDER BY created_at DESC, id DESC
+    `
+    : `
+      SELECT
+        id,
+        title,
+        organization,
+        description,
+        category,
+        location,
+        duration,
+        apply_url,
+        deadline_date,
+        target_goals,
+        required_english_level,
+        experience_level,
+        region_type,
+        created_at
+      FROM internships
+      WHERE category = $1
+      ORDER BY created_at DESC, id DESC
+    `;
+  const params = category === "all" || category === "recommended" ? [] : [category];
+  const result = await pool.query(sql, params);
+  const internships = result.rows.map((row) => {
+    const recommendation = buildRecommendationForItem(row, registrationSurvey, inferInternshipMetadata(row));
+    return {
+      id: row.id,
+      title: row.title,
+      organization: row.organization,
+      description: row.description,
+      category: row.category,
+      location: row.location,
+      duration: row.duration,
+      apply_url: row.apply_url,
+      deadline_date: serializeDateOnly(row.deadline_date),
+      target_goals: recommendation.metadata.target_goals,
+      required_english_level: recommendation.metadata.required_english_level,
+      experience_level: recommendation.metadata.experience_level,
+      region_type: recommendation.metadata.region_type,
+      recommendation_score: recommendation.score,
+      is_recommended: recommendation.is_recommended,
+      recommendation_reasons: recommendation.reasons,
+      created_at: row.created_at,
+    };
+  });
+  const filtered = internships.filter((item) => assistantQueryMatches(item, query, [
+    "title",
+    "organization",
+    "description",
+    "location",
+    "category",
+  ]));
+  const narrowed = recommendedOnly ? filtered.filter((item) => item.is_recommended) : filtered;
+  const accessPolicy = applyCatalogAccessPolicy(narrowed, {
+    hasPlusAccess,
+    entityType: "internship",
+    entityLabel: "стажировки",
+    requestedFilter: recommendedOnly ? "recommended" : category,
+    survey: registrationSurvey,
+    subscription,
+  });
+
+  return {
+    category,
+    query: query || null,
+    total_matches: narrowed.length,
+    returned: Math.min(limit, accessPolicy.visible_items.length),
+    upgrade_required: accessPolicy.personalization.upgrade_required === true,
+    access_tier: accessPolicy.access.access_tier,
+    access_message: accessPolicy.access.access_policy.access_message,
+    items: accessPolicy.visible_items.slice(0, limit).map((item) => compactAssistantCatalogItem("internship", item)),
+  };
+}
+
+async function assistantSearchOpportunities(req, args = {}) {
+  const requestedType = String(args.type || "all").trim().toLowerCase();
+  const allowedTypes = new Set(["all", "recommended", "grants", "scholarships", "news", "articles"]);
+  const type = allowedTypes.has(requestedType) ? requestedType : "all";
+  const query = trimAssistantText(args.query, 160);
+  const limit = clampNumber(args.limit, 1, ASSISTANT_TOOL_RESULT_LIMIT, 4);
+  const recommendedOnly = Boolean(args.recommended_only) || type === "recommended";
+  const [canManage, registrationSurvey, subscription] = await Promise.all([
+    canManageOpportunities(req),
+    getRegistrationSurveyForUser(req.session.userId),
+    getCurrentSubscriptionForUser(req.session.userId),
+  ]);
+  const hasPlusAccess = Boolean(canManage || isSubscriptionActiveRecord(subscription));
+  const sql = type === "all" || type === "recommended"
+    ? `
+      SELECT
+        id,
+        title,
+        organization,
+        summary,
+        content_type,
+        country,
+        deadline,
+        deadline_date,
+        source_url,
+        image_url,
+        target_goals,
+        required_english_level,
+        experience_level,
+        region_type,
+        created_at
+      FROM opportunities
+      ORDER BY created_at DESC, id DESC
+    `
+    : `
+      SELECT
+        id,
+        title,
+        organization,
+        summary,
+        content_type,
+        country,
+        deadline,
+        deadline_date,
+        source_url,
+        image_url,
+        target_goals,
+        required_english_level,
+        experience_level,
+        region_type,
+        created_at
+      FROM opportunities
+      WHERE content_type = $1
+      ORDER BY created_at DESC, id DESC
+    `;
+  const params = type === "all" || type === "recommended" ? [] : [type];
+  const result = await pool.query(sql, params);
+  const opportunities = result.rows.map((row) => {
+    const recommendation = buildRecommendationForItem(row, registrationSurvey, inferOpportunityMetadata(row));
+    return {
+      id: row.id,
+      title: row.title,
+      organization: row.organization,
+      summary: row.summary,
+      content_type: row.content_type,
+      country: row.country,
+      deadline: row.deadline,
+      deadline_date: serializeDateOnly(row.deadline_date),
+      source_url: row.source_url,
+      image_url: row.image_url,
+      target_goals: recommendation.metadata.target_goals,
+      required_english_level: recommendation.metadata.required_english_level,
+      experience_level: recommendation.metadata.experience_level,
+      region_type: recommendation.metadata.region_type,
+      recommendation_score: recommendation.score,
+      is_recommended: recommendation.is_recommended,
+      recommendation_reasons: recommendation.reasons,
+      created_at: row.created_at,
+    };
+  });
+  const filtered = opportunities.filter((item) => assistantQueryMatches(item, query, [
+    "title",
+    "organization",
+    "summary",
+    "country",
+    "content_type",
+  ]));
+  const narrowed = recommendedOnly ? filtered.filter((item) => item.is_recommended) : filtered;
+  const accessPolicy = applyCatalogAccessPolicy(narrowed, {
+    hasPlusAccess,
+    entityType: "opportunity",
+    entityLabel: "материалы и возможности",
+    requestedFilter: recommendedOnly ? "recommended" : type,
+    survey: registrationSurvey,
+    subscription,
+  });
+
+  return {
+    type,
+    query: query || null,
+    total_matches: narrowed.length,
+    returned: Math.min(limit, accessPolicy.visible_items.length),
+    upgrade_required: accessPolicy.personalization.upgrade_required === true,
+    access_tier: accessPolicy.access.access_tier,
+    access_message: accessPolicy.access.access_policy.access_message,
+    items: accessPolicy.visible_items.slice(0, limit).map((item) => compactAssistantCatalogItem("opportunity", item)),
+  };
+}
+
+async function assistantSearchResources(req, args = {}) {
+  const requestedType = String(args.type || "all").trim().toLowerCase();
+  const allowedTypes = new Set(["all", "recommended", ...careerResourceTypes]);
+  const type = allowedTypes.has(requestedType) ? requestedType : "all";
+  const query = trimAssistantText(args.query, 160);
+  const limit = clampNumber(args.limit, 1, ASSISTANT_TOOL_RESULT_LIMIT, 4);
+  const recommendedOnly = Boolean(args.recommended_only) || type === "recommended";
+  const [canManage, registrationSurvey, subscription] = await Promise.all([
+    canManageOpportunities(req),
+    getRegistrationSurveyForUser(req.session.userId),
+    getCurrentSubscriptionForUser(req.session.userId),
+  ]);
+  const hasPlusAccess = Boolean(canManage || isSubscriptionActiveRecord(subscription));
+  const sql = type === "all" || type === "recommended"
+    ? `
+      SELECT
+        id,
+        title,
+        summary,
+        body,
+        resource_type,
+        source_url,
+        target_goals,
+        required_english_level,
+        experience_level,
+        region_type,
+        created_at
+      FROM career_resources
+      ORDER BY created_at DESC, id DESC
+    `
+    : `
+      SELECT
+        id,
+        title,
+        summary,
+        body,
+        resource_type,
+        source_url,
+        target_goals,
+        required_english_level,
+        experience_level,
+        region_type,
+        created_at
+      FROM career_resources
+      WHERE resource_type = $1
+      ORDER BY created_at DESC, id DESC
+    `;
+  const params = type === "all" || type === "recommended" ? [] : [type];
+  const result = await pool.query(sql, params);
+  const resources = result.rows.map((row) => {
+    const recommendation = buildRecommendationForItem(row, registrationSurvey, inferResourceMetadata(row));
+    return {
+      id: row.id,
+      title: row.title,
+      summary: row.summary,
+      body: row.body,
+      resource_type: row.resource_type,
+      source_url: row.source_url,
+      target_goals: recommendation.metadata.target_goals,
+      required_english_level: recommendation.metadata.required_english_level,
+      experience_level: recommendation.metadata.experience_level,
+      region_type: recommendation.metadata.region_type,
+      recommendation_score: recommendation.score,
+      is_recommended: recommendation.is_recommended,
+      recommendation_reasons: recommendation.reasons,
+      created_at: row.created_at,
+    };
+  });
+  const filtered = resources.filter((item) => assistantQueryMatches(item, query, [
+    "title",
+    "summary",
+    "body",
+    "resource_type",
+  ]));
+  const narrowed = recommendedOnly ? filtered.filter((item) => item.is_recommended) : filtered;
+  const accessPolicy = applyCatalogAccessPolicy(narrowed, {
+    hasPlusAccess,
+    entityType: "resource",
+    entityLabel: "карьерные материалы",
+    requestedFilter: recommendedOnly ? "recommended" : type,
+    survey: registrationSurvey,
+    subscription,
+  });
+
+  return {
+    type,
+    query: query || null,
+    total_matches: narrowed.length,
+    returned: Math.min(limit, accessPolicy.visible_items.length),
+    upgrade_required: accessPolicy.personalization.upgrade_required === true,
+    access_tier: accessPolicy.access.access_tier,
+    access_message: accessPolicy.access.access_policy.access_message,
+    items: accessPolicy.visible_items.slice(0, limit).map((item) => compactAssistantCatalogItem("resource", item)),
+  };
+}
+
+async function assistantGetUserContext(req, args = {}) {
+  const context = await getAssistantBootstrapContext(req, args.page || "dashboard");
+  if (!context) {
+    return { error: "User context is unavailable" };
+  }
+
+  return {
+    page: context.page,
+    profile: context.profile,
+    survey: context.survey,
+    subscription: context.subscription,
+    roadmap: context.roadmap,
+    access: context.access,
+    roles: context.roles,
+    saved_summary: args.include_saved === true ? context.saved_summary : null,
+  };
+}
+
+async function assistantGetSavedSummary(req) {
+  const [subscription, canManageInternshipsValue, canManageOpportunitiesValue] = await Promise.all([
+    getCurrentSubscriptionForUser(req.session.userId),
+    canManageInternships(req),
+    canManageOpportunities(req),
+  ]);
+  const hasPlusAccess = Boolean(
+    canManageInternshipsValue ||
+    canManageOpportunitiesValue ||
+    isSubscriptionActiveRecord(subscription)
+  );
+
+  if (!hasPlusAccess) {
+    return {
+      upgrade_required: true,
+      access_tier: "free",
+      access_message: buildAccessPolicy(false, subscription).access_message,
+      summary: buildSavedSummary([]),
+      items: [],
+    };
+  }
+
+  const savedPayload = await getSavedItemsForUser(req.session.userId, { limit: 10 });
+  return {
+    upgrade_required: false,
+    access_tier: "plus",
+    summary: savedPayload.summary,
+    items: savedPayload.items.slice(0, 5),
+  };
+}
+
+function getAssistantTools() {
+  return [
+    {
+      type: "function",
+      name: "get_user_context",
+      description: "Получить профиль пользователя, текущий доступ, roadmap, анкету и состояние кабинета.",
+      parameters: {
+        type: "object",
+        properties: {
+          page: {
+            type: "string",
+            enum: ["dashboard", "internships", "opportunities", "resources", "subscribe"],
+          },
+          include_saved: {
+            type: "boolean",
+          },
+        },
+        additionalProperties: false,
+      },
+    },
+    {
+      type: "function",
+      name: "get_saved_summary",
+      description: "Получить краткую сводку по сохранениям и ближайшим дедлайнам пользователя.",
+      parameters: {
+        type: "object",
+        properties: {},
+        additionalProperties: false,
+      },
+    },
+    {
+      type: "function",
+      name: "search_internships",
+      description: "Найти стажировки на платформе с учетом фильтра, поиска и доступа пользователя.",
+      parameters: {
+        type: "object",
+        properties: {
+          category: {
+            type: "string",
+            enum: ["all", "recommended", "ministries", "akimats", "quasi", "online", "other"],
+          },
+          query: {
+            type: "string",
+          },
+          limit: {
+            type: "integer",
+            minimum: 1,
+            maximum: ASSISTANT_TOOL_RESULT_LIMIT,
+          },
+          recommended_only: {
+            type: "boolean",
+          },
+        },
+        additionalProperties: false,
+      },
+    },
+    {
+      type: "function",
+      name: "search_opportunities",
+      description: "Найти гранты, стипендии, статьи или новости на платформе.",
+      parameters: {
+        type: "object",
+        properties: {
+          type: {
+            type: "string",
+            enum: ["all", "recommended", "grants", "scholarships", "news", "articles"],
+          },
+          query: {
+            type: "string",
+          },
+          limit: {
+            type: "integer",
+            minimum: 1,
+            maximum: ASSISTANT_TOOL_RESULT_LIMIT,
+          },
+          recommended_only: {
+            type: "boolean",
+          },
+        },
+        additionalProperties: false,
+      },
+    },
+    {
+      type: "function",
+      name: "search_resources",
+      description: "Найти карьерные материалы и шаблоны на платформе.",
+      parameters: {
+        type: "object",
+        properties: {
+          type: {
+            type: "string",
+            enum: ["all", "recommended", "cv", "interview", "grants", "internships", "career_start"],
+          },
+          query: {
+            type: "string",
+          },
+          limit: {
+            type: "integer",
+            minimum: 1,
+            maximum: ASSISTANT_TOOL_RESULT_LIMIT,
+          },
+          recommended_only: {
+            type: "boolean",
+          },
+        },
+        additionalProperties: false,
+      },
+    },
+  ];
+}
+
+function buildAssistantInstructions(context) {
+  const promptContext = {
+    current_page: context.page,
+    access_tier: context.access && context.access.access_tier,
+    profile: {
+      first_name: context.profile && context.profile.first_name,
+      last_name: context.profile && context.profile.last_name,
+      university: context.profile && context.profile.university,
+      workplace: context.profile && context.profile.workplace,
+      is_verified: context.profile && context.profile.is_verified,
+    },
+    survey: context.survey,
+    subscription: context.subscription
+      ? {
+          status: context.subscription.status,
+          active: context.subscription.active,
+          plan: context.subscription.plan,
+          expires_at: context.subscription.expires_at,
+        }
+      : null,
+    roadmap: context.roadmap,
+    saved_summary: context.saved_summary,
+    roles: context.roles,
+  };
+
+  return [
+    "Ты встроенный AI-агент сайта KazYouthDiplomacy внутри личного кабинета.",
+    "Отвечай по-русски, если пользователь не просит другой язык.",
+    "Помогай коротко, практично и по делу: навигация по сайту, рекомендации по стажировкам, возможностям, материалам, подписке и карьерному маршруту.",
+    "Для фактов о пользователе, доступе, подписке, сохранениях и каталоге используй только предоставленный контекст и tool calls.",
+    "Не выдумывай дедлайны, статусы оплаты, доступы, количество элементов или содержимое каталога.",
+    "Если ответ связан с ограничением Free или Plus, скажи это прямо и предложи следующий шаг на сайте.",
+    "Если рекомендуешь элементы, указывай название, организацию и коротко почему это релевантно.",
+    "Если данных недостаточно, честно скажи, что именно не видно, и предложи открыть нужный раздел.",
+    `Контекст сессии: ${JSON.stringify(promptContext)}`,
+  ].join("\n");
+}
+
+async function createOpenAiResponse(payload) {
+  if (!OPENAI_API_KEY) {
+    const error = new Error("OpenAI API key is not configured");
+    error.status = 503;
+    throw error;
+  }
+
+  if (typeof fetch !== "function") {
+    const error = new Error("Global fetch is not available in this Node runtime");
+    error.status = 500;
+    throw error;
+  }
+
+  const response = await fetch(`${OPENAI_API_BASE}/responses`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${OPENAI_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      store: false,
+      ...payload,
+    }),
+  });
+  const rawText = await response.text();
+  let data = null;
+
+  try {
+    data = rawText ? JSON.parse(rawText) : null;
+  } catch (parseErr) {
+    data = null;
+  }
+
+  if (!response.ok) {
+    const error = new Error(
+      (data && data.error && data.error.message) ||
+      rawText ||
+      `OpenAI API request failed with status ${response.status}`
+    );
+    error.status = response.status;
+    error.openaiType = data && data.error ? data.error.type : "";
+    error.openaiCode = data && data.error ? data.error.code : "";
+    throw error;
+  }
+
+  return data;
+}
+
+function extractAssistantOutputText(response) {
+  if (response && typeof response.output_text === "string" && response.output_text.trim()) {
+    return response.output_text.trim();
+  }
+
+  if (!response || !Array.isArray(response.output)) {
+    return "";
+  }
+
+  const parts = [];
+  for (const item of response.output) {
+    if (item.type !== "message" || !Array.isArray(item.content)) {
+      continue;
+    }
+
+    for (const contentItem of item.content) {
+      if (contentItem.type === "output_text" && contentItem.text) {
+        parts.push(String(contentItem.text).trim());
+      }
+    }
+  }
+
+  return parts.filter(Boolean).join("\n\n").trim();
+}
+
+async function executeAssistantTool(req, toolCall) {
+  let parsedArguments = {};
+
+  try {
+    parsedArguments = toolCall.arguments ? JSON.parse(toolCall.arguments) : {};
+  } catch (err) {
+    return {
+      error: "Tool arguments could not be parsed",
+    };
+  }
+
+  switch (toolCall.name) {
+    case "get_user_context":
+      return assistantGetUserContext(req, parsedArguments);
+    case "get_saved_summary":
+      return assistantGetSavedSummary(req);
+    case "search_internships":
+      return assistantSearchInternships(req, parsedArguments);
+    case "search_opportunities":
+      return assistantSearchOpportunities(req, parsedArguments);
+    case "search_resources":
+      return assistantSearchResources(req, parsedArguments);
+    default:
+      return {
+        error: `Unknown tool: ${toolCall.name}`,
+      };
+  }
+}
+
+async function runAssistantConversation(req, page, messages) {
+  const bootstrapContext = await getAssistantBootstrapContext(req, page);
+  if (!bootstrapContext) {
+    const error = new Error("Assistant context is unavailable");
+    error.status = 404;
+    throw error;
+  }
+
+  const tools = getAssistantTools();
+  const normalizedMessages = normalizeAssistantMessages(messages);
+  const input = normalizedMessages.map((message) => ({
+    role: message.role,
+    content: message.content,
+  }));
+  let response = await createOpenAiResponse({
+    model: OPENAI_MODEL,
+    instructions: buildAssistantInstructions(bootstrapContext),
+    input,
+    tools,
+    tool_choice: "auto",
+    max_output_tokens: 900,
+  });
+
+  for (let round = 0; round < ASSISTANT_MAX_TOOL_ROUNDS; round += 1) {
+    const toolCalls = Array.isArray(response && response.output)
+      ? response.output.filter((item) => item.type === "function_call" && item.call_id)
+      : [];
+
+    if (!toolCalls.length) {
+      break;
+    }
+
+    const toolOutputs = [];
+    for (const toolCall of toolCalls) {
+      const result = await executeAssistantTool(req, toolCall);
+      toolOutputs.push({
+        type: "function_call_output",
+        call_id: toolCall.call_id,
+        output: JSON.stringify(result),
+      });
+    }
+
+    response = await createOpenAiResponse({
+      model: OPENAI_MODEL,
+      previous_response_id: response.id,
+      input: toolOutputs,
+      tools,
+      max_output_tokens: 900,
+    });
+  }
+
+  return {
+    reply: extractAssistantOutputText(response),
+    context: bootstrapContext,
+  };
+}
+
 async function requireSubscriptionManager(req, res, next) {
   if (await canManageSubscriptions(req)) {
     return next();
@@ -2471,6 +3453,29 @@ function saveSessionAndRedirect(req, res, user, targetPath) {
         return res.redirect("/login?error=session");
       }
       return res.redirect(targetPath);
+    });
+  });
+}
+
+function saveSessionForUser(req, user) {
+  return new Promise((resolve, reject) => {
+    req.session.regenerate((regenErr) => {
+      if (regenErr) {
+        reject(regenErr);
+        return;
+      }
+
+      req.session.userId = user.id;
+      req.session.email = normalizeEmail(user.email);
+      req.session.role = user.role || "user";
+
+      req.session.save((saveErr) => {
+        if (saveErr) {
+          reject(saveErr);
+          return;
+        }
+        resolve();
+      });
     });
   });
 }
@@ -2544,6 +3549,14 @@ const registerRateLimiter = createAuthRateLimiter({
   skipSuccessfulRequests: false,
   message: "Слишком много попыток регистрации. Попробуйте снова немного позже.",
   redirectPath: "/register",
+});
+
+const verifyCodeRateLimiter = createAuthRateLimiter({
+  windowMinutes: VERIFY_CODE_RATE_LIMIT_WINDOW_MINUTES,
+  maxAttempts: VERIFY_CODE_RATE_LIMIT_MAX_ATTEMPTS,
+  skipSuccessfulRequests: true,
+  message: "Too many verification code attempts. Please try again later.",
+  redirectPath: "/login",
 });
 
 const resendVerificationRateLimiter = createAuthRateLimiter({
@@ -2863,17 +3876,17 @@ app.post("/register", registerRateLimiter, async (req, res) => {
       return saveSessionAndRedirect(req, res, user, "/dashboard");
     }
 
-    const { token } = await createEmailVerificationToken(user.id);
-    let verificationNotice = "verify-email";
+    const { code } = await createEmailVerificationToken(user.id);
+    let verificationNotice = "verify-code-sent";
 
     try {
-      const delivery = await sendVerificationEmail(user.email, token);
+      const delivery = await sendVerificationEmail(user.email, code);
       if (!delivery.delivered) {
-        verificationNotice = "verify-email-preview";
+        verificationNotice = "verify-code-preview";
       }
     } catch (emailErr) {
       console.error("Verification email send error:", emailErr);
-      verificationNotice = "verify-email-error";
+      verificationNotice = "verify-code-error";
     }
 
     return req.session.save((saveErr) => {
@@ -2888,6 +3901,130 @@ app.post("/register", registerRateLimiter, async (req, res) => {
   } catch (err) {
     console.error("Register server error:", err);
     return res.redirect("/register?error=server");
+  }
+});
+
+app.post("/verify-email-code", verifyCodeRateLimiter, async (req, res) => {
+  if (!EMAIL_VERIFICATION_ENABLED) {
+    if (wantsJson(req)) {
+      return res.json({ ok: true, message: "Подтверждение почты сейчас отключено." });
+    }
+    return res.redirect("/login");
+  }
+
+  const email = normalizeEmail(req.body.email);
+  const code = String(req.body.code || "").trim();
+  const respondWithJson = wantsJson(req);
+
+  if (!email || !/^\d+$/.test(code) || code.length !== EMAIL_VERIFY_CODE_LENGTH) {
+    const message = `Введите ${EMAIL_VERIFY_CODE_LENGTH}-значный код и email.`;
+    if (respondWithJson) {
+      return res.status(400).json({ error: message });
+    }
+    return res.redirect(`/login?error=verify-code-invalid&email=${encodeURIComponent(email)}`);
+  }
+
+  try {
+    const result = await pool.query(
+      `
+      SELECT
+        u.id AS user_id,
+        u.email,
+        u.role,
+        u.is_verified,
+        evt.id AS verification_id,
+        evt.token_hash,
+        evt.expires_at,
+        evt.used_at
+      FROM users u
+      LEFT JOIN LATERAL (
+        SELECT id, token_hash, expires_at, used_at
+        FROM email_verification_tokens
+        WHERE user_id = u.id
+        ORDER BY created_at DESC
+        LIMIT 1
+      ) evt ON true
+      WHERE u.email = $1
+      LIMIT 1
+      `,
+      [email]
+    );
+
+    if (result.rows.length === 0) {
+      const message = "Неверный код или email.";
+      if (respondWithJson) {
+        return res.status(400).json({ error: message });
+      }
+      return res.redirect(`/login?error=verify-code-invalid&email=${encodeURIComponent(email)}`);
+    }
+
+    const verification = result.rows[0];
+
+    if (verification.is_verified) {
+      if (respondWithJson) {
+        return res.json({ ok: true, alreadyVerified: true, redirectTo: "/login?notice=already-verified" });
+      }
+      return res.redirect(`/login?notice=already-verified&email=${encodeURIComponent(email)}`);
+    }
+
+    if (!verification.verification_id || verification.used_at) {
+      const message = "Запросите новый код подтверждения.";
+      if (respondWithJson) {
+        return res.status(400).json({ error: message });
+      }
+      return res.redirect(`/login?error=verify-code-invalid&email=${encodeURIComponent(email)}`);
+    }
+
+    const expiresAt = new Date(verification.expires_at);
+    if (Number.isNaN(expiresAt.getTime()) || expiresAt <= new Date()) {
+      const message = "Срок действия кода закончился. Запросите новый.";
+      if (respondWithJson) {
+        return res.status(400).json({ error: message, code: "expired" });
+      }
+      return res.redirect(`/login?error=verify-code-expired&email=${encodeURIComponent(email)}`);
+    }
+
+    if (verification.token_hash !== hashVerificationToken(code)) {
+      const message = "Неверный код подтверждения.";
+      if (respondWithJson) {
+        return res.status(400).json({ error: message });
+      }
+      return res.redirect(`/login?error=verify-code-invalid&email=${encodeURIComponent(email)}`);
+    }
+
+    await pool.query(
+      `
+      UPDATE users
+      SET is_verified = true,
+          email_verified_at = CURRENT_TIMESTAMP
+      WHERE id = $1
+      `,
+      [verification.user_id]
+    );
+
+    await pool.query(
+      "UPDATE email_verification_tokens SET used_at = CURRENT_TIMESTAMP WHERE id = $1",
+      [verification.verification_id]
+    );
+
+    const sessionUser = {
+      id: verification.user_id,
+      email: verification.email,
+      role: verification.role,
+    };
+
+    if (respondWithJson) {
+      await saveSessionForUser(req, sessionUser);
+      return res.json({ ok: true, redirectTo: "/dashboard" });
+    }
+
+    return saveSessionAndRedirect(req, res, sessionUser, "/dashboard");
+  } catch (err) {
+    console.error("Verify email code error:", err);
+    if (respondWithJson) {
+      return res.status(500).json({ error: "Не получилось подтвердить код. Попробуйте ещё раз." });
+    }
+    return res.redirect(`/login?error=server&email=${encodeURIComponent(email)}`);
   }
 });
 
@@ -3057,8 +4194,8 @@ app.post("/resend-verification", resendVerificationRateLimiter, async (req, res)
       return res.redirect(`/login?error=verify-rate&email=${encodeURIComponent(user.email)}`);
     }
 
-    const { token } = await createEmailVerificationToken(user.id);
-    const delivery = await sendVerificationEmail(user.email, token);
+    const { code } = await createEmailVerificationToken(user.id);
+    const delivery = await sendVerificationEmail(user.email, code);
     const message = delivery.delivered
       ? "Письмо отправлено повторно. Проверьте входящие и папку Спам."
       : "SMTP пока не настроен на этом сервере. Обратитесь к администратору.";
@@ -3067,7 +4204,7 @@ app.post("/resend-verification", resendVerificationRateLimiter, async (req, res)
       return res.json({ ok: true, message, delivered: delivery.delivered });
     }
 
-    const noticeCode = delivery.delivered ? "verify-resent" : "verify-email-preview";
+    const noticeCode = delivery.delivered ? "verify-code-resent" : "verify-code-preview";
     return res.redirect(`/login?notice=${noticeCode}&email=${encodeURIComponent(user.email)}`);
   } catch (err) {
     console.error("Resend verification error:", err);
@@ -3380,6 +4517,50 @@ app.get("/api/account/access", requireAuth, async (req, res) => {
   } catch (err) {
     console.error("Account access check error:", err);
     return res.status(500).json({ error: "Failed to check account access" });
+  }
+});
+
+app.get("/api/assistant/status", requireAuth, (req, res) => {
+  return res.json({
+    enabled: Boolean(OPENAI_API_KEY),
+    model: OPENAI_MODEL,
+  });
+});
+
+app.post("/api/assistant", requireAuth, async (req, res) => {
+  const page = normalizeAssistantPage(req.body.page);
+  const messages = normalizeAssistantMessages(req.body.messages);
+
+  if (!messages.length) {
+    return res.status(400).json({ error: "Assistant messages are required" });
+  }
+
+  if (!OPENAI_API_KEY) {
+    return res.status(503).json({
+      error: "AI assistant is not configured on the server yet. Add OPENAI_API_KEY to enable it.",
+      enabled: false,
+    });
+  }
+
+  try {
+    const result = await runAssistantConversation(req, page, messages);
+    return res.json({
+      ok: true,
+      reply: result.reply || "Не удалось подготовить ответ. Попробуйте переформулировать запрос.",
+      model: OPENAI_MODEL,
+      page,
+    });
+  } catch (err) {
+    const status = Number(err && err.status) || 500;
+    console.error("Assistant request error:", err);
+    const openaiCode = String(err && err.openaiCode || "").trim().toLowerCase();
+    return res.status(status >= 400 && status < 600 ? status : 500).json({
+      error: status === 503
+        ? "AI assistant is not configured on the server yet."
+        : openaiCode === "insufficient_quota"
+          ? "AI assistant is connected, but the OpenAI API quota has been exhausted. Add billing or top up API credits in OpenAI Platform."
+          : "AI assistant is temporarily unavailable. Please try again later.",
+    });
   }
 });
 

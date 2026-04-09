@@ -2,6 +2,7 @@
   var TRANSITION_KEY = "kyd_route_transition_v1";
   var TRANSITION_DURATION_MS = 740;
   var TRANSITION_TTL_MS = 4500;
+  var activeTransitionTimer = null;
 
   function safeParse(value) {
     try {
@@ -31,6 +32,25 @@
     return payload;
   }
 
+  function clearPendingNavigation() {
+    if (activeTransitionTimer !== null) {
+      window.clearTimeout(activeTransitionTimer);
+      activeTransitionTimer = null;
+    }
+  }
+
+  function clearTransitionState() {
+    var body = document.body;
+    if (!body) return;
+
+    body.classList.remove(
+      "route-transition-out-left",
+      "route-transition-out-right",
+      "route-transition-in-left",
+      "route-transition-in-right"
+    );
+  }
+
   function startOutTransition(direction, navigateTo) {
     var body = document.body;
     if (!body) {
@@ -44,7 +64,9 @@
 
     body.classList.add(direction === "left" ? "route-transition-out-left" : "route-transition-out-right");
 
-    window.setTimeout(function () {
+    clearPendingNavigation();
+    activeTransitionTimer = window.setTimeout(function () {
+      activeTransitionTimer = null;
       window.location.href = navigateTo;
     }, TRANSITION_DURATION_MS);
   }
@@ -87,5 +109,22 @@
   document.addEventListener("DOMContentLoaded", function () {
     bindRouteLinks();
     playInTransition();
+  });
+
+  window.addEventListener("pageshow", function () {
+    clearPendingNavigation();
+    clearTransitionState();
+    sessionStorage.removeItem(TRANSITION_KEY);
+  });
+
+  window.addEventListener("pagehide", function () {
+    clearPendingNavigation();
+    clearTransitionState();
+  });
+
+  window.addEventListener("popstate", function () {
+    clearPendingNavigation();
+    clearTransitionState();
+    sessionStorage.removeItem(TRANSITION_KEY);
   });
 })();

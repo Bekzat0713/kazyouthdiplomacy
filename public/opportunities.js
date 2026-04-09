@@ -65,7 +65,7 @@ const state = {
 };
 
 const filtersRoot = document.getElementById("opportunityFilters");
-const filters = Array.from(document.querySelectorAll(".filter"));
+const filters = filtersRoot ? Array.from(filtersRoot.querySelectorAll(".filter")) : [];
 const grid = document.getElementById("opportunitiesGrid");
 const emptyState = document.getElementById("opportunitiesEmpty");
 const form = document.getElementById("opportunityForm");
@@ -81,7 +81,9 @@ const goalAction = document.getElementById("opportunityGoalAction");
 function setActiveFilter(type) {
   state.type = type;
   filters.forEach((button) => {
-    button.classList.toggle("active", button.dataset.type === type);
+    const isActive = button.dataset.type === type;
+    button.classList.toggle("active", isActive);
+    button.setAttribute("aria-pressed", isActive ? "true" : "false");
   });
 }
 
@@ -532,8 +534,11 @@ async function handleFormSubmit(event) {
 }
 
 function handleFilterClick(event) {
-  const target = event.target;
-  if (!(target instanceof HTMLElement) || !target.classList.contains("filter")) {
+  const target = event.target instanceof HTMLElement
+    ? event.target.closest(".filter")
+    : null;
+
+  if (!(target instanceof HTMLElement)) {
     return;
   }
 
@@ -564,9 +569,16 @@ function handleGoalAction() {
 
 function init() {
   updateManagerControls();
-  filtersRoot.addEventListener("click", handleFilterClick);
-  form.addEventListener("submit", handleFormSubmit);
-  toggleFormButton.addEventListener("click", handleToggleForm);
+  setActiveFilter(state.type);
+  if (filtersRoot) {
+    filtersRoot.addEventListener("click", handleFilterClick);
+  }
+  if (form) {
+    form.addEventListener("submit", handleFormSubmit);
+  }
+  if (toggleFormButton) {
+    toggleFormButton.addEventListener("click", handleToggleForm);
+  }
   if (goalAction) {
     goalAction.addEventListener("click", handleGoalAction);
   }

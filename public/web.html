@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KazYouthDiplomacy — Career GPS</title>
+  <title>KazYouthDiplomacy - Career GPS</title>
   <link rel="stylesheet" href="/web.css" />
 </head>
-<body class="home-page route-page">
+<body class="home-page route-page home-figma-page">
 <div class="site-splash" id="site-splash" aria-hidden="true">
   <div class="site-splash-inner">
     <div class="splash-bowl" aria-hidden="true">
@@ -20,62 +20,124 @@
   </div>
 </div>
 
-<header class="header">
-  <div class="logo-wrap logo-intro" aria-label="KazYouthDiplomacy">
+<header class="header home-figma-header">
+  <a href="/" class="logo-wrap logo-intro" aria-label="KazYouthDiplomacy">
     <img src="/logo.png" alt="KazYouthDiplomacy logo" />
     <span>KazYouthDiplomacy</span>
-  </div>
-  <nav>
-    <a href="/login">Войти</a>
+  </a>
+
+  <nav class="home-figma-nav">
+    <a href="#opportunities">Возможности</a>
+    <a href="/about#features">Преимущества</a>
+    <a href="/subscribe" class="route-link" data-transition-direction="right">Подписка</a>
+    <a href="/about" class="route-link" data-transition-direction="left">О нас</a>
+    <a href="/login" class="nav-btn">Войти</a>
   </nav>
 </header>
 
-<section class="hero">
-  <div class="hero-logo-backdrop" aria-hidden="true">
-    <img src="/logo.png" alt="" class="hero-logo-art" />
+<main class="home-figma-main">
+  <section class="hero home-figma-hero" id="homeHero">
+    <div class="home-figma-shell">
+      <div class="home-figma-copy">
+        <span class="home-figma-kicker">Career GPS for students</span>
+        <h1>
+          <span class="home-figma-title-line">Возможности для</span>
+          <span class="home-figma-title-line home-figma-title-line-bottom">молодежи</span>
+        </h1>
+        <p>
+          Международные стажировки, гранты и карьерные возможности собраны в одном
+          понятном маршруте для студентов и молодых специалистов.
+        </p>
+
+        <div class="home-figma-hero-actions">
+          <a href="/register-survey" class="btn primary home-figma-primary-cta">Пройти короткий опрос</a>
+          <a href="/login" class="btn secondary home-figma-secondary-cta">Войти</a>
+        </div>
+      </div>
+
+      <div class="home-figma-visual" aria-hidden="true">
+        <div class="home-figma-visual-frame">
+          <div class="home-figma-logo-glow">
+            <img src="/logo.png" alt="" class="home-figma-logo-mark" />
+            <img src="/logo.png" alt="" class="home-figma-logo-mark home-figma-logo-mark-echo" />
+          </div>
+        </div>
+
+        <a href="/register-survey" class="home-figma-status-card home-figma-status-card-cta">
+          <span class="home-figma-status-icon"></span>
+          <div>
+            <strong>Пройти опрос</strong>
+            <p>Узнай свой уровень и получи личный маршрут развития за пару минут.</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-figma-section home-figma-opportunities" id="opportunities" data-scroll-reveal>
+    <div class="home-figma-section-head">
+      <span class="home-figma-kicker">Opportunities</span>
+      <h2>Главные возможности собраны в одном аккуратном интерфейсе.</h2>
+      <p>На главной остаётся только понятный вход в продукт, а детали человек открывает уже осознанно.</p>
+    </div>
+
+    <div class="home-figma-card-grid">
+      <article class="home-figma-info-card">
+        <strong>Стажировки</strong>
+        <p>Локальные и международные internship-программы для студентов и выпускников.</p>
+      </article>
+
+      <article class="home-figma-info-card">
+        <strong>Гранты</strong>
+        <p>Возможности финансирования для проектов, обучения и участия в программах.</p>
+      </article>
+
+      <article class="home-figma-info-card">
+        <strong>Стипендии</strong>
+        <p>Образовательные треки, обмены и академические программы с поддержкой.</p>
+      </article>
+
+      <article class="home-figma-info-card">
+        <strong>Roadmap</strong>
+        <p>Личный маршрут развития от стартовой точки до следующей серьёзной возможности.</p>
+      </article>
+
+      <article class="home-figma-info-card">
+        <strong>Материалы</strong>
+        <p>Подборка ресурсов и ориентиров, которые помогают готовиться качественно.</p>
+      </article>
+
+      <article class="home-figma-info-card">
+        <strong>Личный кабинет</strong>
+        <p>Сохранённые возможности, прогресс и понятная структура работы с платформой.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="home-figma-section home-figma-cta" data-scroll-reveal>
+    <div class="home-figma-cta-box">
+      <span class="home-figma-kicker">Start now</span>
+      <h2>Один главный шаг для пользователя: начать с короткого опроса.</h2>
+      <p>Так человек быстрее понимает, какой маршрут ему подходит и какие возможности открывать дальше.</p>
+      <a href="/register-survey" class="btn primary">Начать сейчас</a>
+    </div>
+  </section>
+</main>
+
+<footer class="home-figma-footer">
+  <div class="home-figma-footer-shell">
+    <div>
+      <strong>KazYouthDiplomacy</strong>
+      <p>Career GPS для студентов, стажировок и образовательных возможностей.</p>
+    </div>
+
+    <div class="home-figma-footer-links">
+      <a href="/about" class="route-link" data-transition-direction="left">О нас</a>
+      <a href="/subscribe" class="route-link" data-transition-direction="right">Подписка</a>
+      <a href="/login">Войти</a>
+    </div>
   </div>
-  <h1>Возможности<br>для молодежи</h1>
-  <p>
-    Международные стажировки, дипломатические программы и карьерные возможности
-    в сфере международных отношений.
-  </p>
-
-  <div class="hero-actions">
-    <a href="/login" class="btn primary">Войти</a>
-    <a href="/opportunities" class="btn secondary">Перейти к публикациям</a>
-  </div>
-
-  <p class="hero-note">
-    Career GPS для амбассадоров, студентов и молодых лидеров.
-  </p>
-
-  <div class="hero-arrow-nav" aria-label="Навигация по разделам">
-    <a
-      href="/about"
-      class="hero-arrow hero-arrow-left route-link"
-      data-transition-direction="left"
-      aria-label="Перейти на страницу О нас"
-    >
-      <span class="hero-arrow-icon" aria-hidden="true"></span>
-    </a>
-
-    <a
-      href="/subscribe"
-      class="hero-arrow hero-arrow-right route-link"
-      data-transition-direction="right"
-      aria-label="Перейти на страницу Подписка"
-    >
-      <span class="hero-arrow-icon" aria-hidden="true"></span>
-    </a>
-  </div>
-</section>
-
-<section class="cta-modern" data-scroll-reveal>
-  <div class="cta-box">
-    <h2>Начните свой путь<br>в международной среде</h2>
-    <p>Откройте доступ к стажировкам, грантам и сильному комьюнити уже сегодня.</p>
-  </div>
-</section>
+</footer>
 
 <script src="/web.js" defer></script>
 <script src="/page-transitions.js" defer></script>

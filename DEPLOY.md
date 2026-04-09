@@ -22,7 +22,8 @@
 
 - `NODE_ENV=production`
 - `DATABASE_URL=<your render postgres url>`
-- `PGSSLMODE=require`
+- `PGSSLMODE=disable` for Render internal database URLs
+- `PGSSLMODE=require` only if you intentionally use the external Postgres URL
 - `SESSION_SECRET=<64+ random characters>`
 - `APP_BASE_URL=https://<your-domain>`
 - `EMAIL_VERIFICATION_ENABLED=true`
@@ -44,6 +45,58 @@
 - `KASPI_CALLBACK_URL=https://<your-domain>/kaspi/return`
 
 Do not store real secrets in repo.
+
+Copy-paste block for Render or local `.env`:
+
+```env
+NODE_ENV=production
+PORT=3000
+APP_BASE_URL=https://your-domain.example
+
+DATABASE_URL=postgresql://user:password@host:5432/database
+PGSSLMODE=disable
+
+SESSION_SECRET=replace-with-a-random-secret-at-least-32-characters-long
+SESSION_COOKIE_NAME=kyd.sid
+
+EMAIL_VERIFICATION_ENABLED=true
+EMAIL_VERIFY_TOKEN_TTL_MINUTES=1440
+EMAIL_RESEND_COOLDOWN_SECONDS=60
+PASSWORD_RESET_TOKEN_TTL_MINUTES=60
+
+AUTH_MIN_PASSWORD_LENGTH=10
+LOGIN_RATE_LIMIT_WINDOW_MINUTES=15
+LOGIN_RATE_LIMIT_MAX_ATTEMPTS=7
+REGISTER_RATE_LIMIT_WINDOW_MINUTES=30
+REGISTER_RATE_LIMIT_MAX_ATTEMPTS=5
+RESEND_RATE_LIMIT_WINDOW_MINUTES=30
+RESEND_RATE_LIMIT_MAX_ATTEMPTS=5
+FORGOT_RATE_LIMIT_WINDOW_MINUTES=30
+FORGOT_RATE_LIMIT_MAX_ATTEMPTS=5
+RESET_RATE_LIMIT_WINDOW_MINUTES=30
+RESET_RATE_LIMIT_MAX_ATTEMPTS=10
+
+FREE_INTERNSHIP_PREVIEW_LIMIT=4
+FREE_OPPORTUNITY_PREVIEW_LIMIT=6
+FREE_RESOURCE_PREVIEW_LIMIT=4
+
+INTERNSHIP_MANAGER_EMAILS=first@example.com,second@example.com
+SUBSCRIPTION_MANAGER_EMAILS=admin@example.com
+OPPORTUNITIES_ADMIN_EMAIL=admin@example.com
+
+MAIL_FROM=no-reply@your-domain.example
+SMTP_URL=
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your-smtp-login
+SMTP_PASS=your-smtp-password
+
+KASPI_MERCHANT_ID=your-kaspi-merchant-id
+KASPI_API_KEY=your-kaspi-api-key
+KASPI_CALLBACK_URL=https://your-domain.example/kaspi/return
+KASPI_QR_URL=https://pay.kaspi.kz/pay/your-qr-code
+```
 
 ## 4) Domain and HTTPS
 

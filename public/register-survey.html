@@ -6,140 +6,175 @@
   <title>Опрос перед регистрацией - KazYouthDiplomacy</title>
   <link rel="stylesheet" href="/web.css">
 </head>
-<body class="register-survey-page">
+<body class="register-survey-page route-page auth-figma-page">
 
-<header class="header">
-  <a href="/" class="logo-wrap">
-    <img src="/logo.png" alt="logo">
+<header class="header home-figma-header">
+  <a href="/" class="logo-wrap logo-intro" aria-label="KazYouthDiplomacy">
+    <img src="/logo.png" alt="KazYouthDiplomacy logo">
     <span>KazYouthDiplomacy</span>
   </a>
+
+  <nav class="home-figma-nav">
+    <a href="/" class="route-link" data-transition-direction="right">Главная</a>
+    <a href="/about" class="route-link" data-transition-direction="left">О нас</a>
+    <a href="/login">Вход</a>
+    <a href="/register-survey" class="nav-btn">Опрос</a>
+  </nav>
 </header>
 
-<main class="survey-card">
-  <h1>Небольшой опрос перед регистрацией</h1>
-  <p class="survey-lead">
-    Отвечайте в удобном темпе: мы показываем по одному вопросу за раз.
-  </p>
+<main class="auth-figma-main auth-figma-main-survey">
+  <div class="auth-figma-shell auth-figma-shell-survey">
+    <section class="auth-figma-panel auth-figma-copy-panel auth-figma-copy-panel-survey">
+      <span class="home-figma-kicker">Quick survey</span>
+      <h1>Короткий опрос поможет показать вам более точный путь.</h1>
+      <p>
+        Мы показываем по одному вопросу за раз, чтобы вам было спокойно и удобно
+        пройти весь маршрут без перегруза.
+      </p>
 
-  <form id="preRegisterSurveyForm" class="survey-form" novalidate>
-    <section class="survey-progress">
-      <div class="survey-progress-top">
-        <span id="surveyStepLabel">Шаг 1</span>
-        <span class="survey-progress-note">Короткий вопрос за раз</span>
+      <div class="auth-figma-chip-row">
+        <span class="auth-figma-chip">1 вопрос за раз</span>
+        <span class="auth-figma-chip">Пара минут</span>
+        <span class="auth-figma-chip">Более точные рекомендации</span>
       </div>
-      <div class="survey-progress-track" aria-hidden="true">
-        <span id="surveyProgressFill" class="survey-progress-fill"></span>
-      </div>
-    </section>
 
-    <section class="survey-section survey-step" data-field="current_status" data-kind="radio">
-      <h2>Сейчас я:</h2>
-      <div class="survey-options">
-        <label class="survey-option"><input type="radio" name="current_status" value="school" required> Учусь в школе</label>
-        <label class="survey-option"><input type="radio" name="current_status" value="university"> Учусь в университете</label>
-        <label class="survey-option"><input type="radio" name="current_status" value="working"> Уже работаю</label>
-        <label class="survey-option"><input type="radio" name="current_status" value="study_and_work"> И учусь, и работаю</label>
+      <div class="auth-figma-highlight-card">
+        <strong>Что вы получите после опроса</strong>
+        <p>Более понятный старт, персональный маршрут и подбор возможностей под ваши цели.</p>
       </div>
     </section>
 
-    <section class="survey-section survey-step" data-field="age_group" data-kind="radio" hidden>
-      <h2>Мой возраст:</h2>
-      <div class="survey-options">
-        <label class="survey-option"><input type="radio" name="age_group" value="under_17" required> До 17</label>
-        <label class="survey-option"><input type="radio" name="age_group" value="18_20"> 18-20</label>
-        <label class="survey-option"><input type="radio" name="age_group" value="21_23"> 21-23</label>
-        <label class="survey-option"><input type="radio" name="age_group" value="24_30"> 24-30</label>
-        <label class="survey-option"><input type="radio" name="age_group" value="30_plus"> 30+</label>
+    <section class="survey-card auth-figma-card auth-figma-card-survey">
+      <div class="auth-figma-card-top">
+        <span class="auth-figma-card-badge">Опрос</span>
+        <h2>Небольшой опрос перед регистрацией</h2>
+        <p class="survey-lead">
+          Отвечайте в удобном темпе: мы показываем по одному вопросу за раз.
+        </p>
       </div>
+
+      <form id="preRegisterSurveyForm" class="survey-form auth-figma-form" novalidate>
+        <section class="survey-progress">
+          <div class="survey-progress-top">
+            <span id="surveyStepLabel">Шаг 1</span>
+            <span class="survey-progress-note">Короткий вопрос за раз</span>
+          </div>
+          <div class="survey-progress-track" aria-hidden="true">
+            <span id="surveyProgressFill" class="survey-progress-fill"></span>
+          </div>
+        </section>
+
+        <section class="survey-section survey-step" data-field="current_status" data-kind="radio">
+          <h2>Сейчас я:</h2>
+          <div class="survey-options">
+            <label class="survey-option"><input type="radio" name="current_status" value="school" required> Учусь в школе</label>
+            <label class="survey-option"><input type="radio" name="current_status" value="university"> Учусь в университете</label>
+            <label class="survey-option"><input type="radio" name="current_status" value="working"> Уже работаю</label>
+            <label class="survey-option"><input type="radio" name="current_status" value="study_and_work"> И учусь, и работаю</label>
+          </div>
+        </section>
+
+        <section class="survey-section survey-step" data-field="age_group" data-kind="radio" hidden>
+          <h2>Мой возраст:</h2>
+          <div class="survey-options">
+            <label class="survey-option"><input type="radio" name="age_group" value="under_17" required> До 17</label>
+            <label class="survey-option"><input type="radio" name="age_group" value="18_20"> 18-20</label>
+            <label class="survey-option"><input type="radio" name="age_group" value="21_23"> 21-23</label>
+            <label class="survey-option"><input type="radio" name="age_group" value="24_30"> 24-30</label>
+            <label class="survey-option"><input type="radio" name="age_group" value="30_plus"> 30+</label>
+          </div>
+        </section>
+
+        <section class="survey-section survey-step" data-field="main_goal" data-kind="radio" hidden>
+          <h2>Моя главная цель:</h2>
+          <div class="survey-options">
+            <label class="survey-option"><input type="radio" name="main_goal" value="study_abroad" required> Поступить за границу</label>
+            <label class="survey-option"><input type="radio" name="main_goal" value="masters"> Поступить в магистратуру</label>
+            <label class="survey-option"><input type="radio" name="main_goal" value="civil_service"> Попасть на госслужбу</label>
+            <label class="survey-option"><input type="radio" name="main_goal" value="international_org"> Работать в международной организации</label>
+            <label class="survey-option"><input type="radio" name="main_goal" value="national_company"> Устроиться в нацкомпанию</label>
+            <label class="survey-option"><input type="radio" name="main_goal" value="private_sector"> Работать в частном секторе</label>
+            <label class="survey-option"><input type="radio" name="main_goal" value="undecided"> Пока не определился</label>
+          </div>
+        </section>
+
+        <section class="survey-section survey-step" data-field="goal_clarity" data-kind="radio" hidden>
+          <h2>Сейчас я понимаю, как достичь своей цели:</h2>
+          <div class="survey-options">
+            <label class="survey-option"><input type="radio" name="goal_clarity" value="none" required> Вообще не понимаю</label>
+            <label class="survey-option"><input type="radio" name="goal_clarity" value="roughly"> Примерно понимаю</label>
+            <label class="survey-option"><input type="radio" name="goal_clarity" value="partially"> Частично знаю шаги</label>
+            <label class="survey-option"><input type="radio" name="goal_clarity" value="clear"> Четко знаю, что делать</label>
+          </div>
+        </section>
+
+        <section class="survey-section survey-step" data-field="main_blocker" data-kind="radio" hidden>
+          <h2>Больше всего мне сейчас мешает:</h2>
+          <div class="survey-options">
+            <label class="survey-option"><input type="radio" name="main_blocker" value="dont_know_start" required> Я не знаю, с чего начать</label>
+            <label class="survey-option"><input type="radio" name="main_blocker" value="too_much_info"> Слишком много информации</label>
+            <label class="survey-option"><input type="radio" name="main_blocker" value="no_experience"> У меня нет опыта</label>
+            <label class="survey-option"><input type="radio" name="main_blocker" value="lack_skills"> Мне не хватает навыков</label>
+            <label class="survey-option"><input type="radio" name="main_blocker" value="low_confidence"> Я не уверен(а) в себе</label>
+            <label class="survey-option"><input type="radio" name="main_blocker" value="procrastination"> Я откладываю / прокрастинирую</label>
+          </div>
+        </section>
+
+        <section class="survey-section survey-step" data-field="current_experience" data-kind="radio" hidden>
+          <h2>Мой текущий опыт:</h2>
+          <div class="survey-options">
+            <label class="survey-option"><input type="radio" name="current_experience" value="none" required> У меня нет опыта</label>
+            <label class="survey-option"><input type="radio" name="current_experience" value="little"> Есть небольшой опыт</label>
+            <label class="survey-option"><input type="radio" name="current_experience" value="internships_or_projects"> Есть стажировки / проекты</label>
+            <label class="survey-option"><input type="radio" name="current_experience" value="already_working_in_field"> Я уже работаю по направлению</label>
+          </div>
+        </section>
+
+        <section class="survey-section survey-step" data-field="english_level" data-kind="radio" hidden>
+          <h2>Мой уровень английского:</h2>
+          <div class="survey-options">
+            <label class="survey-option"><input type="radio" name="english_level" value="a1_a2" required> A1-A2</label>
+            <label class="survey-option"><input type="radio" name="english_level" value="b1_b2"> B1-B2</label>
+            <label class="survey-option"><input type="radio" name="english_level" value="c1_plus"> C1 и выше</label>
+          </div>
+        </section>
+
+        <section class="survey-section survey-step" data-field="discovery_channels" data-kind="checkbox" hidden>
+          <h2>Обычно я ищу возможности через:</h2>
+          <p class="survey-hint">Можно выбрать несколько вариантов</p>
+          <div class="survey-options">
+            <label class="survey-option"><input type="checkbox" name="discovery_channels" value="telegram"> Telegram</label>
+            <label class="survey-option"><input type="checkbox" name="discovery_channels" value="instagram"> Instagram</label>
+            <label class="survey-option"><input type="checkbox" name="discovery_channels" value="tiktok"> TikTok</label>
+            <label class="survey-option"><input type="checkbox" name="discovery_channels" value="google_sites"> Google / сайты</label>
+            <label class="survey-option"><input type="checkbox" name="discovery_channels" value="friends"> Через знакомых</label>
+          </div>
+        </section>
+
+        <section class="survey-section survey-step" data-field="needs_action_plan" data-kind="radio" hidden>
+          <h2>Мне был бы полезен сервис с понятным планом действий:</h2>
+          <div class="survey-options">
+            <label class="survey-option"><input type="radio" name="needs_action_plan" value="yes_very" required> Да, очень</label>
+            <label class="survey-option"><input type="radio" name="needs_action_plan" value="rather_yes"> Скорее да</label>
+            <label class="survey-option"><input type="radio" name="needs_action_plan" value="not_sure"> Не уверен(а)</label>
+            <label class="survey-option"><input type="radio" name="needs_action_plan" value="no"> Нет</label>
+          </div>
+        </section>
+
+        <p id="surveyError" class="form-error" style="display:none;"></p>
+
+        <div class="survey-actions">
+          <button id="surveyPrevBtn" class="btn secondary auth-figma-secondary-btn" type="button" hidden>Назад</button>
+          <button id="surveyNextBtn" class="btn primary auth-figma-submit" type="button">Далее</button>
+          <button id="surveySubmitBtn" class="btn primary auth-figma-submit" type="submit" hidden>Отправить и продолжить</button>
+        </div>
+      </form>
     </section>
-
-    <section class="survey-section survey-step" data-field="main_goal" data-kind="radio" hidden>
-      <h2>Моя главная цель:</h2>
-      <div class="survey-options">
-        <label class="survey-option"><input type="radio" name="main_goal" value="study_abroad" required> Поступить за границу</label>
-        <label class="survey-option"><input type="radio" name="main_goal" value="masters"> Поступить в магистратуру</label>
-        <label class="survey-option"><input type="radio" name="main_goal" value="civil_service"> Попасть на госслужбу</label>
-        <label class="survey-option"><input type="radio" name="main_goal" value="international_org"> Работать в международной организации</label>
-        <label class="survey-option"><input type="radio" name="main_goal" value="national_company"> Устроиться в нацкомпанию</label>
-        <label class="survey-option"><input type="radio" name="main_goal" value="private_sector"> Работать в частном секторе</label>
-        <label class="survey-option"><input type="radio" name="main_goal" value="undecided"> Пока не определился</label>
-      </div>
-    </section>
-
-    <section class="survey-section survey-step" data-field="goal_clarity" data-kind="radio" hidden>
-      <h2>Сейчас я понимаю, как достичь своей цели:</h2>
-      <div class="survey-options">
-        <label class="survey-option"><input type="radio" name="goal_clarity" value="none" required> Вообще не понимаю</label>
-        <label class="survey-option"><input type="radio" name="goal_clarity" value="roughly"> Примерно понимаю</label>
-        <label class="survey-option"><input type="radio" name="goal_clarity" value="partially"> Частично знаю шаги</label>
-        <label class="survey-option"><input type="radio" name="goal_clarity" value="clear"> Четко знаю, что делать</label>
-      </div>
-    </section>
-
-    <section class="survey-section survey-step" data-field="main_blocker" data-kind="radio" hidden>
-      <h2>Больше всего мне сейчас мешает:</h2>
-      <div class="survey-options">
-        <label class="survey-option"><input type="radio" name="main_blocker" value="dont_know_start" required> Я не знаю, с чего начать</label>
-        <label class="survey-option"><input type="radio" name="main_blocker" value="too_much_info"> Слишком много информации</label>
-        <label class="survey-option"><input type="radio" name="main_blocker" value="no_experience"> У меня нет опыта</label>
-        <label class="survey-option"><input type="radio" name="main_blocker" value="lack_skills"> Мне не хватает навыков</label>
-        <label class="survey-option"><input type="radio" name="main_blocker" value="low_confidence"> Я не уверен(а) в себе</label>
-        <label class="survey-option"><input type="radio" name="main_blocker" value="procrastination"> Я откладываю / прокрастинирую</label>
-      </div>
-    </section>
-
-    <section class="survey-section survey-step" data-field="current_experience" data-kind="radio" hidden>
-      <h2>Мой текущий опыт:</h2>
-      <div class="survey-options">
-        <label class="survey-option"><input type="radio" name="current_experience" value="none" required> У меня нет опыта</label>
-        <label class="survey-option"><input type="radio" name="current_experience" value="little"> Есть небольшой опыт</label>
-        <label class="survey-option"><input type="radio" name="current_experience" value="internships_or_projects"> Есть стажировки / проекты</label>
-        <label class="survey-option"><input type="radio" name="current_experience" value="already_working_in_field"> Я уже работаю по направлению</label>
-      </div>
-    </section>
-
-    <section class="survey-section survey-step" data-field="english_level" data-kind="radio" hidden>
-      <h2>Мой уровень английского:</h2>
-      <div class="survey-options">
-        <label class="survey-option"><input type="radio" name="english_level" value="a1_a2" required> A1-A2</label>
-        <label class="survey-option"><input type="radio" name="english_level" value="b1_b2"> B1-B2</label>
-        <label class="survey-option"><input type="radio" name="english_level" value="c1_plus"> C1 и выше</label>
-      </div>
-    </section>
-
-    <section class="survey-section survey-step" data-field="discovery_channels" data-kind="checkbox" hidden>
-      <h2>Обычно я ищу возможности через:</h2>
-      <p class="survey-hint">Можно выбрать несколько вариантов</p>
-      <div class="survey-options">
-        <label class="survey-option"><input type="checkbox" name="discovery_channels" value="telegram"> Telegram</label>
-        <label class="survey-option"><input type="checkbox" name="discovery_channels" value="instagram"> Instagram</label>
-        <label class="survey-option"><input type="checkbox" name="discovery_channels" value="tiktok"> TikTok</label>
-        <label class="survey-option"><input type="checkbox" name="discovery_channels" value="google_sites"> Google / сайты</label>
-        <label class="survey-option"><input type="checkbox" name="discovery_channels" value="friends"> Через знакомых</label>
-      </div>
-    </section>
-
-    <section class="survey-section survey-step" data-field="needs_action_plan" data-kind="radio" hidden>
-      <h2>Мне был бы полезен сервис с понятным планом действий:</h2>
-      <div class="survey-options">
-        <label class="survey-option"><input type="radio" name="needs_action_plan" value="yes_very" required> Да, очень</label>
-        <label class="survey-option"><input type="radio" name="needs_action_plan" value="rather_yes"> Скорее да</label>
-        <label class="survey-option"><input type="radio" name="needs_action_plan" value="not_sure"> Не уверен(а)</label>
-        <label class="survey-option"><input type="radio" name="needs_action_plan" value="no"> Нет</label>
-      </div>
-    </section>
-
-    <p id="surveyError" class="form-error" style="display:none;"></p>
-
-    <div class="survey-actions">
-      <button id="surveyPrevBtn" class="btn secondary" type="button" hidden>Назад</button>
-      <button id="surveyNextBtn" class="btn primary" type="button">Далее</button>
-      <button id="surveySubmitBtn" class="btn primary" type="submit" hidden>Отправить и продолжить</button>
-    </div>
-  </form>
+  </div>
 </main>
 
 <script src="/register-survey.js" defer></script>
+<script src="/page-transitions.js" defer></script>
 
 </body>
 </html>

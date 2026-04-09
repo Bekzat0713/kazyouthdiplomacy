@@ -58,8 +58,11 @@ const savedStatusLabels = {
 const state = {
   category: "all",
   internships: [],
+  goalItems: [],
   canManage: false,
   accessTier: "free",
+  searchQuery: "",
+  viewMode: "grid",
   featureAccess: {
     saved_items: false,
     recommendations: false,
@@ -67,32 +70,208 @@ const state = {
 };
 
 const filtersRoot = document.getElementById("internshipFilters");
-const filters = Array.from(document.querySelectorAll(".filter"));
+const filters = filtersRoot ? Array.from(filtersRoot.querySelectorAll(".filter")) : [];
+const filterCountElements = Array.from(document.querySelectorAll("[data-filter-count]"));
 const grid = document.getElementById("internshipsGrid");
 const emptyState = document.getElementById("internshipsEmpty");
 const form = document.getElementById("internshipForm");
 const formStatus = document.getElementById("internshipFormStatus");
 const pageStatus = document.getElementById("internshipPageStatus");
 const toggleFormButton = document.getElementById("toggleInternshipForm");
+const summaryPill = document.getElementById("internshipsSummaryPill");
+const searchInput = document.getElementById("internshipSearchInput");
+const discoveryPanel = document.getElementById("internshipsDiscoveryPanel");
+const filtersWrap = document.getElementById("internshipFiltersWrap");
+const filterToggleButton = document.getElementById("internshipsFilterToggle");
+const gridViewButton = document.getElementById("internshipsGridViewBtn");
+const listViewButton = document.getElementById("internshipsListViewBtn");
 const goalSection = document.getElementById("internshipGoalSection");
 const goalTitle = document.getElementById("internshipGoalTitle");
 const goalDescription = document.getElementById("internshipGoalDescription");
 const goalGrid = document.getElementById("internshipGoalGrid");
 const goalAction = document.getElementById("internshipGoalAction");
 
+function updateToggleFormButtonLabel(isOpen) {
+  if (!toggleFormButton) {
+    return;
+  }
+
+  toggleFormButton.innerHTML = isOpen
+    ? '<span class="internships-add-btn-icon" aria-hidden="true">+</span><span>Скрыть форму</span>'
+    : '<span class="internships-add-btn-icon" aria-hidden="true">+</span><span>Добавить объявление</span>';
+}
+
 function setActiveFilter(category) {
   state.category = category;
   filters.forEach((button) => {
-    button.classList.toggle("active", button.dataset.category === category);
+    const isActive = button.dataset.category === category;
+    button.classList.toggle("active", isActive);
+    button.setAttribute("aria-pressed", isActive ? "true" : "false");
   });
 }
 
 function updateManagerControls() {
-  toggleFormButton.hidden = !state.canManage;
+  if (toggleFormButton) {
+    toggleFormButton.hidden = !state.canManage;
+  }
 
   if (!state.canManage) {
     form.hidden = true;
   }
+
+  updateToggleFormButtonLabel(!form.hidden);
+}
+
+function setViewMode(viewMode) {
+  state.viewMode = viewMode === "list" ? "list" : "grid";
+
+  if (grid) {
+    grid.classList.toggle("view-list", state.viewMode === "list");
+  }
+
+  if (gridViewButton) {
+    const isGrid = state.viewMode === "grid";
+    gridViewButton.classList.toggle("active", isGrid);
+    gridViewButton.setAttribute("aria-pressed", isGrid ? "true" : "false");
+  }
+
+  if (listViewButton) {
+    const isList = state.viewMode === "list";
+    listViewButton.classList.toggle("active", isList);
+    listViewButton.setAttribute("aria-pressed", isList ? "true" : "false");
+  }
+}
+
+function normalizeSearchValue(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function matchesSearch(item, query) {
+  if (!query) {
+    return true;
+  }
+
+  const haystack = [
+    item.title,
+    item.organization,
+    item.description,
+    item.location,
+    item.duration,
+    categoryLabels[item.category],
+    englishLabels[item.required_english_level],
+    experienceLabels[item.experience_level],
+    regionLabels[item.region_type],
+    ...(item.recommendation_reasons || []),
+    ...((item.target_goals || []).map((goal) => goalLabels[goal] || goal)),
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  return haystack.includes(query);
+}
+
+function getSearchFilteredInternships() {
+  const query = normalizeSearchValue(state.searchQuery);
+  if (!query) {
+    return state.internships.slice();
+  }
+
+  return state.internships.filter((item) => matchesSearch(item, query));
+}
+
+function getSearchFilteredGoalItems() {
+  const query = normalizeSearchValue(state.searchQuery);
+  if (!query) {
+    return state.goalItems.slice();
+  }
+
+  return state.goalItems.filter((item) => matchesSearch(item, query));
+}
+
+function getVisibleInternships() {
+  const searchableItems = getSearchFilteredInternships();
+  const searchableGoalItems = getSearchFilteredGoalItems();
+
+  if (state.category === "recommended") {
+    if (!state.featureAccess.recommendations) {
+      return searchableGoalItems;
+    }
+
+    return searchableItems.filter((item) => item.is_recommended);
+  }
+
+  if (state.category === "all") {
+    return searchableItems;
+  }
+
+  return searchableItems.filter((item) => item.category === state.category);
+}
+
+function updateFilterCounts(searchableItems, searchableGoalItems) {
+  const counts = {
+    all: searchableItems.length,
+    recommended: state.featureAccess.recommendations
+      ? searchableItems.filter((item) => item.is_recommended).length
+      : searchableGoalItems.length,
+    ministries: searchableItems.filter((item) => item.category === "ministries").length,
+    akimats: searchableItems.filter((item) => item.category === "akimats").length,
+    quasi: searchableItems.filter((item) => item.category === "quasi").length,
+    online: searchableItems.filter((item) => item.category === "online").length,
+    other: searchableItems.filter((item) => item.category === "other").length,
+  };
+
+  filterCountElements.forEach((element) => {
+    const key = element.getAttribute("data-filter-count");
+    element.textContent = String(counts[key] || 0);
+  });
+}
+
+function formatInternshipCount(value) {
+  const count = Number(value || 0);
+  const mod10 = count % 10;
+  const mod100 = count % 100;
+
+  if (mod10 === 1 && mod100 !== 11) {
+    return `${count} актуальное предложение`;
+  }
+
+  if (mod10 >= 2 && mod10 <= 4 && !(mod100 >= 12 && mod100 <= 14)) {
+    return `${count} актуальных предложения`;
+  }
+
+  return `${count} актуальных предложений`;
+}
+
+function updateSummaryPill(visibleItems) {
+  if (!summaryPill) {
+    return;
+  }
+
+  const query = normalizeSearchValue(state.searchQuery);
+  summaryPill.textContent = query
+    ? `Найдено: ${formatInternshipCount(visibleItems.length)}`
+    : formatInternshipCount(visibleItems.length);
+}
+
+function updateEmptyStateMessage(visibleItems) {
+  if (!emptyState) {
+    return;
+  }
+
+  const query = normalizeSearchValue(state.searchQuery);
+
+  if (query && !visibleItems.length) {
+    emptyState.textContent = "По вашему запросу ничего не найдено. Попробуйте изменить формулировку или сбросить фильтр.";
+    return;
+  }
+
+  if (state.category === "recommended" && !state.featureAccess.recommendations && !visibleItems.length) {
+    emptyState.textContent = "Персональные подборки полностью открываются на Plus. На Free доступен только базовый обзор части базы.";
+    return;
+  }
+
+  emptyState.textContent = "По выбранному фильтру пока нет объявлений.";
 }
 
 function isValidHttpUrl(value) {
@@ -320,6 +499,7 @@ function renderGoalSection(personalization, items) {
 
 function renderInternships(internships) {
   grid.innerHTML = "";
+  grid.classList.toggle("view-list", state.viewMode === "list");
 
   if (!internships.length) {
     emptyState.hidden = false;
@@ -335,12 +515,9 @@ async function loadInternships(category) {
   emptyState.hidden = true;
 
   try {
-    const response = await fetch(
-      `/api/internships?category=${encodeURIComponent(category)}`,
-      {
-        headers: { Accept: "application/json" },
-      }
-    );
+    const response = await fetch("/api/internships?category=all", {
+      headers: { Accept: "application/json" },
+    });
 
     if (!response.ok) {
       throw new Error(`Failed with status ${response.status}`);
@@ -353,8 +530,14 @@ async function loadInternships(category) {
     state.accessTier = payload.access_tier || "free";
     state.featureAccess = payload.feature_access || state.featureAccess;
     state.internships = internships;
+    state.goalItems = Array.isArray(payload.for_goal) ? payload.for_goal : [];
+    if (category) {
+      state.category = category;
+    }
     updateManagerControls();
-    renderGoalSection(payload.personalization || {}, Array.isArray(payload.for_goal) ? payload.for_goal : []);
+    renderGoalSection(payload.personalization || {}, state.goalItems);
+    applyCurrentFilters();
+    return;
 
     if (
       state.accessTier === "free" &&
@@ -372,6 +555,17 @@ async function loadInternships(category) {
     emptyState.textContent = "Не удалось загрузить объявления. Обнови страницу.";
     console.error("Load internships error:", error);
   }
+}
+
+function applyCurrentFilters() {
+  const searchableItems = getSearchFilteredInternships();
+  const searchableGoalItems = getSearchFilteredGoalItems();
+  const visibleItems = getVisibleInternships();
+
+  updateFilterCounts(searchableItems, searchableGoalItems);
+  updateSummaryPill(visibleItems);
+  updateEmptyStateMessage(visibleItems);
+  renderInternships(visibleItems);
 }
 
 function showFormStatus(message, isError) {
@@ -413,7 +607,7 @@ async function handleDeleteInternship(internshipId) {
       throw new Error(errorPayload.error || "Не удалось удалить объявление");
     }
 
-    await loadInternships(state.category);
+    await loadInternships();
     showFormStatus("Объявление удалено.");
   } catch (error) {
     showFormStatus(error.message, true);
@@ -447,7 +641,7 @@ async function handleSavedStatusChange(internshipId, savedStatus, shouldRemove) 
     }
 
     showPageStatus("Статус сохранения обновлён.");
-    await loadInternships(state.category);
+    await loadInternships();
   } catch (error) {
     showPageStatus(error.message, true);
     console.error("Save internship status error:", error);
@@ -467,7 +661,7 @@ async function handleRemoveSavedItem(internshipId) {
     }
 
     showPageStatus("Сохранение удалено.");
-    await loadInternships(state.category);
+    await loadInternships();
   } catch (error) {
     showPageStatus(error.message, true);
     console.error("Remove saved internship error:", error);
@@ -517,7 +711,7 @@ async function handleFormSubmit(event) {
 
     form.reset();
     setActiveFilter(payload.category);
-    await loadInternships(payload.category);
+    await loadInternships();
     showFormStatus("Объявление опубликовано.");
   } catch (error) {
     showFormStatus(error.message, true);
@@ -526,23 +720,34 @@ async function handleFormSubmit(event) {
 }
 
 function handleFilterClick(event) {
-  const target = event.target;
-  if (!(target instanceof HTMLElement) || !target.classList.contains("filter")) {
+  const target = event.target instanceof HTMLElement
+    ? event.target.closest(".filter")
+    : null;
+
+  if (!(target instanceof HTMLElement)) {
     return;
   }
 
   const category = target.dataset.category || "all";
   setActiveFilter(category);
-  void loadInternships(category);
+  applyCurrentFilters();
 }
 
 function handleToggleForm() {
-  if (!state.canManage) {
+  if (!state.canManage || !form) {
     return;
   }
 
   const hidden = form.hidden;
   form.hidden = !hidden;
+  updateToggleFormButtonLabel(hidden);
+  return;
+  if (toggleFormButton) {
+    toggleFormButton.innerHTML = hidden
+      ? '<span class="internships-add-btn-icon" aria-hidden="true">+</span><span>Скрыть форму</span>'
+      : '<span class="internships-add-btn-icon" aria-hidden="true">+</span><span>Добавить объявление</span>';
+    return;
+  }
   toggleFormButton.textContent = hidden ? "Скрыть форму" : "+ Добавить объявление";
 }
 
@@ -553,11 +758,63 @@ function handleGoalAction() {
   }
 
   setActiveFilter("recommended");
+  applyCurrentFilters();
+  return;
   void loadInternships("recommended");
+}
+
+function handleSearchInput(event) {
+  state.searchQuery = event.target.value || "";
+  applyCurrentFilters();
+}
+
+function handleFiltersToggle() {
+  if (!discoveryPanel || !filterToggleButton) {
+    return;
+  }
+
+  const isCollapsed = discoveryPanel.classList.toggle("filters-collapsed");
+  filterToggleButton.setAttribute("aria-expanded", isCollapsed ? "false" : "true");
+}
+
+function handleGridView() {
+  setViewMode("grid");
+}
+
+function handleListView() {
+  setViewMode("list");
 }
 
 function init() {
   updateManagerControls();
+  setActiveFilter(state.category);
+  setViewMode("grid");
+  if (filtersRoot) {
+    filtersRoot.addEventListener("click", handleFilterClick);
+  }
+  if (form) {
+    form.addEventListener("submit", handleFormSubmit);
+  }
+  if (toggleFormButton) {
+    toggleFormButton.addEventListener("click", handleToggleForm);
+  }
+  if (searchInput) {
+    searchInput.addEventListener("input", handleSearchInput);
+  }
+  if (filterToggleButton) {
+    filterToggleButton.addEventListener("click", handleFiltersToggle);
+  }
+  if (gridViewButton) {
+    gridViewButton.addEventListener("click", handleGridView);
+  }
+  if (listViewButton) {
+    listViewButton.addEventListener("click", handleListView);
+  }
+  if (goalAction) {
+    goalAction.addEventListener("click", handleGoalAction);
+  }
+  void loadInternships(state.category);
+  return;
   filtersRoot.addEventListener("click", handleFilterClick);
   form.addEventListener("submit", handleFormSubmit);
   toggleFormButton.addEventListener("click", handleToggleForm);

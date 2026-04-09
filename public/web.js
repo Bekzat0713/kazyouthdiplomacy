@@ -111,4 +111,51 @@ document.addEventListener("DOMContentLoaded", () => {
     section.classList.add("reveal-pending");
     sectionObserver.observe(section);
   });
+
+  // 4) Smooth anchor navigation for the homepage storyboard.
+  const inPageLinks = document.querySelectorAll('a[href^="#"]:not([href="#"])');
+
+  inPageLinks.forEach((link) => {
+    link.addEventListener("click", (event) => {
+      const href = link.getAttribute("href");
+      if (!href) return;
+
+      const target = document.querySelector(href);
+      if (!target) return;
+
+      event.preventDefault();
+      target.scrollIntoView({
+        behavior: prefersReducedMotion ? "auto" : "smooth",
+        block: "start",
+      });
+    });
+  });
+
+  // 5) Horizontal slide between overview and platform panels on the homepage.
+  const showcaseShell = document.querySelector(".home-showcase-shell");
+  const showcaseButtons = document.querySelectorAll("[data-showcase-switch]");
+
+  if (showcaseShell && showcaseButtons.length) {
+    const syncShowcaseButtons = (state) => {
+      showcaseButtons.forEach((button) => {
+        const isActive = button.dataset.showcaseSwitch === state;
+        button.setAttribute("aria-pressed", isActive ? "true" : "false");
+      });
+    };
+
+    syncShowcaseButtons(showcaseShell.dataset.showcaseState || "overview");
+
+    showcaseButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const nextState = button.dataset.showcaseSwitch === "platform" ? "platform" : "overview";
+        showcaseShell.dataset.showcaseState = nextState;
+        syncShowcaseButtons(nextState);
+
+        showcaseShell.scrollIntoView({
+          behavior: prefersReducedMotion ? "auto" : "smooth",
+          block: "start",
+        });
+      });
+    });
+  }
 });

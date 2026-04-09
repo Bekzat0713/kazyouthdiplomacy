@@ -11,7 +11,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: PGSSLMODE
-        value: require
+        value: disable
       - key: APP_BASE_URL
         sync: false
       - key: SESSION_SECRET
@@ -30,6 +30,10 @@ services:
         value: 30
       - key: REGISTER_RATE_LIMIT_MAX_ATTEMPTS
         value: 5
+      - key: VERIFY_CODE_RATE_LIMIT_WINDOW_MINUTES
+        value: 15
+      - key: VERIFY_CODE_RATE_LIMIT_MAX_ATTEMPTS
+        value: 10
       - key: RESEND_RATE_LIMIT_WINDOW_MINUTES
         value: 30
       - key: RESEND_RATE_LIMIT_MAX_ATTEMPTS
