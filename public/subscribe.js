@@ -27,6 +27,8 @@ const PLAN_WIDGET_LABELS = {
   quarterly: "Kaspi QR • Plus Growth",
   halfyear: "Kaspi QR • Plus Long Run",
 };
+const DEFAULT_SUBSCRIBE_STATUS = "Выберите Plus, оплатите точную сумму по QR и дождитесь подтверждения доступа.";
+const DEFAULT_SUBSCRIBE_NOTE = "Сразу после оплаты заявка попадёт в очередь проверки, а Plus включится после подтверждения.";
 
 function formatDate(value) {
   if (!value) {
@@ -47,7 +49,7 @@ function formatPreviewLimits(previewLimits) {
     return "";
   }
 
-  return `Free включает ${previewLimits.internships || 0} стажировок, ${previewLimits.opportunities || 0} возможностей и ${previewLimits.resources || 0} материалов.`;
+  return `До активации Plus доступно ${previewLimits.internships || 0} стажировок, ${previewLimits.opportunities || 0} возможностей и ${previewLimits.resources || 0} материалов.`;
 }
 
 function setStatus(message, isError = false) {
@@ -206,14 +208,8 @@ function renderSubscriptionState(payload) {
 
   if (!subscription) {
     closeKaspiWidget();
-    setStatus(
-      accessPolicy && accessPolicy.access_message
-        ? accessPolicy.access_message
-        : "Сейчас у вас Free. Можно смотреть часть базы и часть материалов, а Plus откроет полный каталог, roadmap, подборки и сохранения."
-    );
-    setNote(
-      `${limitsText ? `${limitsText} ` : ""}Сценарий простой: выберите Plus, оплатите точную сумму по QR и дождитесь подтверждения.`
-    );
+    setStatus(DEFAULT_SUBSCRIBE_STATUS);
+    setNote(`${limitsText ? `${limitsText} ` : ""}${DEFAULT_SUBSCRIBE_NOTE}`.trim());
     return;
   }
 
@@ -239,11 +235,7 @@ function renderSubscriptionState(payload) {
     setPrepareButtonsDisabled(true);
     setPlanActionsVisibility(subscription.plan, true);
     applyKaspiLink(kaspiUrl, subscription.plan);
-    setStatus(
-      accessPolicy && accessPolicy.access_message
-        ? accessPolicy.access_message
-        : "Заявка уже отправлена на проверку. Как только платёж подтвердят, Plus включится автоматически."
-    );
+    setStatus("Заявка уже отправлена на проверку. Как только платёж подтвердят, Plus включится автоматически.");
     setNote(`С вашей стороны всё сделано: QR уже доступен, а заявка стоит в очереди проверки. После оплаты остаётся только дождаться подтверждения. ${limitsText}`.trim());
     return;
   }
@@ -257,25 +249,15 @@ function renderSubscriptionState(payload) {
 
   if (subscription.status === "expired") {
     closeKaspiWidget();
-    setStatus(
-      accessPolicy && accessPolicy.access_message
-        ? accessPolicy.access_message
-        : "Срок Plus закончился. Можно снова нажать «Оплатить Plus» и продлить доступ."
-    );
-    setNote(`${limitsText ? `${limitsText} ` : ""}Полный каталог, roadmap и сохранения вернутся после повторной активации Plus.`);
+    setStatus("Срок Plus закончился. Можно снова нажать «Оплатить Plus» и продлить доступ.");
+    setNote(`${limitsText ? `${limitsText} ` : ""}Полный каталог, roadmap и сохранения вернутся после повторной активации Plus.`.trim());
     return;
   }
 
   if (accessTier === "free") {
     closeKaspiWidget();
-    setStatus(
-      accessPolicy && accessPolicy.access_message
-        ? accessPolicy.access_message
-        : "Сейчас у вас Free. Можно смотреть часть базы и часть материалов, а Plus откроет полный каталог, roadmap, подборки и сохранения."
-    );
-    setNote(
-      `${limitsText ? `${limitsText} ` : ""}Сценарий простой: выберите Plus, оплатите точную сумму по QR и дождитесь подтверждения.`
-    );
+    setStatus(DEFAULT_SUBSCRIBE_STATUS);
+    setNote(`${limitsText ? `${limitsText} ` : ""}${DEFAULT_SUBSCRIBE_NOTE}`.trim());
     return;
   }
 
