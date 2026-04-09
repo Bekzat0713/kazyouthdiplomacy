@@ -555,6 +555,8 @@ async function initDB() {
       ADD COLUMN IF NOT EXISTS required_english_level TEXT DEFAULT 'any',
       ADD COLUMN IF NOT EXISTS experience_level TEXT DEFAULT 'any',
       ADD COLUMN IF NOT EXISTS region_type TEXT DEFAULT 'any',
+      ADD COLUMN IF NOT EXISTS sector TEXT DEFAULT '',
+      ADD COLUMN IF NOT EXISTS work_format TEXT DEFAULT 'offline',
       ADD COLUMN IF NOT EXISTS deadline_date DATE
     `);
 
@@ -1207,6 +1209,11 @@ function normalizeExperienceRequirement(value) {
 function normalizeRegionType(value) {
   const normalized = String(value || "any").trim().toLowerCase();
   return recommendationRegionTypes.has(normalized) ? normalized : "any";
+}
+
+function normalizeWorkFormat(value) {
+  const normalized = String(value || "offline").trim().toLowerCase();
+  return normalized === "online" ? "online" : "offline";
 }
 
 function getEnglishRank(level) {
@@ -4608,6 +4615,8 @@ app.get("/api/internships", requireAuth, async (req, res) => {
           required_english_level,
           experience_level,
           region_type,
+          sector,
+          work_format,
           created_at,
           created_by
         FROM internships
@@ -4628,6 +4637,8 @@ app.get("/api/internships", requireAuth, async (req, res) => {
           required_english_level,
           experience_level,
           region_type,
+          sector,
+          work_format,
           created_at,
           created_by
         FROM internships
@@ -4663,6 +4674,8 @@ app.get("/api/internships", requireAuth, async (req, res) => {
         required_english_level: recommendation.metadata.required_english_level,
         experience_level: recommendation.metadata.experience_level,
         region_type: recommendation.metadata.region_type,
+        sector: row.sector || "",
+        work_format: normalizeWorkFormat(row.work_format),
         recommendation_score: recommendation.score,
         is_recommended: recommendation.is_recommended,
         recommendation_reasons: recommendation.reasons,
@@ -5661,12 +5674,14 @@ app.post("/api/internships", requireAuth, async (req, res) => {
   const category = String(req.body.category || "").trim().toLowerCase();
   const location = String(req.body.location || "").trim();
   const duration = String(req.body.duration || "").trim();
+  const sector = String(req.body.sector || "").trim();
   const applyUrl = String(req.body.applyUrl || "").trim();
   const deadlineDate = parseDeadlineDate(req.body.deadlineDate);
   const targetGoals = normalizeTargetGoals(req.body.targetGoals);
   const requiredEnglishLevel = normalizeEnglishRequirement(req.body.requiredEnglishLevel);
   const experienceLevel = normalizeExperienceRequirement(req.body.experienceLevel);
   const regionType = normalizeRegionType(req.body.regionType);
+  const workFormat = normalizeWorkFormat(req.body.workFormat);
 
   const allowedCategories = new Set([
     "ministries",
@@ -5682,6 +5697,7 @@ app.post("/api/internships", requireAuth, async (req, res) => {
     !description ||
     !location ||
     !duration ||
+    !sector ||
     !allowedCategories.has(category)
   ) {
     return res.status(400).json({ error: "Invalid internship payload" });
@@ -5707,8 +5723,10 @@ app.post("/api/internships", requireAuth, async (req, res) => {
         required_english_level,
         experience_level,
         region_type,
+        sector,
+        work_format,
         created_by
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::text[], $10, $11, $12, $13)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::text[], $10, $11, $12, $13, $14, $15)
       RETURNING
         id,
         title,
@@ -5723,6 +5741,8 @@ app.post("/api/internships", requireAuth, async (req, res) => {
         required_english_level,
         experience_level,
         region_type,
+        sector,
+        work_format,
         created_at
       `,
       [
@@ -5738,6 +5758,8 @@ app.post("/api/internships", requireAuth, async (req, res) => {
         requiredEnglishLevel,
         experienceLevel,
         regionType,
+        sector,
+        workFormat,
         req.session.userId,
       ]
     );

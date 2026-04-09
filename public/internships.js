@@ -49,6 +49,11 @@ const regionLabels = {
   hybrid: "Гибрид",
 };
 
+const workFormatLabels = {
+  online: "Онлайн",
+  offline: "Офлайн",
+};
+
 const savedStatusLabels = {
   saved: "Сохранено",
   want_to_apply: "Хочу податься",
@@ -177,6 +182,7 @@ function matchesSectorFilter(item, sectorQuery) {
   }
 
   const sectorHaystack = [
+    item.sector,
     item.title,
     item.organization,
     item.description,
@@ -190,31 +196,12 @@ function matchesSectorFilter(item, sectorQuery) {
   return sectorHaystack.includes(query);
 }
 
-function inferItemFormat(item) {
-  const regionType = String(item.region_type || "").trim().toLowerCase();
-  const location = String(item.location || "").trim().toLowerCase();
-  const description = String(item.description || "").trim().toLowerCase();
-  const combined = `${location} ${description}`;
-
-  if (
-    regionType === "online" ||
-    combined.includes("онлайн") ||
-    combined.includes("online") ||
-    combined.includes("remote") ||
-    combined.includes("удален")
-  ) {
-    return "online";
-  }
-
-  return "offline";
-}
-
 function matchesFormatFilter(item, selectedFormat) {
   if (!selectedFormat || selectedFormat === "all") {
     return true;
   }
 
-  return inferItemFormat(item) === selectedFormat;
+  return String(item.work_format || "offline").trim().toLowerCase() === selectedFormat;
 }
 
 function matchesSearch(item, query) {
@@ -227,11 +214,13 @@ function matchesSearch(item, query) {
     item.organization,
     item.description,
     item.location,
+    item.sector,
     item.duration,
     categoryLabels[item.category],
     englishLabels[item.required_english_level],
     experienceLabels[item.experience_level],
     regionLabels[item.region_type],
+    workFormatLabels[item.work_format],
     ...(item.recommendation_reasons || []),
     ...((item.target_goals || []).map((goal) => goalLabels[goal] || goal)),
   ]
@@ -488,6 +477,18 @@ function createInternshipCard(internship) {
   meta.appendChild(
     createTextElement("span", "", regionLabels[internship.region_type] || regionLabels.any)
   );
+  if (internship.sector) {
+    meta.appendChild(createTextElement("span", "", `Сфера: ${internship.sector}`));
+  }
+  if (internship.work_format) {
+    meta.appendChild(
+      createTextElement(
+        "span",
+        "",
+        `Формат: ${workFormatLabels[internship.work_format] || internship.work_format}`
+      )
+    );
+  }
   card.appendChild(meta);
 
   const goals = createTagRow(
@@ -763,13 +764,15 @@ async function handleFormSubmit(event) {
     category: String(formData.get("category") || "").trim(),
     location: String(formData.get("location") || "").trim(),
     duration: String(formData.get("duration") || "").trim(),
+    sector: String(formData.get("sector") || "").trim(),
     applyUrl: String(formData.get("applyUrl") || "").trim(),
     deadlineDate: String(formData.get("deadlineDate") || "").trim(),
     description: String(formData.get("description") || "").trim(),
     targetGoals: formData.getAll("targetGoals"),
     requiredEnglishLevel: String(formData.get("requiredEnglishLevel") || "any").trim(),
-    experienceLevel: String(formData.get("experienceLevel") || "any").trim(),
-    regionType: String(formData.get("regionType") || "any").trim(),
+    experienceLevel: String(formData.get("experienceLevel") || "none").trim(),
+    regionType: String(formData.get("regionType") || "kazakhstan").trim(),
+    workFormat: String(formData.get("workFormat") || "offline").trim(),
   };
 
   showFormStatus("Публикуем...");
