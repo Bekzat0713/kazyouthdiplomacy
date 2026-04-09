@@ -2429,6 +2429,21 @@ async function userHasActiveSubscription(userId) {
   return isSubscriptionActiveRecord(subscription);
 }
 
+function deriveUserEntitlements(options = {}) {
+  const hasPaidPlusAccess = isSubscriptionActiveRecord(options.subscription);
+  const hasManagerAccess = Boolean(
+    options.canManageInternships ||
+    options.canManageOpportunities ||
+    options.canManageSubscriptions
+  );
+
+  return {
+    hasPaidPlusAccess,
+    hasManagerAccess,
+    hasFullAccess: hasPaidPlusAccess || hasManagerAccess,
+  };
+}
+
 function buildAccessPolicy(hasPlusAccess, subscription) {
   const normalizedStatus = String(subscription?.status || "").trim().toLowerCase();
 
@@ -2521,22 +2536,27 @@ function buildAccessPolicy(hasPlusAccess, subscription) {
   };
 }
 
-function buildFeatureAccess(hasPlusAccess) {
+function buildFeatureAccess(hasFeatureAccess) {
   return {
-    full_catalog: hasPlusAccess,
-    roadmap: hasPlusAccess,
-    recommendations: hasPlusAccess,
-    saved_items: hasPlusAccess,
-    preview_limits: hasPlusAccess ? null : FREE_PREVIEW_LIMITS,
+    full_catalog: hasFeatureAccess,
+    roadmap: hasFeatureAccess,
+    recommendations: hasFeatureAccess,
+    saved_items: hasFeatureAccess,
+    preview_limits: hasFeatureAccess ? null : FREE_PREVIEW_LIMITS,
   };
 }
 
-function buildAccessState(hasPlusAccess, subscription = null) {
+function buildAccessState(hasPaidPlusAccess, subscription = null, options = {}) {
+  const hasFeatureAccess = options.hasFeatureAccess != null
+    ? Boolean(options.hasFeatureAccess)
+    : Boolean(hasPaidPlusAccess);
+
   return {
-    access_tier: hasPlusAccess ? "plus" : "free",
-    has_plus_access: hasPlusAccess,
-    feature_access: buildFeatureAccess(hasPlusAccess),
-    access_policy: buildAccessPolicy(hasPlusAccess, subscription),
+    access_tier: hasPaidPlusAccess ? "plus" : "free",
+    has_plus_access: Boolean(hasPaidPlusAccess),
+    has_manager_access: Boolean(options.hasManagerAccess),
+    feature_access: buildFeatureAccess(hasFeatureAccess),
+    access_policy: buildAccessPolicy(hasPaidPlusAccess, subscription),
   };
 }
 
@@ -2553,11 +2573,12 @@ function getPreviewLimit(entityType) {
 }
 
 function applyCatalogAccessPolicy(items, options = {}) {
-  const hasPlusAccess = Boolean(options.hasPlusAccess);
+  const hasFullAccess = Boolean(options.hasFullAccess);
+  const hasPaidPlusAccess = Boolean(options.hasPaidPlusAccess);
   const entityType = String(options.entityType || "opportunity");
   const teaserLimit = Math.max(1, Math.min(2, getPreviewLimit(entityType)));
 
-  if (hasPlusAccess) {
+  if (hasFullAccess) {
     return {
       visible_items: items,
       for_goal_items: pickForGoalItems(items),
@@ -2565,7 +2586,10 @@ function applyCatalogAccessPolicy(items, options = {}) {
         ...buildPersonalizationMeta(options.survey, items, options.entityLabel || "материалы"),
         upgrade_required: false,
       },
-      access: buildAccessState(true, options.subscription),
+      access: buildAccessState(hasPaidPlusAccess, options.subscription, {
+        hasFeatureAccess: true,
+        hasManagerAccess: options.hasManagerAccess,
+      }),
     };
   }
 
@@ -2689,15 +2713,16 @@ async function getAssistantBootstrapContext(req, page) {
     getCurrentSubscriptionForUser(userId),
     getRegistrationSurveyForUser(userId),
   ]);
-  const hasPlusAccess = Boolean(
-    canManageInternshipsValue ||
-    canManageOpportunitiesValue ||
-    isSubscriptionActiveRecord(subscription)
-  );
-  const roadmap = hasPlusAccess
+  const entitlement = deriveUserEntitlements({
+    subscription,
+    canManageInternships: canManageInternshipsValue,
+    canManageOpportunities: canManageOpportunitiesValue,
+    canManageSubscriptions: canManageSubscriptionsValue,
+  });
+  const roadmap = entitlement.hasFullAccess
     ? buildRoadmapFromSurvey(survey) || buildFallbackRoadmap()
     : null;
-  const savedPayload = hasPlusAccess
+  const savedPayload = entitlement.hasFullAccess
     ? await getSavedItemsForUser(userId, { limit: 12 })
     : { items: [], summary: buildSavedSummary([]) };
 
@@ -2708,8 +2733,11 @@ async function getAssistantBootstrapContext(req, page) {
     survey: buildAssistantSurveySummary(survey),
     subscription: serializeSubscription(subscription),
     roadmap: buildAssistantRoadmapSummary(roadmap),
-    access: buildAccessState(hasPlusAccess, subscription),
-    saved_summary: hasPlusAccess ? savedPayload.summary : null,
+    access: buildAccessState(entitlement.hasPaidPlusAccess, subscription, {
+      hasFeatureAccess: entitlement.hasFullAccess,
+      hasManagerAccess: entitlement.hasManagerAccess,
+    }),
+    saved_summary: entitlement.hasFullAccess ? savedPayload.summary : null,
     roles: {
       can_manage_internships: canManageInternshipsValue,
       can_manage_opportunities: canManageOpportunitiesValue,
@@ -2789,7 +2817,10 @@ async function assistantSearchInternships(req, args = {}) {
     getRegistrationSurveyForUser(req.session.userId),
     getCurrentSubscriptionForUser(req.session.userId),
   ]);
-  const hasPlusAccess = Boolean(canManage || isSubscriptionActiveRecord(subscription));
+  const entitlement = deriveUserEntitlements({
+    subscription,
+    canManageInternships: canManage,
+  });
   const sql = category === "all" || category === "recommended"
     ? `
       SELECT
@@ -2863,7 +2894,9 @@ async function assistantSearchInternships(req, args = {}) {
   ]));
   const narrowed = recommendedOnly ? filtered.filter((item) => item.is_recommended) : filtered;
   const accessPolicy = applyCatalogAccessPolicy(narrowed, {
-    hasPlusAccess,
+    hasFullAccess: entitlement.hasFullAccess,
+    hasPaidPlusAccess: entitlement.hasPaidPlusAccess,
+    hasManagerAccess: entitlement.hasManagerAccess,
     entityType: "internship",
     entityLabel: "стажировки",
     requestedFilter: recommendedOnly ? "recommended" : category,
@@ -2895,7 +2928,10 @@ async function assistantSearchOpportunities(req, args = {}) {
     getRegistrationSurveyForUser(req.session.userId),
     getCurrentSubscriptionForUser(req.session.userId),
   ]);
-  const hasPlusAccess = Boolean(canManage || isSubscriptionActiveRecord(subscription));
+  const entitlement = deriveUserEntitlements({
+    subscription,
+    canManageOpportunities: canManage,
+  });
   const sql = type === "all" || type === "recommended"
     ? `
       SELECT
@@ -2972,7 +3008,9 @@ async function assistantSearchOpportunities(req, args = {}) {
   ]));
   const narrowed = recommendedOnly ? filtered.filter((item) => item.is_recommended) : filtered;
   const accessPolicy = applyCatalogAccessPolicy(narrowed, {
-    hasPlusAccess,
+    hasFullAccess: entitlement.hasFullAccess,
+    hasPaidPlusAccess: entitlement.hasPaidPlusAccess,
+    hasManagerAccess: entitlement.hasManagerAccess,
     entityType: "opportunity",
     entityLabel: "материалы и возможности",
     requestedFilter: recommendedOnly ? "recommended" : type,
@@ -3004,7 +3042,10 @@ async function assistantSearchResources(req, args = {}) {
     getRegistrationSurveyForUser(req.session.userId),
     getCurrentSubscriptionForUser(req.session.userId),
   ]);
-  const hasPlusAccess = Boolean(canManage || isSubscriptionActiveRecord(subscription));
+  const entitlement = deriveUserEntitlements({
+    subscription,
+    canManageOpportunities: canManage,
+  });
   const sql = type === "all" || type === "recommended"
     ? `
       SELECT
@@ -3068,7 +3109,9 @@ async function assistantSearchResources(req, args = {}) {
   ]));
   const narrowed = recommendedOnly ? filtered.filter((item) => item.is_recommended) : filtered;
   const accessPolicy = applyCatalogAccessPolicy(narrowed, {
-    hasPlusAccess,
+    hasFullAccess: entitlement.hasFullAccess,
+    hasPaidPlusAccess: entitlement.hasPaidPlusAccess,
+    hasManagerAccess: entitlement.hasManagerAccess,
     entityType: "resource",
     entityLabel: "карьерные материалы",
     requestedFilter: recommendedOnly ? "recommended" : type,
@@ -3112,13 +3155,13 @@ async function assistantGetSavedSummary(req) {
     canManageInternships(req),
     canManageOpportunities(req),
   ]);
-  const hasPlusAccess = Boolean(
-    canManageInternshipsValue ||
-    canManageOpportunitiesValue ||
-    isSubscriptionActiveRecord(subscription)
-  );
+  const entitlement = deriveUserEntitlements({
+    subscription,
+    canManageInternships: canManageInternshipsValue,
+    canManageOpportunities: canManageOpportunitiesValue,
+  });
 
-  if (!hasPlusAccess) {
+  if (!entitlement.hasFullAccess) {
     return {
       upgrade_required: true,
       access_tier: "free",
@@ -3131,7 +3174,7 @@ async function assistantGetSavedSummary(req) {
   const savedPayload = await getSavedItemsForUser(req.session.userId, { limit: 10 });
   return {
     upgrade_required: false,
-    access_tier: "plus",
+    access_tier: entitlement.hasPaidPlusAccess ? "plus" : "free",
     summary: savedPayload.summary,
     items: savedPayload.items.slice(0, 5),
   };
@@ -4511,25 +4554,31 @@ app.get("/api/account/access", requireAuth, async (req, res) => {
       getCurrentSubscriptionForUser(req.session.userId),
       getRegistrationSurveyForUser(req.session.userId),
     ]);
-    const hasPlusAccess = Boolean(
-      canManageInternshipsValue ||
-      canManageOpportunitiesValue ||
-      isSubscriptionActiveRecord(subscription)
-    );
-    const actualRoadmap = buildRoadmapFromSurvey(registrationSurvey) || buildFallbackRoadmap();
+    const entitlement = deriveUserEntitlements({
+      subscription,
+      canManageInternships: canManageInternshipsValue,
+      canManageOpportunities: canManageOpportunitiesValue,
+      canManageSubscriptions: canManageSubscriptionsValue,
+    });
+    const actualRoadmap = entitlement.hasFullAccess
+      ? (buildRoadmapFromSurvey(registrationSurvey) || buildFallbackRoadmap())
+      : null;
 
     return res.json({
       email: normalizeEmail(req.session.email),
       profile: buildUserProfile(userResult.rows[0]),
       subscription: serializeSubscription(subscription),
-      roadmap: hasPlusAccess ? actualRoadmap : null,
-      roadmap_preview: !hasPlusAccess
+      roadmap: actualRoadmap,
+      roadmap_preview: !entitlement.hasFullAccess
         ? {
             title: "Персональный roadmap доступен в Plus",
             description: "На Plus открывается персональный маршрут, подборки под вашу цель и рабочие инструменты для движения по карьерному треку.",
           }
         : null,
-      ...buildAccessState(hasPlusAccess, subscription),
+      ...buildAccessState(entitlement.hasPaidPlusAccess, subscription, {
+        hasFeatureAccess: entitlement.hasFullAccess,
+        hasManagerAccess: entitlement.hasManagerAccess,
+      }),
       can_manage_internships: canManageInternshipsValue,
       can_manage_opportunities: canManageOpportunitiesValue,
       can_manage_subscriptions: canManageSubscriptionsValue,
@@ -4613,7 +4662,10 @@ app.get("/api/internships", requireAuth, async (req, res) => {
       getRegistrationSurveyForUser(req.session.userId),
       getCurrentSubscriptionForUser(req.session.userId),
     ]);
-    const hasPlusAccess = Boolean(canManage || isSubscriptionActiveRecord(subscription));
+    const entitlement = deriveUserEntitlements({
+      subscription,
+      canManageInternships: canManage,
+    });
 
     const sql = category === "all" || category === "recommended"
       ? `
@@ -4704,7 +4756,9 @@ app.get("/api/internships", requireAuth, async (req, res) => {
       };
     });
     const accessPolicy = applyCatalogAccessPolicy(internships, {
-      hasPlusAccess,
+      hasFullAccess: entitlement.hasFullAccess,
+      hasPaidPlusAccess: entitlement.hasPaidPlusAccess,
+      hasManagerAccess: entitlement.hasManagerAccess,
       entityType: "internship",
       entityLabel: "стажировки",
       requestedFilter: category,
@@ -4846,9 +4900,14 @@ app.get("/api/opportunities", requireAuth, async (req, res) => {
       };
     });
 
-    const hasPlusAccess = Boolean(canManage || isSubscriptionActiveRecord(subscription));
+    const entitlement = deriveUserEntitlements({
+      subscription,
+      canManageOpportunities: canManage,
+    });
     const accessPolicy = applyCatalogAccessPolicy(opportunities, {
-      hasPlusAccess,
+      hasFullAccess: entitlement.hasFullAccess,
+      hasPaidPlusAccess: entitlement.hasPaidPlusAccess,
+      hasManagerAccess: entitlement.hasManagerAccess,
       entityType: "opportunity",
       entityLabel: "материалы и возможности",
       requestedFilter: requestedType,
@@ -4883,7 +4942,10 @@ app.get("/api/resources", requireAuth, async (req, res) => {
       getRegistrationSurveyForUser(req.session.userId),
       getCurrentSubscriptionForUser(req.session.userId),
     ]);
-    const hasPlusAccess = Boolean(canManage || isSubscriptionActiveRecord(subscription));
+    const entitlement = deriveUserEntitlements({
+      subscription,
+      canManageOpportunities: canManage,
+    });
 
     const sql = requestedType === "all" || requestedType === "recommended"
       ? `
@@ -4948,7 +5010,9 @@ app.get("/api/resources", requireAuth, async (req, res) => {
     });
 
     const accessPolicy = applyCatalogAccessPolicy(resources, {
-      hasPlusAccess,
+      hasFullAccess: entitlement.hasFullAccess,
+      hasPaidPlusAccess: entitlement.hasPaidPlusAccess,
+      hasManagerAccess: entitlement.hasManagerAccess,
       entityType: "resource",
       entityLabel: "карьерные материалы",
       requestedFilter: requestedType,
@@ -4976,13 +5040,13 @@ app.get("/api/saved", requireAuth, async (req, res) => {
       canManageInternships(req),
       canManageOpportunities(req),
     ]);
-    const hasPlusAccess = Boolean(
-      canManageInternshipsValue ||
-      canManageOpportunitiesValue ||
-      isSubscriptionActiveRecord(subscription)
-    );
+    const entitlement = deriveUserEntitlements({
+      subscription,
+      canManageInternships: canManageInternshipsValue,
+      canManageOpportunities: canManageOpportunitiesValue,
+    });
 
-    if (!hasPlusAccess) {
+    if (!entitlement.hasFullAccess) {
       return res.json({
         items: [],
         summary: buildSavedSummary([]),
@@ -4999,7 +5063,10 @@ app.get("/api/saved", requireAuth, async (req, res) => {
 
     return res.json({
       ...savedPayload,
-      ...buildAccessState(true, subscription),
+      ...buildAccessState(entitlement.hasPaidPlusAccess, subscription, {
+        hasFeatureAccess: entitlement.hasFullAccess,
+        hasManagerAccess: entitlement.hasManagerAccess,
+      }),
       upgrade_required: false,
     });
   } catch (err) {
@@ -5024,13 +5091,13 @@ app.post("/api/saved", requireAuth, async (req, res) => {
       canManageInternships(req),
       canManageOpportunities(req),
     ]);
-    const hasPlusAccess = Boolean(
-      canManageInternshipsValue ||
-      canManageOpportunitiesValue ||
-      isSubscriptionActiveRecord(subscription)
-    );
+    const entitlement = deriveUserEntitlements({
+      subscription,
+      canManageInternships: canManageInternshipsValue,
+      canManageOpportunities: canManageOpportunitiesValue,
+    });
 
-    if (!hasPlusAccess) {
+    if (!entitlement.hasFullAccess) {
       return res.status(402).json({
         error: "Избранное и трекинг откликов доступны в Plus.",
         redirect: "/subscribe",
@@ -5123,13 +5190,13 @@ app.delete("/api/saved/:entityType/:entityId", requireAuth, async (req, res) => 
       canManageInternships(req),
       canManageOpportunities(req),
     ]);
-    const hasPlusAccess = Boolean(
-      canManageInternshipsValue ||
-      canManageOpportunitiesValue ||
-      isSubscriptionActiveRecord(subscription)
-    );
+    const entitlement = deriveUserEntitlements({
+      subscription,
+      canManageInternships: canManageInternshipsValue,
+      canManageOpportunities: canManageOpportunitiesValue,
+    });
 
-    if (!hasPlusAccess) {
+    if (!entitlement.hasFullAccess) {
       return res.status(402).json({
         error: "Избранное и трекинг откликов доступны в Plus.",
         redirect: "/subscribe",
