@@ -333,6 +333,12 @@ app.use(
   })
 );
 
+function applyNoStoreHeaders(res) {
+  res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
+  res.set("Pragma", "no-cache");
+  res.set("Expires", "0");
+}
+
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} ${req.method} ${redactUrlForLogs(req.originalUrl)}`);
   next();
@@ -812,6 +818,7 @@ function requireAuth(req, res, next) {
     }
     return res.redirect("/login");
   }
+  applyNoStoreHeaders(res);
   return next();
 }
 
@@ -3500,6 +3507,169 @@ async function requireSubscriptionManager(req, res, next) {
   return res.redirect("/dashboard");
 }
 
+async function canViewAdminAnalytics(req) {
+  const [canManageInternshipsValue, canManageOpportunitiesValue, canManageSubscriptionsValue] = await Promise.all([
+    canManageInternships(req),
+    canManageOpportunities(req),
+    canManageSubscriptions(req),
+  ]);
+
+  return Boolean(
+    canManageInternshipsValue ||
+    canManageOpportunitiesValue ||
+    canManageSubscriptionsValue
+  );
+}
+
+async function requireAdminAnalytics(req, res, next) {
+  if (await canViewAdminAnalytics(req)) {
+    return next();
+  }
+
+  if (wantsJson(req)) {
+    return res.status(403).json({ error: "Admin analytics access required" });
+  }
+
+  return res.redirect("/dashboard");
+}
+
+async function getAdminAnalyticsSnapshot() {
+  const [overviewResult, goalBreakdownResult, currentStatusBreakdownResult, subscriptionStatusResult, recentUsersResult] = await Promise.all([
+    pool.query(`
+      SELECT
+        (SELECT COUNT(*)::INT FROM users) AS users_total,
+        (SELECT COUNT(*)::INT FROM users WHERE created_at >= NOW() - INTERVAL '7 days') AS registrations_last_7d,
+        (SELECT COUNT(*)::INT FROM users WHERE created_at >= NOW() - INTERVAL '30 days') AS registrations_last_30d,
+        (SELECT COUNT(*)::INT FROM users WHERE is_verified IS TRUE) AS verified_users,
+        (SELECT COUNT(*)::INT FROM users WHERE COALESCE(is_verified, false) IS FALSE) AS unverified_users,
+        (SELECT COUNT(*)::INT FROM registration_surveys) AS survey_completed_users,
+        (SELECT COUNT(*)::INT FROM subscriptions WHERE active IS TRUE AND status = 'active') AS active_plus_users,
+        (SELECT COUNT(*)::INT FROM subscriptions WHERE status = 'pending_manual_review') AS pending_payment_users,
+        (SELECT COUNT(*)::INT FROM subscriptions WHERE status = 'rejected') AS rejected_payments,
+        (SELECT COUNT(*)::INT FROM subscriptions WHERE status = 'expired') AS expired_plus_users,
+        (SELECT COUNT(*)::INT FROM subscriptions WHERE active IS TRUE AND status = 'active' AND plan = 'monthly') AS active_monthly_users,
+        (SELECT COUNT(*)::INT FROM subscriptions WHERE active IS TRUE AND status = 'active' AND plan = 'quarterly') AS active_quarterly_users,
+        (SELECT COUNT(*)::INT FROM subscriptions WHERE active IS TRUE AND status = 'active' AND plan = 'halfyear') AS active_halfyear_users,
+        (SELECT COUNT(DISTINCT user_id)::INT FROM saved_items) AS users_with_saved_items,
+        (SELECT COUNT(*)::INT FROM saved_items) AS saved_items_total
+    `),
+    pool.query(`
+      SELECT
+        COALESCE(survey_payload ->> 'main_goal', 'undecided') AS key,
+        COUNT(*)::INT AS total
+      FROM registration_surveys
+      GROUP BY 1
+      ORDER BY total DESC, key ASC
+    `),
+    pool.query(`
+      SELECT
+        COALESCE(survey_payload ->> 'current_status', 'unknown') AS key,
+        COUNT(*)::INT AS total
+      FROM registration_surveys
+      GROUP BY 1
+      ORDER BY total DESC, key ASC
+    `),
+    pool.query(`
+      SELECT
+        COALESCE(status, 'none') AS status,
+        COALESCE(plan, 'none') AS plan,
+        COUNT(*)::INT AS total
+      FROM subscriptions
+      GROUP BY 1, 2
+      ORDER BY total DESC, status ASC, plan ASC
+    `),
+    pool.query(`
+      SELECT
+        u.id,
+        u.first_name,
+        u.last_name,
+        u.email,
+        u.is_verified,
+        u.created_at,
+        u.email_verified_at,
+        rs.survey_payload ->> 'main_goal' AS main_goal,
+        rs.survey_payload ->> 'current_status' AS current_status,
+        s.status AS subscription_status,
+        s.active AS subscription_active,
+        s.plan AS subscription_plan,
+        s.expires_at AS subscription_expires_at
+      FROM users u
+      LEFT JOIN registration_surveys rs ON rs.user_id = u.id
+      LEFT JOIN subscriptions s ON s.user_id = u.id
+      ORDER BY u.created_at DESC, u.id DESC
+      LIMIT 14
+    `),
+  ]);
+
+  const overview = overviewResult.rows[0] || {};
+  const usersTotal = Number(overview.users_total || 0);
+  const activePlusUsers = Number(overview.active_plus_users || 0);
+  const surveyCompletedUsers = Number(overview.survey_completed_users || 0);
+  const verifiedUsers = Number(overview.verified_users || 0);
+
+  return {
+    overview: {
+      users_total: usersTotal,
+      registrations_last_7d: Number(overview.registrations_last_7d || 0),
+      registrations_last_30d: Number(overview.registrations_last_30d || 0),
+      verified_users: verifiedUsers,
+      unverified_users: Number(overview.unverified_users || 0),
+      survey_completed_users: surveyCompletedUsers,
+      active_plus_users: activePlusUsers,
+      free_users: Math.max(0, usersTotal - activePlusUsers),
+      pending_payment_users: Number(overview.pending_payment_users || 0),
+      rejected_payments: Number(overview.rejected_payments || 0),
+      expired_plus_users: Number(overview.expired_plus_users || 0),
+      active_monthly_users: Number(overview.active_monthly_users || 0),
+      active_quarterly_users: Number(overview.active_quarterly_users || 0),
+      active_halfyear_users: Number(overview.active_halfyear_users || 0),
+      users_with_saved_items: Number(overview.users_with_saved_items || 0),
+      saved_items_total: Number(overview.saved_items_total || 0),
+      verification_rate: usersTotal ? Math.round((verifiedUsers / usersTotal) * 100) : 0,
+      survey_completion_rate: usersTotal ? Math.round((surveyCompletedUsers / usersTotal) * 100) : 0,
+      plus_conversion_rate: usersTotal ? Math.round((activePlusUsers / usersTotal) * 100) : 0,
+    },
+    goal_breakdown: goalBreakdownResult.rows.map((row) => ({
+      key: row.key,
+      label: getSurveyLabel("main_goal", row.key) || "Без цели",
+      total: Number(row.total || 0),
+    })),
+    current_status_breakdown: currentStatusBreakdownResult.rows.map((row) => ({
+      key: row.key,
+      label: getSurveyLabel("current_status", row.key) || "Не указано",
+      total: Number(row.total || 0),
+    })),
+    subscription_breakdown: subscriptionStatusResult.rows.map((row) => ({
+      status: row.status,
+      plan: row.plan,
+      total: Number(row.total || 0),
+    })),
+    recent_users: recentUsersResult.rows.map((row) => ({
+      id: Number(row.id),
+      first_name: normalizeProfileText(row.first_name),
+      last_name: normalizeProfileText(row.last_name),
+      email: normalizeEmail(row.email),
+      is_verified: !EMAIL_VERIFICATION_ENABLED || row.is_verified !== false,
+      created_at: row.created_at,
+      email_verified_at: row.email_verified_at,
+      main_goal: row.main_goal ? {
+        key: row.main_goal,
+        label: getSurveyLabel("main_goal", row.main_goal) || row.main_goal,
+      } : null,
+      current_status: row.current_status ? {
+        key: row.current_status,
+        label: getSurveyLabel("current_status", row.current_status) || row.current_status,
+      } : null,
+      subscription: row.subscription_status ? {
+        status: row.subscription_status,
+        active: row.subscription_active === true,
+        plan: row.subscription_plan || null,
+        expires_at: row.subscription_expires_at,
+      } : null,
+    })),
+  };
+}
+
 function saveSessionAndRedirect(req, res, user, targetPath) {
   req.session.regenerate((regenErr) => {
     if (regenErr) {
@@ -3766,6 +3936,10 @@ app.get("/resources.html", (req, res) =>
 
 app.get("/subscriptions-review", requireAuth, requireSubscriptionManager, (req, res) =>
   res.sendFile(path.join(__dirname, "public", "subscriptions-review.html"))
+);
+
+app.get("/admin-analytics", requireAuth, requireAdminAnalytics, (req, res) =>
+  res.sendFile(path.join(__dirname, "public", "admin-analytics.html"))
 );
 
 app.get("/health", async (req, res) => {
@@ -4502,8 +4676,14 @@ app.post("/login", loginRateLimiter, async (req, res) => {
 ====================== */
 
 app.post("/logout", (req, res) => {
+  applyNoStoreHeaders(res);
   req.session.destroy(() => {
-    res.clearCookie(SESSION_COOKIE_NAME);
+    res.clearCookie(SESSION_COOKIE_NAME, {
+      path: "/",
+      httpOnly: true,
+      sameSite: "lax",
+      secure: isProduction,
+    });
     res.redirect("/");
   });
 });
@@ -4554,6 +4734,11 @@ app.get("/api/account/access", requireAuth, async (req, res) => {
       getCurrentSubscriptionForUser(req.session.userId),
       getRegistrationSurveyForUser(req.session.userId),
     ]);
+    const canViewAdminAnalyticsValue = Boolean(
+      canManageInternshipsValue ||
+      canManageOpportunitiesValue ||
+      canManageSubscriptionsValue
+    );
     const entitlement = deriveUserEntitlements({
       subscription,
       canManageInternships: canManageInternshipsValue,
@@ -4582,6 +4767,7 @@ app.get("/api/account/access", requireAuth, async (req, res) => {
       can_manage_internships: canManageInternshipsValue,
       can_manage_opportunities: canManageOpportunitiesValue,
       can_manage_subscriptions: canManageSubscriptionsValue,
+      can_view_admin_analytics: canViewAdminAnalyticsValue,
       opportunities_admin_email: OPPORTUNITIES_ADMIN_EMAIL,
     });
   } catch (err) {
@@ -5298,16 +5484,6 @@ app.post("/api/subscription/prepare", requireAuth, async (req, res) => {
 
     if (
       existingSubscription &&
-      String(existingSubscription.status || "").toLowerCase() === "pending_manual_review"
-    ) {
-      await client.query("ROLLBACK");
-      return res.status(409).json({
-        error: "Ваша заявка уже отправлена на проверку. Дождитесь подтверждения.",
-      });
-    }
-
-    if (
-      existingSubscription &&
       String(existingSubscription.status || "").toLowerCase() === "payment_pending" &&
       existingSubscription.plan === planConfig.id &&
       Number.isInteger(Number(existingSubscription.amount))
@@ -5633,6 +5809,19 @@ app.get("/api/subscription/review-queue", requireAuth, requireSubscriptionManage
   } catch (err) {
     console.error("Subscription review queue error:", err);
     return res.status(500).json({ error: "Failed to load subscription review queue" });
+  }
+});
+
+app.get("/api/admin-analytics", requireAuth, requireAdminAnalytics, async (req, res) => {
+  try {
+    const snapshot = await getAdminAnalyticsSnapshot();
+    return res.json({
+      generated_at: new Date().toISOString(),
+      ...snapshot,
+    });
+  } catch (err) {
+    console.error("Admin analytics error:", err);
+    return res.status(500).json({ error: "Failed to load admin analytics" });
   }
 });
 

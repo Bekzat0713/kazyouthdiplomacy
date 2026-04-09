@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Аналитика админа — KazYouthDiplomacy</title>
+  <link rel="stylesheet" href="/web.css">
+</head>
+<body class="dashboard-page route-page admin-analytics-page">
+
+<header class="header">
+  <a href="/dashboard" class="logo-wrap">
+    <span>KazYouthDiplomacy</span>
+  </a>
+  <nav>
+    <a href="/dashboard">Кабинет</a>
+    <a href="/subscriptions-review">Проверка оплат</a>
+    <form method="POST" action="/logout" style="display:inline;">
+      <button class="nav-btn">Выйти</button>
+    </form>
+  </nav>
+</header>
+
+<section class="dashboard-page">
+  <div class="dashboard-container admin-analytics-container">
+    <div class="dashboard-card admin-analytics-hero">
+      <p class="dashboard-kicker">Admin Analytics</p>
+      <h1>Состояние клиентов и подписок</h1>
+      <p>Здесь собраны ключевые метрики по регистрациям, подтверждению почты, подпискам, анкетам и последним пользователям.</p>
+      <p id="adminAnalyticsGeneratedAt" class="admin-analytics-meta">Загружаем сводку...</p>
+    </div>
+
+    <div id="adminAnalyticsStatus" class="subscribe-status"></div>
+
+    <div id="adminAnalyticsOverview" class="admin-analytics-metrics"></div>
+
+    <div class="admin-analytics-grid">
+      <section class="dashboard-card">
+        <div class="admin-analytics-card-head">
+          <div>
+            <p class="dashboard-kicker">Funnel</p>
+            <h3>Главные цели клиентов</h3>
+          </div>
+        </div>
+        <div id="adminAnalyticsGoals" class="admin-analytics-list"></div>
+      </section>
+
+      <section class="dashboard-card">
+        <div class="admin-analytics-card-head">
+          <div>
+            <p class="dashboard-kicker">Audience</p>
+            <h3>Кто приходит на платформу</h3>
+          </div>
+        </div>
+        <div id="adminAnalyticsCurrentStatuses" class="admin-analytics-list"></div>
+      </section>
+    </div>
+
+    <section class="dashboard-card">
+      <div class="admin-analytics-card-head">
+        <div>
+          <p class="dashboard-kicker">Subscriptions</p>
+          <h3>Разбивка по статусам и тарифам</h3>
+        </div>
+      </div>
+      <div id="adminAnalyticsSubscriptions" class="admin-analytics-subscriptions"></div>
+    </section>
+
+    <section class="dashboard-card">
+      <div class="admin-analytics-card-head">
+        <div>
+          <p class="dashboard-kicker">Recent Users</p>
+          <h3>Последние регистрации</h3>
+        </div>
+      </div>
+      <div id="adminAnalyticsRecentUsers" class="admin-analytics-recent"></div>
+    </section>
+  </div>
+</section>
+
+<script src="/page-transitions.js" defer></script>
+<script src="/admin-analytics.js" defer></script>
+</body>
+</html>

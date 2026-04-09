@@ -96,7 +96,7 @@ function setPreparedPlanButton(plan, options = {}) {
 
   prepareButtons.forEach((button) => {
     const isActivePlan = button.getAttribute("data-prepare-plan") === plan;
-    button.disabled = !isActivePlan;
+    button.disabled = false;
     button.textContent = isActivePlan ? OPEN_QR_LABEL : DEFAULT_PREPARE_LABEL;
     button.dataset.actionMode = isActivePlan ? "open_qr" : "prepare";
     button.dataset.kaspiUrl = isActivePlan ? kaspiUrl : "";
@@ -267,7 +267,7 @@ function renderSubscriptionState(payload) {
       paymentCode: subscription.payment_code || "",
     });
     setStatus("Kaspi QR уже подготовлен. После оплаты заявка автоматически попадёт на проверку.");
-    setNote(`Ничего дополнительно нажимать не нужно. После поступления оплаты админ увидит заявку и подтвердит доступ. ${limitsText}`.trim());
+    setNote(`Ничего дополнительно нажимать не нужно. Если захотите другой тариф, просто выберите его заново — мы пересоберём сумму и заменим текущую заявку. ${limitsText}`.trim());
     return;
   }
 
@@ -281,7 +281,7 @@ function renderSubscriptionState(payload) {
       paymentCode: subscription.payment_code || "",
     });
     setStatus("Заявка уже отправлена на проверку. Как только платёж подтвердят, Plus включится автоматически.");
-    setNote(`С вашей стороны всё сделано: QR уже доступен, а заявка стоит в очереди проверки. После оплаты остаётся только дождаться подтверждения. ${limitsText}`.trim());
+    setNote(`С вашей стороны всё сделано: QR уже доступен, а заявка стоит в очереди проверки. Если нужен другой тариф, можно выбрать его прямо сейчас — мы заменим текущую заявку на новую. ${limitsText}`.trim());
     return;
   }
 
@@ -374,7 +374,7 @@ async function preparePayment(plan) {
       .join(" ");
 
     setStatus(paymentMessage);
-    setNote("После оплаты ничего дополнительно нажимать не нужно. Доступ включится после подтверждения.");
+    setNote("После оплаты ничего дополнительно нажимать не нужно. Если захотите сменить тариф до подтверждения, просто нажмите другой план — заявка обновится.");
   } catch (error) {
     setPrepareButtonsDisabled(false);
     setStatus(error.message || "Не удалось подготовить оплату.", true);

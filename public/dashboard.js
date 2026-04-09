@@ -316,6 +316,8 @@ async function loadAccountAccess() {
   var publicationsCard = document.getElementById("dashboardPublicationsCard");
   var subscriptionReviewTab = document.getElementById("dashboardSubscriptionReviewTab");
   var subscriptionReviewCard = document.getElementById("dashboardSubscriptionReviewCard");
+  var analyticsTab = document.getElementById("dashboardAnalyticsTab");
+  var analyticsCard = document.getElementById("dashboardAnalyticsCard");
 
   if (publicationsTab) {
     publicationsTab.hidden = true;
@@ -331,6 +333,14 @@ async function loadAccountAccess() {
 
   if (subscriptionReviewCard) {
     subscriptionReviewCard.hidden = true;
+  }
+
+  if (analyticsTab) {
+    analyticsTab.hidden = true;
+  }
+
+  if (analyticsCard) {
+    analyticsCard.hidden = true;
   }
 
   try {
@@ -361,6 +371,15 @@ async function loadAccountAccess() {
 
     if (subscriptionReviewCard) {
       subscriptionReviewCard.hidden = !canManageSubscriptions;
+    }
+
+    var canViewAdminAnalytics = Boolean(payload.can_view_admin_analytics);
+    if (analyticsTab) {
+      analyticsTab.hidden = !canViewAdminAnalytics;
+    }
+
+    if (analyticsCard) {
+      analyticsCard.hidden = !canViewAdminAnalytics;
     }
 
     if (payload.profile) {
