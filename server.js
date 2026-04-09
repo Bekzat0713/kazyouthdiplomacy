@@ -564,7 +564,7 @@ async function initDB() {
       "SELECT COUNT(*)::INT AS total FROM internships"
     );
 
-    if (internshipsCount.rows[0].total === 0) {
+    if (false && internshipsCount.rows[0].total === 0) {
       await pool.query(
         `
         INSERT INTO internships (title, organization, description, category, location, duration, apply_url)
