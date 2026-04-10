@@ -3909,7 +3909,7 @@ app.get("/register", (req, res) => {
   return res.sendFile(path.join(__dirname, "public", "register.html"));
 });
 
-app.get("/subscribe", requireAuth, (req, res) =>
+app.get("/subscribe", (req, res) =>
   res.sendFile(path.join(__dirname, "public", "subscribe.html"))
 );
 
