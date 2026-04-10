@@ -243,6 +243,14 @@ async function refreshSubscriptionStatus() {
       credentials: "include",
       headers: { Accept: "application/json" },
     });
+
+    if (response.status === 401) {
+      resetPlanCards();
+      setStatus("");
+      setNote("Зарегистрируйтесь, чтобы оформить подписку и получить полный доступ.");
+      return;
+    }
+
     const payload = await response.json();
 
     if (!response.ok) {
@@ -272,6 +280,12 @@ async function preparePayment(plan) {
       },
       body: JSON.stringify({ plan }),
     });
+
+    if (response.status === 401) {
+      window.location.assign("/register-survey");
+      return;
+    }
+
     const payload = await response.json();
 
     if (!response.ok) {
