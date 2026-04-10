@@ -84,6 +84,7 @@ const state = {
   goalItems: [],
   canManage: false,
   accessTier: "free",
+  accessPolicy: null,
   searchQuery: "",
   experienceFilter: "all",
   sectorQuery: "",
@@ -119,6 +120,8 @@ const goalTitle = document.getElementById("internshipGoalTitle");
 const goalDescription = document.getElementById("internshipGoalDescription");
 const goalGrid = document.getElementById("internshipGoalGrid");
 const goalAction = document.getElementById("internshipGoalAction");
+const lockedState = document.getElementById("internshipsLockedState");
+const lockedText = document.getElementById("internshipsLockedText");
 
 function updateToggleFormButtonLabel(isOpen) {
   if (!toggleFormButton) {
@@ -149,6 +152,79 @@ function updateManagerControls() {
   }
 
   updateToggleFormButtonLabel(!form.hidden);
+}
+
+function isCatalogLocked() {
+  return !state.canManage && state.accessTier !== "plus";
+}
+
+function getLockedCatalogMessage() {
+  const policy = state.accessPolicy || {};
+
+  if (policy.stage === "payment_pending") {
+    return "Заявка на оплату уже создана. Доступ к этому разделу откроется сразу после успешной оплаты и подтверждения подписки.";
+  }
+
+  if (policy.stage === "pending_manual_review") {
+    return "Платёж уже ушёл на проверку. Как только подписку подтвердят, стажировки и вакансии откроются автоматически.";
+  }
+
+  if (policy.stage === "expired") {
+    return "Срок подписки закончился. Продлите Plus, чтобы снова открыть стажировки, вакансии, фильтры и сохранения.";
+  }
+
+  if (policy.stage === "rejected") {
+    return "Предыдущая заявка не была подтверждена. Создайте новую оплату, чтобы открыть этот раздел.";
+  }
+
+  return "Активируйте Plus, чтобы открыть стажировки, вакансии, фильтры, рекомендации и сохранения.";
+}
+
+function updateLockedState() {
+  const locked = isCatalogLocked();
+
+  if (lockedState) {
+    lockedState.hidden = !locked;
+  }
+
+  if (lockedText) {
+    lockedText.textContent = getLockedCatalogMessage();
+  }
+
+  if (discoveryPanel) {
+    discoveryPanel.hidden = locked;
+  }
+
+  if (goalSection) {
+    goalSection.hidden = locked || goalSection.hidden;
+    if (locked) {
+      goalGrid.innerHTML = "";
+    }
+  }
+
+  if (form && !state.canManage) {
+    form.hidden = true;
+  }
+
+  if (grid) {
+    grid.hidden = locked;
+    if (locked) {
+      grid.innerHTML = "";
+    }
+  }
+
+  if (emptyState) {
+    emptyState.hidden = true;
+  }
+
+  if (pageStatus && locked) {
+    pageStatus.textContent = "";
+    pageStatus.classList.remove("error", "success");
+  }
+
+  if (summaryPill && locked) {
+    summaryPill.textContent = "Контент откроется после подписки Plus";
+  }
 }
 
 function setViewMode(viewMode) {
@@ -604,6 +680,12 @@ function renderGoalSection(personalization, items) {
     return;
   }
 
+  if (isCatalogLocked()) {
+    goalSection.hidden = true;
+    goalGrid.innerHTML = "";
+    return;
+  }
+
   if (!items.length && !(personalization && personalization.upgrade_required)) {
     goalSection.hidden = true;
     goalGrid.innerHTML = "";
@@ -620,6 +702,11 @@ function renderGoalSection(personalization, items) {
 }
 
 function renderInternships(internships) {
+  if (isCatalogLocked()) {
+    updateLockedState();
+    return;
+  }
+
   grid.innerHTML = "";
   grid.classList.toggle("view-list", state.viewMode === "list");
 
@@ -650,6 +737,7 @@ async function loadInternships(category) {
 
     state.canManage = Boolean(payload.can_manage);
     state.accessTier = payload.access_tier || "free";
+    state.accessPolicy = payload.access_policy || null;
     state.featureAccess = payload.feature_access || state.featureAccess;
     state.internships = internships;
     state.goalItems = Array.isArray(payload.for_goal) ? payload.for_goal : [];
@@ -657,6 +745,10 @@ async function loadInternships(category) {
       state.category = category;
     }
     updateManagerControls();
+    updateLockedState();
+    if (isCatalogLocked()) {
+      return;
+    }
     renderGoalSection(payload.personalization || {}, state.goalItems);
     applyCurrentFilters();
     return;
@@ -680,6 +772,11 @@ async function loadInternships(category) {
 }
 
 function applyCurrentFilters() {
+  if (isCatalogLocked()) {
+    updateLockedState();
+    return;
+  }
+
   const searchableItems = getSearchFilteredInternships();
   const searchableGoalItems = getSearchFilteredGoalItems();
   const visibleItems = getVisibleInternships();

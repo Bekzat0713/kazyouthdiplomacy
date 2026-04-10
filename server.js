@@ -2478,7 +2478,7 @@ function buildAccessPolicy(hasPlusAccess, subscription) {
       pending_review: false,
       keeps_free_access: true,
       requires_admin_confirmation: true,
-      preview_limits: FREE_PREVIEW_LIMITS,
+      preview_limits: null,
       upgrade_cta_label: "Завершить оплату",
       upgrade_cta_href: "/subscribe",
     };
@@ -2493,7 +2493,7 @@ function buildAccessPolicy(hasPlusAccess, subscription) {
       pending_review: true,
       keeps_free_access: true,
       requires_admin_confirmation: true,
-      preview_limits: FREE_PREVIEW_LIMITS,
+      preview_limits: null,
       upgrade_cta_label: "Ждём подтверждение",
       upgrade_cta_href: "/subscribe",
     };
@@ -2508,7 +2508,7 @@ function buildAccessPolicy(hasPlusAccess, subscription) {
       pending_review: false,
       keeps_free_access: true,
       requires_admin_confirmation: false,
-      preview_limits: FREE_PREVIEW_LIMITS,
+      preview_limits: null,
       upgrade_cta_label: "Продлить Plus",
       upgrade_cta_href: "/subscribe",
     };
@@ -2523,7 +2523,7 @@ function buildAccessPolicy(hasPlusAccess, subscription) {
       pending_review: false,
       keeps_free_access: true,
       requires_admin_confirmation: false,
-      preview_limits: FREE_PREVIEW_LIMITS,
+      preview_limits: null,
       upgrade_cta_label: "Создать новую заявку",
       upgrade_cta_href: "/subscribe",
     };
@@ -2537,7 +2537,7 @@ function buildAccessPolicy(hasPlusAccess, subscription) {
     pending_review: false,
     keeps_free_access: true,
     requires_admin_confirmation: false,
-    preview_limits: FREE_PREVIEW_LIMITS,
+    preview_limits: null,
     upgrade_cta_label: "Открыть Plus",
     upgrade_cta_href: "/subscribe",
   };
@@ -2549,7 +2549,7 @@ function buildFeatureAccess(hasFeatureAccess) {
     roadmap: hasFeatureAccess,
     recommendations: hasFeatureAccess,
     saved_items: hasFeatureAccess,
-    preview_limits: hasFeatureAccess ? null : FREE_PREVIEW_LIMITS,
+    preview_limits: null,
   };
 }
 
@@ -2583,8 +2583,6 @@ function applyCatalogAccessPolicy(items, options = {}) {
   const hasFullAccess = Boolean(options.hasFullAccess);
   const hasPaidPlusAccess = Boolean(options.hasPaidPlusAccess);
   const entityType = String(options.entityType || "opportunity");
-  const teaserLimit = Math.max(1, Math.min(2, getPreviewLimit(entityType)));
-
   if (hasFullAccess) {
     return {
       visible_items: items,
@@ -2600,15 +2598,12 @@ function applyCatalogAccessPolicy(items, options = {}) {
     };
   }
 
-  const previewLimit = getPreviewLimit(entityType);
-  const teaserItems = pickForGoalItems(items, teaserLimit);
-  const visibleItems = options.requestedFilter === "recommended"
-    ? teaserItems
-    : items.slice(0, previewLimit);
+  const teaserItems = [];
+  const visibleItems = [];
 
   return {
     visible_items: visibleItems,
-    for_goal_items: teaserItems.slice(0, 1),
+    for_goal_items: teaserItems,
     personalization: {
       ...buildPersonalizationMeta(options.survey, items, options.entityLabel || "материалы"),
       upgrade_required: true,

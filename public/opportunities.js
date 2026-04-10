@@ -58,6 +58,7 @@ const state = {
   opportunities: [],
   canManage: false,
   accessTier: "free",
+  accessPolicy: null,
   featureAccess: {
     saved_items: false,
     recommendations: false,
@@ -77,6 +78,8 @@ const goalTitle = document.getElementById("opportunityGoalTitle");
 const goalDescription = document.getElementById("opportunityGoalDescription");
 const goalGrid = document.getElementById("opportunityGoalGrid");
 const goalAction = document.getElementById("opportunityGoalAction");
+const lockedState = document.getElementById("opportunitiesLockedState");
+const lockedText = document.getElementById("opportunitiesLockedText");
 
 function setActiveFilter(type) {
   state.type = type;
@@ -91,6 +94,75 @@ function updateManagerControls() {
   toggleFormButton.hidden = !state.canManage;
   if (!state.canManage) {
     form.hidden = true;
+  }
+}
+
+function isCatalogLocked() {
+  return !state.canManage && state.accessTier !== "plus";
+}
+
+function getLockedCatalogMessage() {
+  const policy = state.accessPolicy || {};
+
+  if (policy.stage === "payment_pending") {
+    return "Заявка на оплату уже создана. Раздел откроется после успешной оплаты и подтверждения подписки.";
+  }
+
+  if (policy.stage === "pending_manual_review") {
+    return "Платёж уже на проверке. После подтверждения Plus откроются все публикации и рекомендации.";
+  }
+
+  if (policy.stage === "expired") {
+    return "Срок подписки закончился. Продлите Plus, чтобы снова открыть публикации.";
+  }
+
+  if (policy.stage === "rejected") {
+    return "Предыдущая заявка не была подтверждена. Оформите новую оплату, чтобы открыть этот раздел.";
+  }
+
+  return "После активации Plus здесь откроются все гранты, стипендии, статьи и рекомендации.";
+}
+
+function updateLockedState() {
+  const locked = isCatalogLocked();
+
+  if (lockedState) {
+    lockedState.hidden = !locked;
+  }
+
+  if (lockedText) {
+    lockedText.textContent = getLockedCatalogMessage();
+  }
+
+  if (filtersRoot) {
+    filtersRoot.parentElement.hidden = locked;
+  }
+
+  if (goalSection) {
+    goalSection.hidden = locked || goalSection.hidden;
+    if (locked) {
+      goalGrid.innerHTML = "";
+    }
+  }
+
+  if (form && !state.canManage) {
+    form.hidden = true;
+  }
+
+  if (grid) {
+    grid.hidden = locked;
+    if (locked) {
+      grid.innerHTML = "";
+    }
+  }
+
+  if (emptyState) {
+    emptyState.hidden = true;
+  }
+
+  if (pageStatus && locked) {
+    pageStatus.textContent = "";
+    pageStatus.classList.remove("error", "success");
   }
 }
 
@@ -312,6 +384,12 @@ function renderGoalSection(personalization, items) {
     return;
   }
 
+  if (isCatalogLocked()) {
+    goalSection.hidden = true;
+    goalGrid.innerHTML = "";
+    return;
+  }
+
   if (!items.length && !(personalization && personalization.upgrade_required)) {
     goalSection.hidden = true;
     goalGrid.innerHTML = "";
@@ -328,6 +406,11 @@ function renderGoalSection(personalization, items) {
 }
 
 function renderOpportunities(opportunities) {
+  if (isCatalogLocked()) {
+    updateLockedState();
+    return;
+  }
+
   grid.innerHTML = "";
 
   if (!opportunities.length) {
@@ -358,9 +441,14 @@ async function loadOpportunities(type) {
 
     state.canManage = Boolean(payload.can_manage);
     state.accessTier = payload.access_tier || "free";
+    state.accessPolicy = payload.access_policy || null;
     state.featureAccess = payload.feature_access || state.featureAccess;
     state.opportunities = opportunities;
     updateManagerControls();
+    updateLockedState();
+    if (isCatalogLocked()) {
+      return;
+    }
     renderGoalSection(payload.personalization || {}, Array.isArray(payload.for_goal) ? payload.for_goal : []);
 
     if (

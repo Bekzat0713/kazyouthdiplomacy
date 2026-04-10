@@ -54,6 +54,7 @@ const state = {
   resources: [],
   canManage: false,
   accessTier: "free",
+  accessPolicy: null,
   featureAccess: {
     recommendations: false,
   },
@@ -71,6 +72,8 @@ const goalTitle = document.getElementById("resourceGoalTitle");
 const goalDescription = document.getElementById("resourceGoalDescription");
 const goalGrid = document.getElementById("resourceGoalGrid");
 const goalAction = document.getElementById("resourceGoalAction");
+const lockedState = document.getElementById("resourcesLockedState");
+const lockedText = document.getElementById("resourcesLockedText");
 
 function setActiveFilter(type) {
   state.type = type;
@@ -85,6 +88,70 @@ function updateManagerControls() {
   toggleFormButton.hidden = !state.canManage;
   if (!state.canManage) {
     form.hidden = true;
+  }
+}
+
+function isCatalogLocked() {
+  return !state.canManage && state.accessTier !== "plus";
+}
+
+function getLockedCatalogMessage() {
+  const policy = state.accessPolicy || {};
+
+  if (policy.stage === "payment_pending") {
+    return "Заявка на оплату уже создана. Материалы откроются после успешной оплаты и подтверждения подписки.";
+  }
+
+  if (policy.stage === "pending_manual_review") {
+    return "Платёж уже на проверке. После подтверждения Plus откроются материалы, шаблоны и рекомендации.";
+  }
+
+  if (policy.stage === "expired") {
+    return "Срок подписки закончился. Продлите Plus, чтобы снова открыть библиотеку материалов.";
+  }
+
+  if (policy.stage === "rejected") {
+    return "Предыдущая заявка не была подтверждена. Оформите новую оплату, чтобы открыть этот раздел.";
+  }
+
+  return "Материалы, шаблоны и персональные рекомендации открываются только после активации Plus.";
+}
+
+function updateLockedState() {
+  const locked = isCatalogLocked();
+
+  if (lockedState) {
+    lockedState.hidden = !locked;
+  }
+
+  if (lockedText) {
+    lockedText.textContent = getLockedCatalogMessage();
+  }
+
+  if (filtersRoot) {
+    filtersRoot.parentElement.hidden = locked;
+  }
+
+  if (goalSection) {
+    goalSection.hidden = locked || goalSection.hidden;
+    if (locked) {
+      goalGrid.innerHTML = "";
+    }
+  }
+
+  if (form && !state.canManage) {
+    form.hidden = true;
+  }
+
+  if (grid) {
+    grid.hidden = locked;
+    if (locked) {
+      grid.innerHTML = "";
+    }
+  }
+
+  if (emptyState) {
+    emptyState.hidden = true;
   }
 }
 
@@ -250,6 +317,12 @@ function renderGoalSection(personalization, items) {
     return;
   }
 
+  if (isCatalogLocked()) {
+    goalSection.hidden = true;
+    goalGrid.innerHTML = "";
+    return;
+  }
+
   if (!items.length && !(personalization && personalization.upgrade_required)) {
     goalSection.hidden = true;
     goalGrid.innerHTML = "";
@@ -266,6 +339,11 @@ function renderGoalSection(personalization, items) {
 }
 
 function renderResources(resources) {
+  if (isCatalogLocked()) {
+    updateLockedState();
+    return;
+  }
+
   grid.innerHTML = "";
 
   if (!resources.length) {
@@ -295,9 +373,14 @@ async function loadResources(type) {
 
     state.canManage = Boolean(payload.can_manage);
     state.accessTier = payload.access_tier || "free";
+    state.accessPolicy = payload.access_policy || null;
     state.featureAccess = payload.feature_access || state.featureAccess;
     state.resources = resources;
     updateManagerControls();
+    updateLockedState();
+    if (isCatalogLocked()) {
+      return;
+    }
     renderGoalSection(payload.personalization || {}, Array.isArray(payload.for_goal) ? payload.for_goal : []);
 
     if (
