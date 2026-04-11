@@ -10655,3 +10655,378 @@ body.kaspi-widget-open {
     font-size: 28px;
   }
 }
+
+/* ======================
+   MOBILE REFINEMENTS
+====================== */
+
+#opportunities,
+#pricing,
+#faq,
+#reviews,
+#review-form {
+  scroll-margin-top: 128px;
+}
+
+@media (max-width: 900px) {
+  .home-figma-header {
+    gap: 12px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 14px 16px !important;
+  }
+
+  .home-figma-page .logo-wrap.logo-intro {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .home-figma-page .header nav.home-figma-nav {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .home-figma-page .header nav.home-figma-nav a,
+  .home-figma-page .header nav.home-figma-nav .nav-btn,
+  .home-figma-page .header nav.home-figma-nav .home-figma-nav-logout {
+    width: 100%;
+  }
+
+  .home-figma-page .header nav.home-figma-nav a,
+  .home-figma-page .header nav.home-figma-nav .nav-btn {
+    min-height: 42px;
+    padding-inline: 14px;
+  }
+
+  .home-figma-nav-logout .nav-btn {
+    width: 100%;
+  }
+
+  .home-figma-hero-actions {
+    width: 100%;
+    gap: 12px;
+  }
+
+  .home-figma-primary-cta,
+  .home-figma-secondary-cta,
+  .home-figma-pricing-cta .btn,
+  .home-figma-review-cta .btn,
+  .home-figma-review-form .btn,
+  .home-figma-cta-box .btn {
+    min-width: 100%;
+    width: 100%;
+    margin-top: 0;
+  }
+
+  .home-figma-section {
+    padding-top: 30px;
+  }
+
+  .home-figma-faq-item,
+  .home-figma-review-card,
+  .home-figma-review-form-card,
+  .home-figma-price-card,
+  .home-figma-info-card,
+  .home-figma-cta-box,
+  .home-figma-feature-copy,
+  .home-figma-feature-visual {
+    border-radius: 24px;
+  }
+
+  .home-figma-review-card,
+  .home-figma-price-card,
+  .home-figma-info-card,
+  .home-figma-feature-copy,
+  .home-figma-feature-visual {
+    padding: 22px;
+  }
+
+  .home-figma-review-form-card,
+  .home-figma-cta-box {
+    padding: 24px 22px;
+  }
+
+  .home-figma-review-top {
+    gap: 10px;
+  }
+
+  .home-figma-review-form {
+    gap: 14px;
+  }
+
+  .home-figma-review-field input,
+  .home-figma-review-field textarea {
+    padding: 14px 16px;
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  body[data-assistant-page] {
+    --internal-shell-top: 122px;
+  }
+
+  body[data-assistant-page] .header {
+    padding-inline: 14px;
+  }
+
+  body[data-assistant-page] .header nav {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 10px;
+  }
+
+  body[data-assistant-page] .header nav a,
+  body[data-assistant-page] .header nav .nav-btn,
+  body[data-assistant-page] .header nav form {
+    width: 100%;
+  }
+
+  body[data-assistant-page] .header nav .nav-btn {
+    width: 100%;
+  }
+
+  .dashboard-container,
+  .subscribe-layout {
+    gap: 20px;
+  }
+
+  .dashboard-card,
+  .subscribe-flow-card,
+  .subscribe-compare-card,
+  .plan-card {
+    padding: 22px 18px;
+    border-radius: 24px;
+  }
+
+  .dashboard-profile-head {
+    gap: 14px;
+  }
+
+  .dashboard-badge {
+    white-space: normal;
+    text-align: center;
+  }
+
+  .dashboard-profile-grid,
+  .dashboard-roadmap-grid,
+  .subscribe-value-strip,
+  .subscribe-flow-card,
+  .subscribe-compare {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-card .btn,
+  .dashboard-roadmap-next .btn,
+  .plan-btn,
+  .plan-followup .btn {
+    width: 100%;
+  }
+
+  .subscribe-head {
+    margin-bottom: 24px;
+  }
+
+  .subscribe-head h1 {
+    font-size: clamp(34px, 10vw, 44px);
+  }
+
+  .subscribe-head p,
+  .dashboard-card p {
+    font-size: 15px;
+  }
+
+  .plans-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .plan-card.featured {
+    transform: none;
+  }
+
+  .plan-card h2 {
+    font-size: 30px;
+  }
+
+  .plan-price {
+    font-size: clamp(34px, 11vw, 42px);
+  }
+
+  .plan-payment-info {
+    min-height: auto;
+    padding: 13px 14px;
+  }
+
+  .subscribe-note,
+  .subscribe-status {
+    text-align: left;
+  }
+}
+
+@media (max-width: 560px) {
+  #opportunities,
+  #pricing,
+  #faq,
+  #reviews,
+  #review-form {
+    scroll-margin-top: 172px;
+  }
+
+  .home-figma-header {
+    padding: 12px !important;
+  }
+
+  .home-figma-page .logo-wrap.logo-intro {
+    justify-content: flex-start;
+  }
+
+  .home-figma-page .header nav.home-figma-nav,
+  body[data-assistant-page] .header nav {
+    grid-template-columns: 1fr;
+  }
+
+  .home-figma-hero {
+    padding: 100px 0 42px;
+  }
+
+  .home-figma-copy h1 {
+    font-size: clamp(34px, 13vw, 46px);
+    line-height: 0.96;
+  }
+
+  .home-figma-title-line {
+    white-space: normal;
+  }
+
+  .home-figma-copy p {
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  .home-figma-kicker,
+  .home-figma-review-tag {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+  }
+
+  .home-figma-visual-frame {
+    min-height: 290px;
+    margin-bottom: 114px;
+    border-radius: 28px;
+  }
+
+  .home-figma-status-card {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 22px;
+  }
+
+  .home-figma-status-card strong {
+    font-size: 18px;
+  }
+
+  .home-figma-status-card p,
+  .home-figma-faq-item p,
+  .home-figma-review-card p,
+  .home-figma-review-note {
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .home-figma-section-head h2,
+  .home-figma-review-form-copy h3,
+  .home-figma-cta-box h2 {
+    font-size: clamp(28px, 9vw, 36px);
+  }
+
+  .home-figma-faq-item {
+    padding: 18px;
+  }
+
+  .home-figma-faq-item summary {
+    font-size: 18px;
+    padding-right: 26px;
+  }
+
+  .home-figma-review-card strong,
+  .home-figma-price-card h3,
+  .home-figma-info-card strong {
+    font-size: 22px;
+  }
+
+  .home-figma-review-meta,
+  .home-figma-review-headline {
+    font-size: 13px;
+  }
+
+  .home-figma-review-form-card,
+  .home-figma-cta-box {
+    padding: 20px 18px;
+  }
+
+  .home-figma-review-field span {
+    font-size: 13px;
+  }
+
+  .home-figma-review-field textarea {
+    min-height: 120px;
+  }
+
+  .page-home-arrow {
+    left: 10px;
+    bottom: 10px;
+  }
+
+  .dashboard-page,
+  .subscribe-layout {
+    padding-bottom: 72px;
+  }
+
+  .dashboard-container h1 {
+    font-size: clamp(32px, 11vw, 42px);
+    margin-bottom: 20px;
+  }
+
+  .dashboard-tabs {
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .dashboard-tab {
+    min-height: 40px;
+    padding: 0 14px;
+    font-size: 13px;
+  }
+
+  .dashboard-card,
+  .subscribe-flow-card,
+  .subscribe-compare-card,
+  .plan-card {
+    padding: 18px 16px;
+    border-radius: 22px;
+  }
+
+  .plan-badge {
+    font-size: 12px;
+    padding: 7px 12px;
+  }
+
+  .subscribe-value-pill,
+  .subscribe-flow-step {
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  .subscribe-compare-card h3 {
+    font-size: 20px;
+  }
+}
