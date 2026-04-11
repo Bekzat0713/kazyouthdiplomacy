@@ -10678,31 +10678,55 @@ body.kaspi-widget-open {
 
   .home-figma-page .logo-wrap.logo-intro {
     width: 100%;
-    justify-content: center;
+    justify-content: flex-start;
   }
 
-  .home-figma-page .header nav.home-figma-nav {
+  .home-figma-page .header nav.home-figma-nav,
+  body[data-assistant-page] .header nav {
     width: 100%;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-start;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
     gap: 8px;
     padding: 10px;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+  }
+
+  .home-figma-page .header nav.home-figma-nav::-webkit-scrollbar,
+  body[data-assistant-page] .header nav::-webkit-scrollbar {
+    display: none;
   }
 
   .home-figma-page .header nav.home-figma-nav a,
   .home-figma-page .header nav.home-figma-nav .nav-btn,
-  .home-figma-page .header nav.home-figma-nav .home-figma-nav-logout {
-    width: 100%;
+  .home-figma-page .header nav.home-figma-nav .home-figma-nav-logout,
+  body[data-assistant-page] .header nav a,
+  body[data-assistant-page] .header nav .nav-btn,
+  body[data-assistant-page] .header nav form {
+    width: auto;
+    flex: 0 0 auto;
+    scroll-snap-align: start;
   }
 
   .home-figma-page .header nav.home-figma-nav a,
-  .home-figma-page .header nav.home-figma-nav .nav-btn {
+  .home-figma-page .header nav.home-figma-nav .nav-btn,
+  body[data-assistant-page] .header nav a,
+  body[data-assistant-page] .header nav .nav-btn {
     min-height: 42px;
     padding-inline: 14px;
+    white-space: nowrap;
   }
 
-  .home-figma-nav-logout .nav-btn {
-    width: 100%;
+  .home-figma-nav-logout .nav-btn,
+  body[data-assistant-page] .header nav form .nav-btn {
+    width: auto;
   }
 
   .home-figma-hero-actions {
@@ -10771,24 +10795,6 @@ body.kaspi-widget-open {
 
   body[data-assistant-page] .header {
     padding-inline: 14px;
-  }
-
-  body[data-assistant-page] .header nav {
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-    padding: 10px;
-  }
-
-  body[data-assistant-page] .header nav a,
-  body[data-assistant-page] .header nav .nav-btn,
-  body[data-assistant-page] .header nav form {
-    width: 100%;
-  }
-
-  body[data-assistant-page] .header nav .nav-btn {
-    width: 100%;
   }
 
   .dashboard-container,
@@ -10882,13 +10888,10 @@ body.kaspi-widget-open {
     padding: 12px !important;
   }
 
-  .home-figma-page .logo-wrap.logo-intro {
-    justify-content: flex-start;
-  }
-
   .home-figma-page .header nav.home-figma-nav,
   body[data-assistant-page] .header nav {
-    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 8px 2px 4px;
   }
 
   .home-figma-hero {
@@ -10984,6 +10987,16 @@ body.kaspi-widget-open {
   .page-home-arrow {
     left: 10px;
     bottom: 10px;
+  }
+
+  .home-figma-page .header nav.home-figma-nav a,
+  .home-figma-page .header nav.home-figma-nav .nav-btn,
+  body[data-assistant-page] .header nav a,
+  body[data-assistant-page] .header nav .nav-btn,
+  body[data-assistant-page] .header nav form .nav-btn {
+    min-height: 38px;
+    padding-inline: 12px;
+    font-size: 13px;
   }
 
   .dashboard-page,
