@@ -4,10 +4,11 @@
   var birthDateInput = document.getElementById("birthDateInput");
   var universityInput = document.getElementById("universityInput");
   var universitiesDatalist = document.getElementById("kazakhstanUniversities");
+  var runtime = window.KYD_RUNTIME;
   var mustUseBackendHost = window.location.protocol === "file:";
-  var backendBase = mustUseBackendHost ? "http://localhost:3000" : window.location.origin;
+  var backendBase = mustUseBackendHost && runtime ? runtime.getBackendBaseUrl() : window.location.origin;
 
-  if (mustUseBackendHost) {
+  if (mustUseBackendHost && backendBase) {
     form.action = backendBase + "/register";
     if (loginLink) loginLink.href = backendBase + "/login";
   }

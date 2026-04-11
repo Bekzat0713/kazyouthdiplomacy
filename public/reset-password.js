@@ -2,13 +2,14 @@
   var form = document.getElementById("resetPasswordForm");
   var tokenInput = document.getElementById("resetTokenInput");
   var messageBox = document.getElementById("resetPasswordMessage");
+  var runtime = window.KYD_RUNTIME;
   var mustUseBackendHost = window.location.protocol === "file:";
-  var backendBase = mustUseBackendHost ? "http://localhost:3000" : window.location.origin;
+  var backendBase = mustUseBackendHost && runtime ? runtime.getBackendBaseUrl() : window.location.origin;
   var params = new URLSearchParams(window.location.search);
   var token = params.get("token");
   var error = params.get("error");
 
-  if (mustUseBackendHost) {
+  if (mustUseBackendHost && backendBase) {
     form.action = backendBase + "/reset-password";
   }
 
