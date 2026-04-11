@@ -10697,6 +10697,12 @@ body.kaspi-widget-open {
     white-space: nowrap;
     -webkit-overflow-scrolling: touch;
     scroll-snap-type: x proximity;
+    margin-left: 0;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none;
   }
 
   .home-figma-page .header nav.home-figma-nav::-webkit-scrollbar,
@@ -10891,7 +10897,7 @@ body.kaspi-widget-open {
   .home-figma-page .header nav.home-figma-nav,
   body[data-assistant-page] .header nav {
     gap: 6px;
-    padding: 8px 2px 4px;
+    padding: 6px 0 2px;
   }
 
   .home-figma-hero {
