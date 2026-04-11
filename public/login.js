@@ -9,8 +9,9 @@
   var verifyCodeInput = document.getElementById("verifyCodeInput");
   var verifyCodeButton = document.getElementById("verifyCodeButton");
   var errorBox = document.getElementById("authError");
+  var runtime = window.KYD_RUNTIME;
   var mustUseBackendHost = window.location.protocol === "file:";
-  var backendBase = mustUseBackendHost ? "http://localhost:3000" : window.location.origin;
+  var backendBase = mustUseBackendHost && runtime ? runtime.getBackendBaseUrl() : window.location.origin;
   var params = new URLSearchParams(window.location.search);
   var error = params.get("error");
   var notice = params.get("notice");
@@ -53,6 +54,18 @@
     errorBox.style.color = tone === "success" ? "#166534" : "#b42318";
   }
 
+  function ensureBackendBase() {
+    if (!mustUseBackendHost || backendBase) {
+      return true;
+    }
+
+    setMessage(
+      "Для запуска этой страницы из файла укажите адрес сервера через ?backendBase=... или откройте сайт через работающий backend.",
+      "error"
+    );
+    return false;
+  }
+
   function shouldShowVerificationUi() {
     return (
       error === "unverified" ||
@@ -82,7 +95,7 @@
     hiddenEmail.value = emailInput.value.trim();
   }
 
-  if (mustUseBackendHost) {
+  if (mustUseBackendHost && backendBase) {
     if (form) {
       form.action = backendBase + "/login";
     }
@@ -124,6 +137,10 @@
 
       if (!currentEmail) {
         setMessage("Сначала введите email.", "error");
+        return;
+      }
+
+      if (!ensureBackendBase()) {
         return;
       }
 
@@ -180,6 +197,10 @@
 
       if (!/^\d{6}$/.test(currentCode)) {
         setMessage("Введите 6-значный код подтверждения.", "error");
+        return;
+      }
+
+      if (!ensureBackendBase()) {
         return;
       }
 

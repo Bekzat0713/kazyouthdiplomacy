@@ -12,8 +12,9 @@ const planActionMap = new Map(
   Array.from(document.querySelectorAll("[data-plan-actions]")).map((node) => [node.getAttribute("data-plan-actions"), node])
 );
 const pageHomeArrow = document.querySelector(".page-home-arrow");
+const runtime = window.KYD_RUNTIME;
 
-const FALLBACK_KASPI_QR_URL = "https://pay.kaspi.kz/pay/7tul3afi";
+const FALLBACK_KASPI_QR_URL = runtime ? runtime.getKaspiQrUrl() : "";
 const DEFAULT_PLAN_HINT = "Нажмите «Оплатить Plus», и мы сразу подготовим точную сумму, переведём вас на Kaspi QR и отправим заявку на проверку.";
 const DEFAULT_SUBSCRIBE_STATUS = "Выберите Plus, оплатите точную сумму по Kaspi QR и дождитесь подтверждения доступа.";
 const DEFAULT_SUBSCRIBE_NOTE = "Сразу после оплаты заявка попадёт в очередь проверки, а Plus включится после подтверждения.";
@@ -72,6 +73,10 @@ function setPrepareButtonsDisabled(disabled) {
   });
 }
 
+function resolveKaspiUrl(url) {
+  return String(url || "").trim() || FALLBACK_KASPI_QR_URL;
+}
+
 function resetPrepareButtons() {
   prepareButtons.forEach((button) => {
     button.disabled = false;
@@ -84,7 +89,7 @@ function resetPrepareButtons() {
 }
 
 function setPreparedPlanButton(plan, options = {}) {
-  const kaspiUrl = String(options.kaspiUrl || "").trim() || FALLBACK_KASPI_QR_URL;
+  const kaspiUrl = resolveKaspiUrl(options.kaspiUrl);
   const amount = options.amount != null ? String(options.amount) : "";
   const paymentCode = options.paymentCode != null ? String(options.paymentCode) : "";
 
@@ -106,11 +111,11 @@ function setPlanActionsVisibility(activePlan, visible) {
 }
 
 function applyKaspiLink(url, activePlan) {
-  const href = String(url || "").trim() || FALLBACK_KASPI_QR_URL;
+  const href = resolveKaspiUrl(url);
 
   kaspiLinks.forEach((link) => {
     const plan = link.getAttribute("data-kaspi-link");
-    link.href = href;
+    link.href = href || "#";
     link.hidden = !activePlan || plan !== activePlan;
   });
 
@@ -118,7 +123,12 @@ function applyKaspiLink(url, activePlan) {
 }
 
 function navigateToKaspi(url) {
-  const href = String(url || "").trim() || FALLBACK_KASPI_QR_URL;
+  const href = resolveKaspiUrl(url);
+  if (!href) {
+    setStatus("Ссылка на оплату Kaspi QR пока не настроена.", true);
+    return;
+  }
+
   window.location.assign(href);
 }
 

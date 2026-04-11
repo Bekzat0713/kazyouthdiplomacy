@@ -28,7 +28,7 @@ const shouldUseDbSsl =
 const KASPI_MERCHANT_ID = String(process.env.KASPI_MERCHANT_ID || "");
 const KASPI_API_KEY = String(process.env.KASPI_API_KEY || "");
 const KASPI_CALLBACK_URL = String(process.env.KASPI_CALLBACK_URL || "");
-const KASPI_QR_URL = "https://pay.kaspi.kz/pay/7tul3afi";
+const KASPI_QR_URL = String(process.env.KASPI_QR_URL || "").trim();
 const OPENAI_API_KEY = String(process.env.OPENAI_API_KEY || "").trim();
 const OPENAI_MODEL = String(process.env.OPENAI_MODEL || "gpt-5.4-mini").trim() || "gpt-5.4-mini";
 const OPENAI_API_BASE = String(process.env.OPENAI_API_BASE || "https://api.openai.com/v1")
@@ -38,10 +38,17 @@ const ASSISTANT_HISTORY_LIMIT = Number(process.env.ASSISTANT_HISTORY_LIMIT || 8)
 const ASSISTANT_TOOL_RESULT_LIMIT = Number(process.env.ASSISTANT_TOOL_RESULT_LIMIT || 6);
 const ASSISTANT_MAX_TOOL_ROUNDS = 4;
 const APP_BASE_URL = String(process.env.APP_BASE_URL || `http://localhost:${PORT}`);
+const APP_BASE_HOSTNAME = (() => {
+  try {
+    return new URL(APP_BASE_URL).hostname || "localhost.localdomain";
+  } catch (_error) {
+    return "localhost.localdomain";
+  }
+})();
 const SESSION_SECRET = String(process.env.SESSION_SECRET || "").trim();
 const SESSION_COOKIE_NAME = String(process.env.SESSION_COOKIE_NAME || "kyd.sid").trim() || "kyd.sid";
 const MAIL_FROM = String(
-  process.env.MAIL_FROM || process.env.SMTP_USER || "no-reply@kazyouthdiplomacy.local"
+  process.env.MAIL_FROM || process.env.SMTP_USER || `no-reply@${APP_BASE_HOSTNAME}`
 );
 const SMTP_URL = String(process.env.SMTP_URL || "").trim();
 const SMTP_HOST = String(process.env.SMTP_HOST || "").trim();
@@ -349,6 +356,17 @@ app.use((req, res, next) => {
 });
 
 app.use(express.static(path.join(__dirname, "public")));
+
+app.get("/app-config.js", (_req, res) => {
+  res.setHeader("Cache-Control", "no-store");
+  res.type("application/javascript");
+  res.send(
+    `window.__APP_CONFIG__ = Object.freeze(${JSON.stringify({
+      appBaseUrl: APP_BASE_URL,
+      kaspiQrUrl: KASPI_QR_URL,
+    })});`
+  );
+});
 
 /* ======================
    Init Tables
@@ -1947,7 +1965,7 @@ function serializeSubscription(subscription) {
 }
 
 const OPPORTUNITIES_ADMIN_EMAIL = normalizeEmail(
-  process.env.OPPORTUNITIES_ADMIN_EMAIL || "alibiayap@gmail.com"
+  process.env.OPPORTUNITIES_ADMIN_EMAIL || ""
 );
 
 function stripWrappingQuotes(value) {
@@ -5017,7 +5035,7 @@ app.get("/api/account/access", requireAuth, async (req, res) => {
       can_manage_opportunities: canManageOpportunitiesValue,
       can_manage_subscriptions: canManageSubscriptionsValue,
       can_view_admin_analytics: canViewAdminAnalyticsValue,
-      opportunities_admin_email: OPPORTUNITIES_ADMIN_EMAIL,
+      opportunities_admin_email: Array.from(getOpportunitiesAdminEmails())[0] || null,
     });
   } catch (err) {
     console.error("Account access check error:", err);
@@ -6416,7 +6434,7 @@ app.delete("/api/internships/:id", requireAuth, async (req, res) => {
 app.post("/api/opportunities", requireAuth, async (req, res) => {
   const canManage = await canManageOpportunities(req);
   if (!canManage) {
-    return res.status(403).json({ error: "Only alibiayap@gmail.com can publish grants and publications" });
+    return res.status(403).json({ error: "Only configured opportunities admins can publish grants and publications" });
   }
 
   const title = String(req.body.title || "").trim();
@@ -6517,7 +6535,7 @@ app.post("/api/opportunities", requireAuth, async (req, res) => {
 app.delete("/api/opportunities/:id", requireAuth, async (req, res) => {
   const canManage = await canManageOpportunities(req);
   if (!canManage) {
-    return res.status(403).json({ error: "Only alibiayap@gmail.com can delete grants and publications" });
+    return res.status(403).json({ error: "Only configured opportunities admins can delete grants and publications" });
   }
 
   const opportunityId = Number.parseInt(req.params.id, 10);
@@ -6653,7 +6671,7 @@ async function startServer() {
     console.log("PostgreSQL connected");
     await initDB();
     app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
+      console.log(`Server running on ${APP_BASE_URL}`);
     });
   } catch (err) {
     console.error("Startup failed:", err);

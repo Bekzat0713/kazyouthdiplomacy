@@ -9,8 +9,9 @@
   var steps = Array.prototype.slice.call(form.querySelectorAll(".survey-step"));
   var currentStep = 0;
 
+  var runtime = window.KYD_RUNTIME;
   var mustUseBackendHost = window.location.protocol === "file:";
-  var backendBase = mustUseBackendHost ? "http://localhost:3000" : window.location.origin;
+  var backendBase = mustUseBackendHost && runtime ? runtime.getBackendBaseUrl() : window.location.origin;
   var apiUrl = mustUseBackendHost
     ? backendBase + "/api/register-survey"
     : "/api/register-survey";
@@ -39,6 +40,17 @@
   function hideError() {
     errorBox.textContent = "";
     errorBox.style.display = "none";
+  }
+
+  function ensureBackendBase() {
+    if (!mustUseBackendHost || backendBase) {
+      return true;
+    }
+
+    showError(
+      "Для запуска этой страницы из файла укажите адрес сервера через ?backendBase=... или откройте сайт через работающий backend."
+    );
+    return false;
   }
 
   function isStepAnswered(stepIndex) {
@@ -162,6 +174,10 @@
     submitBtn.textContent = "Сохраняем...";
 
     try {
+      if (!ensureBackendBase()) {
+        return;
+      }
+
       var response = await fetch(apiUrl, {
         method: "POST",
         headers: {

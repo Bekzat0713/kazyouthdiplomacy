@@ -2,14 +2,15 @@
   var form = document.getElementById("forgotPasswordForm");
   var emailInput = document.getElementById("forgotEmailInput");
   var messageBox = document.getElementById("forgotPasswordMessage");
+  var runtime = window.KYD_RUNTIME;
   var mustUseBackendHost = window.location.protocol === "file:";
-  var backendBase = mustUseBackendHost ? "http://localhost:3000" : window.location.origin;
+  var backendBase = mustUseBackendHost && runtime ? runtime.getBackendBaseUrl() : window.location.origin;
   var params = new URLSearchParams(window.location.search);
   var notice = params.get("notice");
   var error = params.get("error");
   var email = params.get("email");
 
-  if (mustUseBackendHost) {
+  if (mustUseBackendHost && backendBase) {
     form.action = backendBase + "/forgot-password";
   }
 

@@ -2158,7 +2158,12 @@ textarea {
   );
   border-color: rgba(251, 191, 36, 0.9);
   box-shadow: 0 36px 76px rgba(146, 64, 14, 0.45);
-  transform: translateY(-8px);
+}
+
+.plan-card.featured:hover {
+  transform: translate3d(0, -10px, 0) scale(1.012);
+  border-color: rgba(251, 191, 36, 1);
+  box-shadow: 0 40px 80px rgba(146, 64, 14, 0.55);
 }
 
 .plan-card.featured .plan-badge {
