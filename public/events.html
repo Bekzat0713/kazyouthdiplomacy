@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Мероприятия - KazYouthDiplomacy</title>
+  <link rel="stylesheet" href="/web.css" />
+</head>
+<body class="events-page route-page" data-assistant-page="events">
+
+<header class="header">
+  <a href="/" class="logo-wrap">
+    <img src="/logo.png" alt="KazYouthDiplomacy logo" />
+    <span>KazYouthDiplomacy</span>
+  </a>
+  <nav class="dashboard-nav" id="mainNav">
+    <a href="/dashboard">Кабинет</a>
+    <a href="/internships">Стажировки</a>
+    <a href="/opportunities">Возможности</a>
+    <a href="/events" class="active">Мероприятия</a>
+    <a href="/courses">Курсы</a>
+    <button class="nav-btn" id="logoutBtn" type="button">Выйти</button>
+  </nav>
+</header>
+
+<main class="events-layout">
+  <section class="events-head">
+    <div class="events-head-copy">
+      <span class="home-figma-kicker">События</span>
+      <h1>Мероприятия</h1>
+      <p>Офлайн и онлайн события, форумы и встречи для молодых специалистов.</p>
+    </div>
+    <button class="btn primary" id="addEventBtn" type="button" hidden>
+      + Добавить мероприятие
+    </button>
+  </section>
+
+  <!-- Форма добавления (только для Алиби) -->
+  <article class="events-form-card" id="eventFormCard" hidden>
+    <h2>Новое мероприятие</h2>
+    <form id="eventForm" class="events-form">
+
+      <div class="events-form-row">
+        <label class="events-field">
+          <span>Название *</span>
+          <input name="title" type="text" placeholder="Название мероприятия" required />
+        </label>
+        <label class="events-field">
+          <span>Дата</span>
+          <input name="date" type="date" />
+        </label>
+      </div>
+
+      <div class="events-form-row">
+        <label class="events-field">
+          <span>Город</span>
+          <input name="city" type="text" placeholder="Например, Алматы" />
+        </label>
+        <label class="events-field">
+          <span>Страна</span>
+          <input name="country" type="text" placeholder="Например, Казахстан" />
+        </label>
+      </div>
+
+      <div class="events-form-row">
+        <label class="events-field">
+          <span>Формат</span>
+          <select name="format">
+            <option value="offline">Офлайн</option>
+            <option value="online">Онлайн</option>
+          </select>
+        </label>
+        <label class="events-field">
+          <span>География</span>
+          <select name="regionType">
+            <option value="kazakhstan">Казахстан</option>
+            <option value="international">Зарубежные</option>
+            <option value="online">Онлайн</option>
+            <option value="hybrid">Гибрид</option>
+          </select>
+        </label>
+      </div>
+
+      <label class="events-field">
+        <span>Для кого (можно выбрать несколько)</span>
+        <div class="events-checkboxes">
+          <label><input type="checkbox" name="targetGoals" value="foundation" /> Подготовительный курс</label>
+          <label><input type="checkbox" name="targetGoals" value="study_abroad" /> Поступить за границу</label>
+          <label><input type="checkbox" name="targetGoals" value="masters" /> Магистратура</label>
+          <label><input type="checkbox" name="targetGoals" value="civil_service" /> Госслужба</label>
+          <label><input type="checkbox" name="targetGoals" value="international_org" /> Международные организации</label>
+          <label><input type="checkbox" name="targetGoals" value="national_company" /> Национальные компании</label>
+          <label><input type="checkbox" name="targetGoals" value="private_sector" /> Частный сектор</label>
+          <label><input type="checkbox" name="targetGoals" value="undecided" /> Пока не определился</label>
+        </div>
+      </label>
+
+      <div class="events-form-row">
+        <label class="events-field">
+          <span>Уровень английского</span>
+          <select name="englishLevel">
+            <option value="any">Любой</option>
+            <option value="a1_a2">A1-A2</option>
+            <option value="b1_b2">B1-B2</option>
+            <option value="c1_plus">C1+</option>
+          </select>
+        </label>
+        <label class="events-field">
+          <span>Доступ</span>
+          <select name="accessLevel">
+            <option value="0">Free — видят все</option>
+            <option value="1">Plus Start и выше</option>
+            <option value="2">Plus Growth и выше</option>
+            <option value="3">Plus Long Run</option>
+          </select>
+        </label>
+      </div>
+
+      <label class="events-field">
+        <span>Ссылка</span>
+        <input name="link" type="url" placeholder="https://..." />
+      </label>
+
+      <label class="events-field">
+        <span>Описание *</span>
+        <textarea name="description" rows="4" placeholder="Краткое описание мероприятия" required></textarea>
+      </label>
+
+      <div class="events-form-actions">
+        <button class="btn primary" type="submit">Опубликовать</button>
+        <button class="btn secondary" type="button" id="cancelEventBtn">Отмена</button>
+      </div>
+    </form>
+  </article>
+
+  <!-- Список мероприятий -->
+  <div class="events-grid" id="eventsGrid">
+    <p class="events-loading">Загрузка...</p>
+  </div>
+</main>
+
+<script src="/app-config.js"></script>
+<script src="/app-runtime.js"></script>
+<script src="/page-transitions.js" defer></script>
+<script src="/events.js" defer></script>
+<script src="/assistant-widget.js" defer></script>
+</body>
+</html>
