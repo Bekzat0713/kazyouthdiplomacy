@@ -11,6 +11,7 @@ const planCardMap = new Map(
 const planActionMap = new Map(
   Array.from(document.querySelectorAll("[data-plan-actions]")).map((node) => [node.getAttribute("data-plan-actions"), node])
 );
+const pageHomeArrow = document.querySelector(".page-home-arrow");
 
 const FALLBACK_KASPI_QR_URL = "https://pay.kaspi.kz/pay/7tul3afi";
 const DEFAULT_PLAN_HINT = "Нажмите «Оплатить Plus», и мы сразу подготовим точную сумму, переведём вас на Kaspi QR и отправим заявку на проверку.";
@@ -18,6 +19,12 @@ const DEFAULT_SUBSCRIBE_STATUS = "Выберите Plus, оплатите точ
 const DEFAULT_SUBSCRIBE_NOTE = "Сразу после оплаты заявка попадёт в очередь проверки, а Plus включится после подтверждения.";
 const DEFAULT_PREPARE_LABEL = "Оплатить Plus";
 const OPEN_QR_LABEL = "Открыть Kaspi QR";
+const GUEST_PREPARE_LABEL = "Создать аккаунт и продолжить";
+const GUEST_SUBSCRIBE_STATUS = "Тарифы и цены открыты без входа. Чтобы оплатить Plus и включить полный доступ, сначала создайте аккаунт.";
+const GUEST_SUBSCRIBE_NOTE = "После короткого опроса и регистрации вы вернётесь к выбору тарифа и сможете сразу перейти к оплате через Kaspi QR.";
+const GUEST_PLAN_HINT = "Сначала создайте аккаунт, а затем вернитесь к выбранному тарифу и оплатите Plus через Kaspi QR.";
+
+let subscriptionRefreshTimer = null;
 
 function formatDate(value) {
   if (!value) {
@@ -115,6 +122,43 @@ function navigateToKaspi(url) {
   window.location.assign(href);
 }
 
+function navigateToRegistration(plan) {
+  const params = new URLSearchParams();
+
+  if (plan) {
+    params.set("plan", plan);
+  }
+
+  params.set("source", "subscribe");
+  window.location.assign(`/register-survey?${params.toString()}`);
+}
+
+function setBackArrowTarget(href, label) {
+  if (!pageHomeArrow) {
+    return;
+  }
+
+  pageHomeArrow.href = href;
+  pageHomeArrow.setAttribute("aria-label", label);
+}
+
+function stopRefreshTimer() {
+  if (subscriptionRefreshTimer !== null) {
+    window.clearInterval(subscriptionRefreshTimer);
+    subscriptionRefreshTimer = null;
+  }
+}
+
+function ensureRefreshTimer() {
+  if (subscriptionRefreshTimer !== null) {
+    return;
+  }
+
+  subscriptionRefreshTimer = window.setInterval(() => {
+    void refreshSubscriptionStatus();
+  }, 15000);
+}
+
 function resetPlanCards() {
   resetPrepareButtons();
 
@@ -129,6 +173,28 @@ function resetPlanCards() {
 
   setPlanActionsVisibility(null, false);
   applyKaspiLink();
+}
+
+function renderGuestState() {
+  stopRefreshTimer();
+  resetPlanCards();
+  setBackArrowTarget("/", "Вернуться на главную");
+  setStatus(GUEST_SUBSCRIBE_STATUS);
+  setNote(GUEST_SUBSCRIBE_NOTE);
+
+  paymentInfoMap.forEach((node) => {
+    node.textContent = GUEST_PLAN_HINT;
+    node.classList.remove("ready");
+  });
+
+  prepareButtons.forEach((button) => {
+    button.disabled = false;
+    button.textContent = GUEST_PREPARE_LABEL;
+    button.dataset.actionMode = "guest_register";
+    button.dataset.kaspiUrl = "";
+    button.dataset.amount = "";
+    button.dataset.paymentCode = "";
+  });
 }
 
 function renderPreparedPayment(subscription) {
@@ -170,7 +236,9 @@ function renderSubscriptionState(payload) {
   const kaspiUrl = payload.kaspi_qr_url || FALLBACK_KASPI_QR_URL;
   const limitsText = accessPolicy ? formatPreviewLimits(accessPolicy.preview_limits) : "";
 
+  ensureRefreshTimer();
   resetPlanCards();
+  setBackArrowTarget("/dashboard", "Вернуться в кабинет");
   applyKaspiLink(kaspiUrl);
   setPrepareButtonsDisabled(false);
 
@@ -243,15 +311,12 @@ async function refreshSubscriptionStatus() {
       credentials: "include",
       headers: { Accept: "application/json" },
     });
+    const payload = await response.json().catch(() => ({}));
 
     if (response.status === 401) {
-      resetPlanCards();
-      setStatus("");
-      setNote("Зарегистрируйтесь, чтобы оформить подписку и получить полный доступ.");
+      renderGuestState();
       return;
     }
-
-    const payload = await response.json();
 
     if (!response.ok) {
       throw new Error(payload.error || "Не удалось получить статус подписки.");
@@ -282,7 +347,7 @@ async function preparePayment(plan) {
     });
 
     if (response.status === 401) {
-      window.location.assign("/register-survey");
+      navigateToRegistration(plan);
       return;
     }
 
@@ -330,6 +395,11 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
+      if (button.dataset.actionMode === "guest_register") {
+        navigateToRegistration(plan);
+        return;
+      }
+
       void preparePayment(plan);
     });
   });
@@ -342,7 +412,4 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   void refreshSubscriptionStatus();
-  window.setInterval(() => {
-    void refreshSubscriptionStatus();
-  }, 15000);
 });

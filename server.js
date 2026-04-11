@@ -3909,9 +3909,13 @@ app.get("/register", (req, res) => {
   return res.sendFile(path.join(__dirname, "public", "register.html"));
 });
 
-app.get("/subscribe", (req, res) =>
-  res.sendFile(path.join(__dirname, "public", "subscribe.html"))
-);
+app.get("/subscribe", (req, res) => {
+  if (req.session.userId) {
+    applyNoStoreHeaders(res);
+  }
+
+  return res.sendFile(path.join(__dirname, "public", "subscribe.html"));
+});
 
 app.get("/opportunities", requireAuth, (req, res) =>
   res.sendFile(path.join(__dirname, "public", "opportunities.html"))

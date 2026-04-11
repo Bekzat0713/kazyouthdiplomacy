@@ -192,7 +192,7 @@
           state.enabled = false;
           state.submit.disabled = true;
           state.input.disabled = true;
-          renderStatus(state, "Сессия истекла. Обновите страницу или войдите снова, чтобы открыть Youth-помощника.", "warning");
+          renderStatus(state, "Войдите или зарегистрируйтесь, чтобы открыть Youth-помощника.", "warning");
           return;
         }
 
