@@ -159,3 +159,227 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+function createReviewCard(review) {
+  const card = document.createElement("article");
+  card.className = "home-figma-review-card";
+
+  const top = document.createElement("div");
+  top.className = "home-figma-review-top";
+
+  const tag = document.createElement("span");
+  tag.className = "home-figma-review-tag";
+  tag.textContent = "Отзыв участника";
+
+  const name = document.createElement("strong");
+  name.textContent = review.display_name + (review.age ? `, ${review.age} лет` : "");
+
+  const meta = document.createElement("span");
+  meta.className = "home-figma-review-meta";
+  meta.textContent = [review.city, review.role_label, review.goal_label ? `цель: ${review.goal_label}` : ""]
+    .filter(Boolean)
+    .join(" • ");
+
+  const headline = document.createElement("span");
+  headline.className = "home-figma-review-headline";
+  headline.textContent = review.headline || "Отзыв участника";
+
+  const body = document.createElement("p");
+  body.textContent = `“${review.body}”`;
+
+  const result = document.createElement("span");
+  result.className = "home-figma-review-note";
+  result.textContent = `Результат: ${review.result_summary}`;
+
+  top.appendChild(tag);
+  top.appendChild(name);
+  top.appendChild(meta);
+  top.appendChild(headline);
+  card.appendChild(top);
+  card.appendChild(body);
+  card.appendChild(result);
+
+  return card;
+}
+
+function renderReviewStatus(message, tone) {
+  const status = document.getElementById("homeReviewStatus");
+  if (!status) {
+    return;
+  }
+
+  status.hidden = !message;
+  status.textContent = message || "";
+  status.dataset.tone = tone || "";
+}
+
+async function initHomePageExperience() {
+  if (!document.body.classList.contains("home-page")) {
+    return;
+  }
+
+  const navLogin = document.getElementById("homeNavLogin");
+  const navDashboard = document.getElementById("homeNavDashboard");
+  const navLogoutForm = document.getElementById("homeNavLogoutForm");
+  const reviewGuestState = document.getElementById("homeReviewGuestState");
+  const reviewForm = document.getElementById("homeReviewForm");
+  const reviewLead = document.getElementById("homeReviewFormLead");
+  const reviewSubmit = document.getElementById("homeReviewSubmit");
+  const reviewsGrid = document.getElementById("homeReviewsGrid");
+
+  try {
+    const [homeStateResponse, reviewsResponse] = await Promise.all([
+      fetch("/api/home-state", {
+        credentials: "include",
+        headers: { Accept: "application/json" },
+      }),
+      fetch("/api/reviews", {
+        credentials: "include",
+        headers: { Accept: "application/json" },
+      }),
+    ]);
+
+    const homeState = await homeStateResponse.json().catch(() => ({}));
+    const reviewsPayload = await reviewsResponse.json().catch(() => ({}));
+    const isAuthenticated = Boolean(homeState && homeState.is_authenticated);
+    const currentUser = homeState && homeState.user ? homeState.user : null;
+    const publicReviews = Array.isArray(reviewsPayload.reviews) ? reviewsPayload.reviews : [];
+
+    if (navLogin) {
+      navLogin.hidden = isAuthenticated;
+    }
+
+    if (navDashboard) {
+      navDashboard.hidden = !isAuthenticated;
+      navDashboard.textContent = "Кабинет";
+    }
+
+    if (navLogoutForm) {
+      navLogoutForm.hidden = !isAuthenticated;
+    }
+
+    if (reviewGuestState) {
+      reviewGuestState.hidden = isAuthenticated;
+    }
+
+    if (reviewForm) {
+      reviewForm.hidden = !isAuthenticated;
+    }
+
+    if (reviewLead && isAuthenticated && currentUser) {
+      reviewLead.textContent = currentUser.has_review
+        ? "Ваш отзыв уже можно обновить. Расскажите, что изменилось сейчас и какой результат вы видите после использования платформы."
+        : "Поделитесь, что изменилось после платформы: стало легче искать возможности, появился маршрут или удалось быстрее перейти к откликам.";
+    }
+
+    if (reviewSubmit && isAuthenticated) {
+      reviewSubmit.textContent = currentUser && currentUser.has_review
+        ? "Обновить отзыв"
+        : "Опубликовать отзыв";
+    }
+
+    if (reviewsGrid && publicReviews.length) {
+      reviewsGrid.innerHTML = "";
+      publicReviews.forEach((review) => {
+        reviewsGrid.appendChild(createReviewCard(review));
+      });
+    }
+  } catch (error) {
+    console.error("Home page state error:", error);
+
+    if (navLogin) {
+      navLogin.hidden = false;
+    }
+
+    if (navDashboard) {
+      navDashboard.hidden = true;
+    }
+
+    if (navLogoutForm) {
+      navLogoutForm.hidden = true;
+    }
+
+    if (reviewGuestState) {
+      reviewGuestState.hidden = false;
+    }
+
+    if (reviewForm) {
+      reviewForm.hidden = true;
+    }
+  }
+
+  if (!reviewForm) {
+    return;
+  }
+
+  reviewForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const submitButton = document.getElementById("homeReviewSubmit");
+    const cityInput = document.getElementById("homeReviewCity");
+    const headlineInput = document.getElementById("homeReviewHeadline");
+    const resultInput = document.getElementById("homeReviewResult");
+    const bodyInput = document.getElementById("homeReviewBody");
+    const reviewsGridNode = document.getElementById("homeReviewsGrid");
+
+    if (!submitButton || !cityInput || !headlineInput || !resultInput || !bodyInput || !reviewsGridNode) {
+      return;
+    }
+
+    submitButton.disabled = true;
+    renderReviewStatus("Сохраняем отзыв...", "");
+
+    try {
+      const response = await fetch("/api/reviews", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          city: cityInput.value,
+          headline: headlineInput.value,
+          result_summary: resultInput.value,
+          body: bodyInput.value,
+        }),
+      });
+
+      const payload = await response.json().catch(() => ({}));
+
+      if (response.status === 401) {
+        window.location.assign("/login");
+        return;
+      }
+
+      if (!response.ok || !payload.review) {
+        throw new Error(payload.error || "Не удалось сохранить отзыв.");
+      }
+
+      const currentCards = Array.from(reviewsGridNode.querySelectorAll(".home-figma-review-card"));
+      reviewsGridNode.innerHTML = "";
+      reviewsGridNode.appendChild(createReviewCard(payload.review));
+
+      currentCards.forEach((card) => {
+        const existingHeadline = card.querySelector(".home-figma-review-headline");
+        if (existingHeadline && payload.review && existingHeadline.textContent === payload.review.headline) {
+          return;
+        }
+        if (reviewsGridNode.children.length < 6) {
+          reviewsGridNode.appendChild(card);
+        }
+      });
+
+      renderReviewStatus("Отзыв сохранён. Спасибо, это усиливает доверие к платформе.", "success");
+      submitButton.textContent = "Обновить отзыв";
+    } catch (error) {
+      renderReviewStatus(error.message || "Не удалось сохранить отзыв.", "error");
+    } finally {
+      submitButton.disabled = false;
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  void initHomePageExperience();
+});

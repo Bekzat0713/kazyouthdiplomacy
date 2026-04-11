@@ -61,6 +61,10 @@ const PASSWORD_RESET_TOKEN_TTL_MINUTES = Number(
 const EMAIL_RESEND_COOLDOWN_SECONDS = Number(
   process.env.EMAIL_RESEND_COOLDOWN_SECONDS || 60
 );
+const SESSION_COOKIE_MAX_AGE_DAYS = Math.max(
+  1,
+  Number(process.env.SESSION_COOKIE_MAX_AGE_DAYS || 30)
+);
 const EMAIL_VERIFY_CODE_LENGTH = Number(process.env.EMAIL_VERIFY_CODE_LENGTH || 6);
 const AUTH_MIN_PASSWORD_LENGTH = Number(process.env.AUTH_MIN_PASSWORD_LENGTH || 10);
 const LOGIN_RATE_LIMIT_WINDOW_MINUTES = Number(process.env.LOGIN_RATE_LIMIT_WINDOW_MINUTES || 15);
@@ -328,7 +332,7 @@ app.use(
       httpOnly: true,
       sameSite: "lax",
       secure: isProduction,
-      maxAge: 1000 * 60 * 60 * 12,
+      maxAge: 1000 * 60 * 60 * 24 * SESSION_COOKIE_MAX_AGE_DAYS,
     },
   })
 );
@@ -662,6 +666,29 @@ async function initDB() {
     `);
 
     await pool.query(`
+      CREATE TABLE IF NOT EXISTS user_reviews (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        display_name TEXT NOT NULL,
+        age INTEGER,
+        city TEXT NOT NULL,
+        role_label TEXT NOT NULL,
+        goal_label TEXT NOT NULL,
+        headline TEXT NOT NULL,
+        body TEXT NOT NULL,
+        result_summary TEXT NOT NULL,
+        is_public BOOLEAN NOT NULL DEFAULT true,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    await pool.query(`
+      CREATE UNIQUE INDEX IF NOT EXISTS user_reviews_user_id_unique
+      ON user_reviews (user_id)
+    `);
+
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS career_resources (
         id SERIAL PRIMARY KEY,
         title TEXT NOT NULL,
@@ -953,6 +980,36 @@ function buildUserProfile(userRow) {
   };
 }
 
+function calculateAgeFromBirthDate(value) {
+  const birthDate = serializeDateOnly(value);
+  if (!birthDate) {
+    return null;
+  }
+
+  const parsedDate = new Date(`${birthDate}T00:00:00Z`);
+  if (Number.isNaN(parsedDate.getTime())) {
+    return null;
+  }
+
+  const now = new Date();
+  let age = now.getUTCFullYear() - parsedDate.getUTCFullYear();
+  const monthDiff = now.getUTCMonth() - parsedDate.getUTCMonth();
+  const dayDiff = now.getUTCDate() - parsedDate.getUTCDate();
+
+  if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+    age -= 1;
+  }
+
+  return age >= 12 && age <= 100 ? age : null;
+}
+
+function buildDisplayNameFromUser(userRow) {
+  const firstName = normalizeProfileText(userRow.first_name);
+  const lastName = normalizeProfileText(userRow.last_name);
+  const name = [firstName, lastName].filter(Boolean).join(" ").trim();
+  return name || normalizeEmail(userRow.email) || "Участник платформы";
+}
+
 const surveyValueLabels = {
   current_status: {
     school: "Школьник",
@@ -1000,6 +1057,84 @@ function getSurveyLabel(field, value) {
   return surveyValueLabels[field]?.[String(value || "").trim()] || "";
 }
 
+function buildReviewRoleLabel(userRow, survey) {
+  const surveyRole = getSurveyLabel("current_status", survey?.current_status);
+  if (surveyRole) {
+    return surveyRole;
+  }
+
+  const university = normalizeProfileText(userRow?.university);
+  if (university) {
+    return "Студент";
+  }
+
+  const workplace = normalizeProfileText(userRow?.workplace);
+  if (workplace) {
+    return "Молодой специалист";
+  }
+
+  return "Участник платформы";
+}
+
+function normalizeReviewText(value, maxLength) {
+  const normalized = String(value || "").trim().replace(/\s+/g, " ");
+  return normalized.slice(0, maxLength);
+}
+
+function validateUserReviewPayload(payload) {
+  const city = normalizeReviewText(payload.city, 80);
+  const headline = normalizeReviewText(payload.headline, 120);
+  const body = normalizeReviewText(payload.body, 1200);
+  const resultSummary = normalizeReviewText(payload.result_summary, 180);
+
+  if (!city || city.length < 2) {
+    return { ok: false, error: "Укажите город." };
+  }
+
+  if (!headline || headline.length < 8) {
+    return { ok: false, error: "Добавьте короткий заголовок отзыва." };
+  }
+
+  if (!body || body.length < 30) {
+    return { ok: false, error: "Расскажите чуть подробнее о результате или опыте." };
+  }
+
+  if (!resultSummary || resultSummary.length < 10) {
+    return { ok: false, error: "Добавьте короткий итог: что изменилось после Plus." };
+  }
+
+  return {
+    ok: true,
+    review: {
+      city,
+      headline,
+      body,
+      result_summary: resultSummary,
+    },
+  };
+}
+
+function serializeUserReview(reviewRow) {
+  if (!reviewRow) {
+    return null;
+  }
+
+  return {
+    id: reviewRow.id,
+    user_id: reviewRow.user_id,
+    display_name: normalizeReviewText(reviewRow.display_name, 120),
+    age: reviewRow.age != null ? Number(reviewRow.age) : null,
+    city: normalizeReviewText(reviewRow.city, 80),
+    role_label: normalizeReviewText(reviewRow.role_label, 80),
+    goal_label: normalizeReviewText(reviewRow.goal_label, 120),
+    headline: normalizeReviewText(reviewRow.headline, 120),
+    body: normalizeReviewText(reviewRow.body, 1200),
+    result_summary: normalizeReviewText(reviewRow.result_summary, 180),
+    created_at: reviewRow.created_at,
+    updated_at: reviewRow.updated_at,
+  };
+}
+
 async function getRegistrationSurveyForUser(userId) {
   if (!userId) {
     return null;
@@ -1023,6 +1158,37 @@ async function getRegistrationSurveyForUser(userId) {
     ...result.rows[0].survey_payload,
     submitted_at: result.rows[0].submitted_at,
   };
+}
+
+async function getUserReviewForUser(userId) {
+  if (!userId) {
+    return null;
+  }
+
+  const result = await pool.query(
+    `
+    SELECT
+      id,
+      user_id,
+      display_name,
+      age,
+      city,
+      role_label,
+      goal_label,
+      headline,
+      body,
+      result_summary,
+      created_at,
+      updated_at
+    FROM user_reviews
+    WHERE user_id = $1
+      AND is_public = TRUE
+    LIMIT 1
+    `,
+    [userId]
+  );
+
+  return result.rows[0] || null;
 }
 
 function buildRoadmapFromSurvey(survey) {
@@ -3958,6 +4124,90 @@ app.get("/health", async (req, res) => {
   }
 });
 
+app.get("/api/home-state", async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.json({
+        is_authenticated: false,
+        user: null,
+      });
+    }
+
+    applyNoStoreHeaders(res);
+
+    const userResult = await pool.query(
+      `
+      SELECT id, first_name, last_name, birth_date, university, workplace, email, is_verified
+      FROM users
+      WHERE id = $1
+      LIMIT 1
+      `,
+      [req.session.userId]
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.json({
+        is_authenticated: false,
+        user: null,
+      });
+    }
+
+    const [survey, review] = await Promise.all([
+      getRegistrationSurveyForUser(req.session.userId),
+      getUserReviewForUser(req.session.userId),
+    ]);
+
+    const user = userResult.rows[0];
+
+    return res.json({
+      is_authenticated: true,
+      user: {
+        id: user.id,
+        display_name: buildDisplayNameFromUser(user),
+        first_name: normalizeProfileText(user.first_name),
+        has_review: Boolean(review),
+        goal_label: getSurveyLabel("main_goal", survey?.main_goal) || "",
+      },
+    });
+  } catch (err) {
+    console.error("Home state error:", err);
+    return res.status(500).json({ error: "Failed to load home state" });
+  }
+});
+
+app.get("/api/reviews", async (_req, res) => {
+  try {
+    const result = await pool.query(
+      `
+      SELECT
+        id,
+        user_id,
+        display_name,
+        age,
+        city,
+        role_label,
+        goal_label,
+        headline,
+        body,
+        result_summary,
+        created_at,
+        updated_at
+      FROM user_reviews
+      WHERE is_public = TRUE
+      ORDER BY updated_at DESC, id DESC
+      LIMIT 6
+      `
+    );
+
+    return res.json({
+      reviews: result.rows.map(serializeUserReview).filter(Boolean),
+    });
+  } catch (err) {
+    console.error("Public reviews load error:", err);
+    return res.status(500).json({ error: "Failed to load reviews" });
+  }
+});
+
 app.post("/api/register-survey", (req, res) => {
   const validation = validatePreRegisterSurveyPayload(req.body || {});
   if (!validation.ok) {
@@ -4772,6 +5022,100 @@ app.get("/api/account/access", requireAuth, async (req, res) => {
   } catch (err) {
     console.error("Account access check error:", err);
     return res.status(500).json({ error: "Failed to check account access" });
+  }
+});
+
+app.post("/api/reviews", requireAuth, async (req, res) => {
+  const validation = validateUserReviewPayload(req.body || {});
+  if (!validation.ok) {
+    return res.status(400).json({ error: validation.error });
+  }
+
+  try {
+    const userResult = await pool.query(
+      `
+      SELECT id, first_name, last_name, birth_date, university, workplace, email
+      FROM users
+      WHERE id = $1
+      LIMIT 1
+      `,
+      [req.session.userId]
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const user = userResult.rows[0];
+    const survey = await getRegistrationSurveyForUser(req.session.userId);
+    const displayName = buildDisplayNameFromUser(user);
+    const age = calculateAgeFromBirthDate(user.birth_date);
+    const roleLabel = buildReviewRoleLabel(user, survey);
+    const goalLabel = getSurveyLabel("main_goal", survey?.main_goal) || "Построить карьерный маршрут";
+
+    const result = await pool.query(
+      `
+      INSERT INTO user_reviews (
+        user_id,
+        display_name,
+        age,
+        city,
+        role_label,
+        goal_label,
+        headline,
+        body,
+        result_summary,
+        is_public,
+        created_at,
+        updated_at
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      ON CONFLICT (user_id)
+      DO UPDATE SET
+        display_name = EXCLUDED.display_name,
+        age = EXCLUDED.age,
+        city = EXCLUDED.city,
+        role_label = EXCLUDED.role_label,
+        goal_label = EXCLUDED.goal_label,
+        headline = EXCLUDED.headline,
+        body = EXCLUDED.body,
+        result_summary = EXCLUDED.result_summary,
+        is_public = TRUE,
+        updated_at = CURRENT_TIMESTAMP
+      RETURNING
+        id,
+        user_id,
+        display_name,
+        age,
+        city,
+        role_label,
+        goal_label,
+        headline,
+        body,
+        result_summary,
+        created_at,
+        updated_at
+      `,
+      [
+        req.session.userId,
+        displayName,
+        age,
+        validation.review.city,
+        roleLabel,
+        goalLabel,
+        validation.review.headline,
+        validation.review.body,
+        validation.review.result_summary,
+      ]
+    );
+
+    return res.json({
+      ok: true,
+      review: serializeUserReview(result.rows[0]),
+    });
+  } catch (err) {
+    console.error("Review save error:", err);
+    return res.status(500).json({ error: "Не удалось сохранить отзыв." });
   }
 });
 

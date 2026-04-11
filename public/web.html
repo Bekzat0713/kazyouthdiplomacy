@@ -28,10 +28,16 @@
 
   <nav class="home-figma-nav">
     <a href="#opportunities">Возможности</a>
-    <a href="/about#features">Преимущества</a>
+    <a href="#pricing">Тарифы</a>
+    <a href="#faq">Вопросы</a>
+    <a href="#reviews">Отзывы</a>
     <a href="/subscribe" class="route-link" data-transition-direction="right">Подписка</a>
     <a href="/about" class="route-link" data-transition-direction="left">О нас</a>
-    <a href="/login" class="nav-btn">Войти</a>
+    <a id="homeNavDashboard" href="/dashboard" class="nav-btn" hidden>Кабинет</a>
+    <form id="homeNavLogoutForm" method="POST" action="/logout" class="home-figma-nav-logout" hidden>
+      <button class="nav-btn" type="submit">Выйти</button>
+    </form>
+    <a id="homeNavLogin" href="/login" class="nav-btn">Войти</a>
   </nav>
 </header>
 
@@ -172,7 +178,7 @@
     </div>
   </section>
 
-  <section class="home-figma-section home-figma-faq" data-scroll-reveal>
+  <section class="home-figma-section home-figma-faq" id="faq" data-scroll-reveal>
     <div class="home-figma-section-head">
       <span class="home-figma-kicker">FAQ</span>
       <h2>Вопросы, которые чаще всего появляются перед оплатой Plus.</h2>
@@ -212,71 +218,121 @@
     </div>
   </section>
 
-  <section class="home-figma-section home-figma-reviews" data-scroll-reveal>
+  <section class="home-figma-section home-figma-reviews" id="reviews" data-scroll-reveal>
     <div class="home-figma-section-head">
       <span class="home-figma-kicker">Reviews</span>
       <h2>Отзывы и истории, которые усиливают доверие перед подпиской.</h2>
-      <p>Ниже можно показывать реальные короткие отзывы участников: что нашли, сколько времени сэкономили и какой следующий шаг сделали после Plus.</p>
+      <p>Пока здесь размещены демонстрационные истории в том формате, как будут выглядеть реальные отзывы пользователей после сбора обратной связи.</p>
     </div>
 
-    <div class="home-figma-review-grid">
+    <div class="home-figma-review-grid" id="homeReviewsGrid">
       <article class="home-figma-review-card">
         <div class="home-figma-review-top">
-          <span class="home-figma-review-tag">Шаблон отзыва</span>
-          <strong>Поиск стал быстрее</strong>
+          <span class="home-figma-review-tag">Демо-история</span>
+          <strong>Аружан, 19 лет</strong>
+          <span class="home-figma-review-meta">Алматы • 2 курс • цель: международная стажировка</span>
+          <span class="home-figma-review-headline">Поиск стал быстрее и спокойнее</span>
         </div>
-        <p>Здесь можно разместить реальный отзыв пользователя о том, как он перестал искать возможности вручную по десяткам каналов и собрал всё важное в одном месте.</p>
-        <span class="home-figma-review-note">Добавьте имя, город и конкретный результат</span>
+        <p>“До Plus я держала открытыми десятки вкладок и всё равно боялась пропустить нормальную программу. Здесь я быстро собрала релевантные варианты под свой профиль и наконец начала подаваться, а не просто сохранять ссылки в заметки.”</p>
+        <span class="home-figma-review-note">Результат: меньше хаотичного поиска и больше реальных откликов за первую неделю</span>
       </article>
 
       <article class="home-figma-review-card">
         <div class="home-figma-review-top">
-          <span class="home-figma-review-tag">Шаблон отзыва</span>
-          <strong>Появился понятный маршрут</strong>
+          <span class="home-figma-review-tag">Демо-история</span>
+          <strong>Нуржан, 22 года</strong>
+          <span class="home-figma-review-meta">Астана • выпускник • цель: первая работа в международной сфере</span>
+          <span class="home-figma-review-headline">Появился понятный маршрут действий</span>
         </div>
-        <p>Эта карточка подойдёт для истории о том, как roadmap помог выбрать следующий шаг и перестать метаться между разными направлениями.</p>
-        <span class="home-figma-review-note">Хорошо работает короткая цитата на 2-3 предложения</span>
+        <p>“Мне было важно не просто увидеть список возможностей, а понять, что делать дальше по шагам. После активации Plus roadmap реально помог собрать последовательность действий: что подтянуть, куда откликаться и на чём фокусироваться в ближайший месяц.”</p>
+        <span class="home-figma-review-note">Результат: появилась ясность по следующему карьерному шагу и приоритетам</span>
       </article>
 
       <article class="home-figma-review-card">
         <div class="home-figma-review-top">
-          <span class="home-figma-review-tag">Шаблон отзыва</span>
-          <strong>Нашёл релевантные возможности</strong>
+          <span class="home-figma-review-tag">Демо-история</span>
+          <strong>Диана, 20 лет</strong>
+          <span class="home-figma-review-meta">Шымкент • студентка • цель: гранты и short-term programs</span>
+          <span class="home-figma-review-headline">Нашлись именно мои возможности</span>
         </div>
-        <p>Здесь можно показать отзыв о том, что пользователь быстрее нашёл стажировки, гранты или программы именно под свой профиль, а не просто общий список.</p>
-        <span class="home-figma-review-note">Лучше всего заходят отзывы с конкретной целью</span>
+        <p>“Мне понравилось, что в Plus я увидела не просто общую базу, а подборки, которые реально подходят под мою цель. Раньше я тратила часы на Telegram и сайты, а здесь намного быстрее поняла, на какие программы стоит обратить внимание в первую очередь.”</p>
+        <span class="home-figma-review-note">Результат: быстрее найден релевантный список программ под конкретную цель</span>
       </article>
 
       <article class="home-figma-review-card">
         <div class="home-figma-review-top">
-          <span class="home-figma-review-tag">Шаблон отзыва</span>
-          <strong>Стало проще не терять дедлайны</strong>
+          <span class="home-figma-review-tag">Демо-история</span>
+          <strong>Алихан, 21 год</strong>
+          <span class="home-figma-review-meta">Караганда • студент • цель: internships в аналитике и policy</span>
+          <span class="home-figma-review-headline">Дедлайны перестали теряться</span>
         </div>
-        <p>Эта история может показывать, как сохранения и контроль дедлайнов помогли не откладывать подачу и довести процесс до реального отклика.</p>
-        <span class="home-figma-review-note">Подчеркните, что изменилось в действиях пользователя</span>
+        <p>“Раньше я постоянно сохранял что-то в разные места и потом забывал про дедлайны. Здесь всё стало гораздо собраннее: отмечаю важные возможности, вижу приоритеты и не теряю те заявки, которые действительно хочу довести до подачи.”</p>
+        <span class="home-figma-review-note">Результат: больше контроля над дедлайнами и сохранёнными заявками</span>
       </article>
 
       <article class="home-figma-review-card">
         <div class="home-figma-review-top">
-          <span class="home-figma-review-tag">Шаблон отзыва</span>
-          <strong>Подошло даже без большого опыта</strong>
+          <span class="home-figma-review-tag">Демо-история</span>
+          <strong>Мадина, 18 лет</strong>
+          <span class="home-figma-review-meta">Тараз • 1 курс • цель: понять, с чего вообще начать</span>
+          <span class="home-figma-review-headline">Стало легче стартовать без опыта</span>
         </div>
-        <p>Сюда можно поставить отзыв студента или начинающего специалиста о том, как платформа помогла увидеть реалистичные варианты даже на старте.</p>
-        <span class="home-figma-review-note">Такой отзыв особенно важен для новых пользователей</span>
+        <p>“Я переживала, что у меня пока слишком мало опыта и мне рано смотреть такие возможности. Но как раз Plus помог убрать этот страх: я увидела варианты для старта и поняла, какие шаги можно делать уже сейчас, а не когда-нибудь потом.”</p>
+        <span class="home-figma-review-note">Результат: снизился барьер входа и стало понятнее, как стартовать без большого опыта</span>
       </article>
 
       <article class="home-figma-review-card">
         <div class="home-figma-review-top">
-          <span class="home-figma-review-tag">Шаблон отзыва</span>
-          <strong>Появилась уверенность в следующем шаге</strong>
+          <span class="home-figma-review-tag">Демо-история</span>
+          <strong>Тимур, 23 года</strong>
+          <span class="home-figma-review-meta">Павлодар • молодой специалист • цель: усилить профиль для программ abroad</span>
+          <span class="home-figma-review-headline">Появилась уверенность в следующем шаге</span>
         </div>
-        <p>Хороший вариант для истории о том, как после Plus пользователь не просто просмотрел базу, а понял, что делать дальше уже на этой неделе.</p>
-        <span class="home-figma-review-note">Лучше завершать такой отзыв измеримым действием</span>
+        <p>“Самое полезное для меня было не количество карточек, а ощущение, что я наконец двигаюсь в правильную сторону. После Plus я за несколько дней составил себе рабочий план, отобрал ближайшие варианты и начал улучшать профиль под конкретные программы.”</p>
+        <span class="home-figma-review-note">Результат: появился рабочий план действий на ближайшие недели</span>
       </article>
     </div>
 
     <div class="home-figma-review-cta">
-      <a href="https://www.instagram.com/kazyouthdiplomacy" target="_blank" rel="noreferrer" class="btn primary">Оставить отзыв</a>
+      <a href="#review-form" class="btn primary">Оставить отзыв</a>
+    </div>
+
+    <article class="home-figma-review-form-card" id="review-form">
+      <div class="home-figma-review-form-copy">
+        <span class="home-figma-review-tag">Your review</span>
+        <h3>Оставьте отзыв прямо на сайте</h3>
+        <p id="homeReviewFormLead">Поделитесь, что изменилось после платформы: стало легче искать возможности, появился маршрут или удалось быстрее перейти к откликам.</p>
+      </div>
+
+      <div id="homeReviewGuestState" class="home-figma-review-guest" hidden>
+        <p>Чтобы оставить отзыв от своего имени, войдите в аккаунт. После входа форма откроется прямо здесь.</p>
+        <a href="/login" class="btn secondary">Войти и оставить отзыв</a>
+      </div>
+
+      <form id="homeReviewForm" class="home-figma-review-form" hidden>
+        <label class="home-figma-review-field">
+          <span>Город</span>
+          <input id="homeReviewCity" name="city" type="text" maxlength="80" placeholder="Например, Алматы" required />
+        </label>
+
+        <label class="home-figma-review-field">
+          <span>Короткий заголовок</span>
+          <input id="homeReviewHeadline" name="headline" type="text" maxlength="120" placeholder="Например, поиск стал быстрее и понятнее" required />
+        </label>
+
+        <label class="home-figma-review-field">
+          <span>Что изменилось после платформы</span>
+          <input id="homeReviewResult" name="result_summary" type="text" maxlength="180" placeholder="Например, собрал 6 релевантных программ и начал подаваться" required />
+        </label>
+
+        <label class="home-figma-review-field">
+          <span>Ваш отзыв</span>
+          <textarea id="homeReviewBody" name="body" rows="5" maxlength="1200" placeholder="Расскажите, что было до платформы, что стало проще и какой результат вы увидели." required></textarea>
+        </label>
+
+        <div id="homeReviewStatus" class="home-figma-review-status" hidden></div>
+        <button id="homeReviewSubmit" class="btn primary" type="submit">Опубликовать отзыв</button>
+      </form>
     </div>
   </section>
 
