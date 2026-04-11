@@ -14,7 +14,7 @@ const planActionMap = new Map(
 const pageHomeArrow = document.querySelector(".page-home-arrow");
 const runtime = window.KYD_RUNTIME;
 
-const FALLBACK_KASPI_QR_URL = runtime ? runtime.getKaspiQrUrl() : "";
+const FALLBACK_KASPI_QR_URL = (runtime ? runtime.getKaspiQrUrl() : "") || "https://pay.kaspi.kz/pay/7tul3afi";
 const DEFAULT_PLAN_HINT = "Нажмите «Оплатить Plus», и мы сразу подготовим точную сумму, переведём вас на Kaspi QR и отправим заявку на проверку.";
 const DEFAULT_SUBSCRIBE_STATUS = "Выберите Plus, оплатите точную сумму по Kaspi QR и дождитесь подтверждения доступа.";
 const DEFAULT_SUBSCRIBE_NOTE = "Сразу после оплаты заявка попадёт в очередь проверки, а Plus включится после подтверждения.";
