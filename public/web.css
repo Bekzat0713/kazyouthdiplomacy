@@ -11403,11 +11403,13 @@ body.kaspi-widget-open {
     font-size: 20px;
   }
 }
-.internship-deadline-urgent {
+.internship-deadline-urgent,
+.meta .internship-deadline-urgent,
+.meta span.internship-deadline-urgent {
   color: #dc2626 !important;
   font-weight: 700 !important;
-  background: rgba(220, 38, 38, 0.08);
-  padding: 4px 10px;
-  border-radius: 8px;
-  border: 1px solid rgba(220, 38, 38, 0.2);
+  background: rgba(220, 38, 38, 0.08) !important;
+  padding: 4px 10px !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(220, 38, 38, 0.2) !important;
 }
