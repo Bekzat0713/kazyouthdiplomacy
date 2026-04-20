@@ -27,6 +27,7 @@
   </a>
 
   <nav class="home-figma-nav">
+    <a href="#ai-youth">AI Youth</a>
     <a href="#opportunities">Возможности</a>
     <a href="#pricing">Тарифы</a>
     <a href="#faq">Вопросы</a>
@@ -76,6 +77,69 @@
             <p>Узнай свой уровень и получи личный маршрут развития за пару минут.</p>
           </div>
         </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-figma-section home-figma-ai" id="ai-youth" data-scroll-reveal>
+    <div class="home-figma-ai-shell">
+      <div class="home-figma-ai-copy">
+        <span class="home-figma-kicker">AI Youth</span>
+        <h2>Видимый AI-помощник, с которого логично начать знакомство с платформой.</h2>
+        <p>
+          AI Youth не выглядит как обычная техподдержка. Он объясняет, что это за сайт, чем он полезен,
+          какие возможности здесь открываются и с какого первого шага лучше начать именно вам.
+        </p>
+        <div class="home-figma-ai-benefits">
+          <article class="home-figma-ai-benefit">
+            <strong>Что это за сайт</strong>
+            <p>Быстро объяснит продукт, кому он подходит и где в нем начинается реальная польза.</p>
+          </article>
+          <article class="home-figma-ai-benefit">
+            <strong>Чем он поможет</strong>
+            <p>Покажет, какие разделы, материалы и карьерные возможности стоит открыть сначала.</p>
+          </article>
+          <article class="home-figma-ai-benefit">
+            <strong>С чего начать</strong>
+            <p>Подскажет первые шаги: опрос, подбор цели, доступ к откликам и следующее действие.</p>
+          </article>
+        </div>
+        <div class="home-figma-ai-actions">
+          <a href="/register-survey" class="btn primary">Пройти Career GPS</a>
+          <a href="/login" id="homeAiLoginCta" class="btn secondary">Войти и задать свой вопрос</a>
+          <a href="/dashboard" id="homeAiDashboardCta" class="btn secondary" hidden>Открыть мой кабинет</a>
+        </div>
+      </div>
+      <div class="home-figma-ai-panel">
+        <div class="home-figma-ai-panel-head">
+          <div>
+            <span class="home-figma-ai-panel-kicker">Career GPS AI</span>
+            <h3>AI Youth</h3>
+            <p>Спрашивайте про сайт, пользу для вас и первые практические шаги.</p>
+          </div>
+          <span id="homeAiModeBadge" class="home-figma-ai-mode-badge">Быстрые ответы</span>
+        </div>
+        <div id="homeAiSuggestionGrid" class="home-figma-ai-suggestions">
+          <button class="home-figma-ai-suggestion" type="button" data-home-ai-question="Что это за сайт и кому он подходит?">Что это за сайт?</button>
+          <button class="home-figma-ai-suggestion" type="button" data-home-ai-question="Чем этот сайт поможет именно мне как студенту или молодому специалисту?">Чем сайт поможет?</button>
+          <button class="home-figma-ai-suggestion" type="button" data-home-ai-question="С чего мне лучше начать прямо сейчас на платформе?">С чего начать?</button>
+          <button class="home-figma-ai-suggestion" type="button" data-home-ai-question="Какие первые шаги помогут быстрее найти стажировки, гранты или карьерные возможности?">Какие первые шаги самые важные?</button>
+        </div>
+        <div id="homeAiMessages" class="home-figma-ai-messages" aria-live="polite"></div>
+        <p id="homeAiStatus" class="home-figma-ai-status"></p>
+        <form id="homeAiForm" class="home-figma-ai-form">
+          <textarea
+            id="homeAiInput"
+            class="home-figma-ai-input"
+            rows="3"
+            maxlength="2000"
+            placeholder="Напишите свой вопрос для AI Youth..."
+          ></textarea>
+          <div class="home-figma-ai-form-actions">
+            <span id="homeAiHint" class="home-figma-ai-hint">Можно начать с готовых вопросов выше.</span>
+            <button id="homeAiSubmit" class="btn primary" type="submit">Спросить AI Youth</button>
+          </div>
+        </form>
       </div>
     </div>
   </section>
@@ -365,3 +429,4 @@
 <script src="/page-transitions.js" defer></script>
 </body>
 </html>
+
