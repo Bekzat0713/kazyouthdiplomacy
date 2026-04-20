@@ -2792,6 +2792,12 @@ textarea {
   align-items: center;
   gap: 6px;
 }
+.meta span.internship-deadline-urgent {
+  color: #dc2626 !important;
+  background: rgba(220, 38, 38, 0.08) !important;
+  border: 1px solid rgba(220, 38, 38, 0.2) !important;
+  font-weight: 700 !important;
+}
 
 .badge {
   display: inline-block;
