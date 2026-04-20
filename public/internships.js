@@ -581,9 +581,8 @@ function createInternshipCard(internship) {
     const deadline = new Date(internship.deadline_date + "T00:00:00");
     const daysLeft = Math.ceil((deadline - today) / (1000 * 60 * 60 * 24));
 
-    if (daysLeft >= 0 && daysLeft <= 15) {
-      deadlineSpan.style.color = "#dc2626";
-      deadlineSpan.style.fontWeight = "700";
+   if (daysLeft >= 0 && daysLeft <= 15) {
+      deadlineSpan.className = "internship-deadline-urgent";
       deadlineSpan.textContent = daysLeft === 0
         ? `⚠️ Дедлайн сегодня: ${internship.deadline_date}`
         : `⚠️ Дедлайн через ${daysLeft} дн.: ${internship.deadline_date}`;
