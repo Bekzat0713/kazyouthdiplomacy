@@ -574,8 +574,23 @@ function createInternshipCard(internship) {
   meta.className = "meta";
   meta.appendChild(createTextElement("span", "", `Локация: ${internship.location}`));
   meta.appendChild(createTextElement("span", "", `Срок: ${internship.duration}`));
-  if (internship.deadline_date) {
-    meta.appendChild(createTextElement("span", "", `Дедлайн: ${internship.deadline_date}`));
+    if (internship.deadline_date) {
+    const deadlineSpan = document.createElement("span");
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const deadline = new Date(internship.deadline_date + "T00:00:00");
+    const daysLeft = Math.ceil((deadline - today) / (1000 * 60 * 60 * 24));
+
+    if (daysLeft >= 0 && daysLeft <= 15) {
+      deadlineSpan.style.color = "#dc2626";
+      deadlineSpan.style.fontWeight = "700";
+      deadlineSpan.textContent = daysLeft === 0
+        ? `⚠️ Дедлайн сегодня: ${internship.deadline_date}`
+        : `⚠️ Дедлайн через ${daysLeft} дн.: ${internship.deadline_date}`;
+    } else {
+      deadlineSpan.textContent = `Дедлайн: ${internship.deadline_date}`;
+    }
+    meta.appendChild(deadlineSpan);
   }
   meta.appendChild(
     createTextElement(
