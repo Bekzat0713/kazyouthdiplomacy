@@ -243,6 +243,17 @@ const careerResourceTypes = new Set([
 ]);
 const savedEntityTypes = new Set(["internship", "opportunity"]);
 const savedStatuses = new Set(["saved", "want_to_apply", "applied"]);
+const careerProfileSectionLabels = {
+  basic_info: "Основная информация",
+  about: "Обо мне",
+  skills: "Навыки",
+  education: "Образование",
+  experience: "Опыт",
+  projects: "Проекты",
+  certificates: "Сертификаты",
+  languages: "Языки",
+  links: "Ссылки",
+};
 
 if (!databaseUrl) {
   console.error("DATABASE_URL is not configured");
@@ -560,6 +571,33 @@ async function initDB() {
         survey_payload JSONB NOT NULL,
         submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS career_profiles (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+        public_slug TEXT UNIQUE NOT NULL,
+        public_enabled BOOLEAN DEFAULT false,
+        profile_data JSONB NOT NULL DEFAULT '{}'::jsonb,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    await pool.query(`
+      ALTER TABLE career_profiles
+      ADD COLUMN IF NOT EXISTS public_slug TEXT,
+      ADD COLUMN IF NOT EXISTS public_enabled BOOLEAN DEFAULT false,
+      ADD COLUMN IF NOT EXISTS profile_data JSONB NOT NULL DEFAULT '{}'::jsonb,
+      ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    `);
+
+    await pool.query(`
+      CREATE UNIQUE INDEX IF NOT EXISTS career_profiles_public_slug_unique
+      ON career_profiles (public_slug)
+      WHERE public_slug IS NOT NULL
     `);
 
     await pool.query(`
@@ -1028,6 +1066,295 @@ function buildDisplayNameFromUser(userRow) {
   return name || normalizeEmail(userRow.email) || "Участник платформы";
 }
 
+function normalizeCareerProfileUrl(value) {
+  const normalized = String(value || "").trim();
+  if (!normalized) {
+    return "";
+  }
+
+  if (!/^https?:\/\//i.test(normalized)) {
+    return "";
+  }
+
+  try {
+    return new URL(normalized).toString().slice(0, 500);
+  } catch (_error) {
+    return "";
+  }
+}
+
+function normalizeCareerProfileImage(value, maxLength = 2_500_000) {
+  const normalized = String(value || "").trim();
+  if (!normalized) {
+    return "";
+  }
+
+  if (/^data:image\/(?:png|jpe?g|webp|gif|svg\+xml);base64,[a-z0-9+/=]+$/i.test(normalized)) {
+    return normalized.slice(0, maxLength);
+  }
+
+  return normalizeCareerProfileUrl(normalized);
+}
+
+function normalizeCareerProfileText(value, maxLength = 240) {
+  return normalizeProfileText(value).slice(0, maxLength);
+}
+
+function normalizeCareerProfileLongText(value, maxLength = 1600) {
+  return String(value || "").trim().replace(/\r\n/g, "\n").replace(/\n{3,}/g, "\n\n").slice(0, maxLength);
+}
+
+function normalizeCareerProfileArray(value, maxItems, mapper) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  const result = [];
+  for (const item of value) {
+    const normalized = mapper(item);
+    if (normalized) {
+      result.push(normalized);
+    }
+    if (result.length >= maxItems) {
+      break;
+    }
+  }
+  return result;
+}
+
+function buildDefaultCareerProfileSlug(userId) {
+  const numericUserId = Number.parseInt(userId, 10);
+  return Number.isInteger(numericUserId) && numericUserId > 0
+    ? `career-${numericUserId}`
+    : `career-${Date.now()}`;
+}
+
+function buildEmptyCareerProfileData(userRow = {}) {
+  return {
+    full_name: buildDisplayNameFromUser(userRow),
+    photo_url: "",
+    city: "",
+    specialization: "",
+    university: normalizeCareerProfileText(userRow.university, 160),
+    about: normalizeCareerProfileLongText(userRow.bio, 1200),
+    skills: [],
+    education: [],
+    experience: [],
+    projects: [],
+    certificates: [],
+    languages: [],
+    links: [],
+  };
+}
+
+function normalizeCareerProfileData(input, userRow = {}) {
+  const source = input && typeof input === "object" ? input : {};
+  const base = buildEmptyCareerProfileData(userRow);
+
+  return {
+    full_name: normalizeCareerProfileText(source.full_name || base.full_name, 140),
+    photo_url: normalizeCareerProfileImage(source.photo_url),
+    city: normalizeCareerProfileText(source.city, 80),
+    specialization: normalizeCareerProfileText(source.specialization, 120),
+    university: normalizeCareerProfileText(source.university || base.university, 160),
+    about: normalizeCareerProfileLongText(source.about || base.about, 1200),
+    skills: normalizeCareerProfileArray(source.skills, 16, (item) => {
+      const label = normalizeCareerProfileText(item, 40);
+      return label || null;
+    }),
+    education: normalizeCareerProfileArray(source.education, 6, (item) => {
+      const entry = item && typeof item === "object" ? item : {};
+      const institution = normalizeCareerProfileText(entry.institution, 140);
+      const degree = normalizeCareerProfileText(entry.degree, 140);
+      const period = normalizeCareerProfileText(entry.period, 80);
+      const details = normalizeCareerProfileLongText(entry.details, 320);
+      if (!institution && !degree && !period && !details) {
+        return null;
+      }
+      return { institution, degree, period, details };
+    }),
+    experience: normalizeCareerProfileArray(source.experience, 8, (item) => {
+      const entry = item && typeof item === "object" ? item : {};
+      const company = normalizeCareerProfileText(entry.company, 140);
+      const role = normalizeCareerProfileText(entry.role, 140);
+      const period = normalizeCareerProfileText(entry.period, 80);
+      const details = normalizeCareerProfileLongText(entry.details, 320);
+      if (!company && !role && !period && !details) {
+        return null;
+      }
+      return { company, role, period, details };
+    }),
+    projects: normalizeCareerProfileArray(source.projects, 8, (item) => {
+      const entry = item && typeof item === "object" ? item : {};
+      const title = normalizeCareerProfileText(entry.title, 140);
+      const summary = normalizeCareerProfileLongText(entry.summary, 360);
+      const link_url = normalizeCareerProfileUrl(entry.link_url);
+      const stack = normalizeCareerProfileText(entry.stack, 140);
+      if (!title && !summary && !link_url && !stack) {
+        return null;
+      }
+      return { title, summary, link_url, stack };
+    }),
+    certificates: normalizeCareerProfileArray(source.certificates, 8, (item) => {
+      const entry = item && typeof item === "object" ? item : {};
+      const title = normalizeCareerProfileText(entry.title, 140);
+      const issuer = normalizeCareerProfileText(entry.issuer, 120);
+      const year = normalizeCareerProfileText(entry.year, 40);
+      const link_url = normalizeCareerProfileUrl(entry.link_url);
+      const image_url = normalizeCareerProfileImage(entry.image_url);
+      if (!title && !issuer && !year && !link_url && !image_url) {
+        return null;
+      }
+      return { title, issuer, year, link_url, image_url };
+    }),
+    languages: normalizeCareerProfileArray(source.languages, 8, (item) => {
+      const entry = item && typeof item === "object" ? item : {};
+      const name = normalizeCareerProfileText(entry.name, 60);
+      const level = normalizeCareerProfileText(entry.level, 60);
+      if (!name && !level) {
+        return null;
+      }
+      return { name, level };
+    }),
+    links: normalizeCareerProfileArray(source.links, 10, (item) => {
+      const entry = item && typeof item === "object" ? item : {};
+      const label = normalizeCareerProfileText(entry.label, 80);
+      const url = normalizeCareerProfileUrl(entry.url);
+      if (!label && !url) {
+        return null;
+      }
+      return { label: label || url.replace(/^https?:\/\//i, ""), url };
+    }),
+  };
+}
+
+function careerProfileSectionHasContent(profileData, sectionKey) {
+  const profile = profileData || {};
+
+  switch (sectionKey) {
+    case "basic_info":
+      return Boolean(profile.full_name || profile.specialization || profile.city || profile.university);
+    case "about":
+      return Boolean(profile.about);
+    case "skills":
+      return Array.isArray(profile.skills) && profile.skills.length > 0;
+    case "education":
+      return Array.isArray(profile.education) && profile.education.length > 0;
+    case "experience":
+      return Array.isArray(profile.experience) && profile.experience.length > 0;
+    case "projects":
+      return Array.isArray(profile.projects) && profile.projects.length > 0;
+    case "certificates":
+      return Array.isArray(profile.certificates) && profile.certificates.length > 0;
+    case "languages":
+      return Array.isArray(profile.languages) && profile.languages.length > 0;
+    case "links":
+      return Array.isArray(profile.links) && profile.links.length > 0;
+    default:
+      return false;
+  }
+}
+
+function buildCareerProfileCompletion(profileData, isPublic) {
+  const checks = [
+    Boolean(profileData.full_name),
+    Boolean(profileData.specialization),
+    Boolean(profileData.photo_url),
+    Boolean(profileData.about),
+    Array.isArray(profileData.skills) && profileData.skills.length >= 3,
+    Array.isArray(profileData.projects) && profileData.projects.length >= 1,
+    Array.isArray(profileData.links) && profileData.links.length >= 1,
+    Array.isArray(profileData.certificates) && profileData.certificates.length >= 1,
+    (Array.isArray(profileData.education) && profileData.education.length >= 1)
+      || (Array.isArray(profileData.experience) && profileData.experience.length >= 1),
+    Boolean(isPublic),
+  ];
+
+  const completed = checks.filter(Boolean).length;
+  return Math.round((completed / checks.length) * 100);
+}
+
+function buildCareerProfileGuidance(survey, profileData) {
+  const priorities = [];
+  const mainGoal = String(survey && survey.main_goal || "").trim().toLowerCase();
+  const englishLevel = String(survey && survey.english_level || "").trim().toLowerCase();
+  const experienceLevel = String(survey && survey.current_experience || "").trim().toLowerCase();
+
+  if (mainGoal === "masters" || mainGoal === "study_abroad") {
+    priorities.push("education", "languages", "projects", "about");
+  } else if (mainGoal === "international_org") {
+    priorities.push("experience", "languages", "projects", "certificates");
+  } else if (mainGoal === "civil_service") {
+    priorities.push("about", "experience", "education", "certificates");
+  } else {
+    priorities.push("projects", "skills", "about", "links");
+  }
+
+  if (experienceLevel === "none" || experienceLevel === "little") {
+    priorities.unshift("projects");
+  }
+
+  if (englishLevel === "a1_a2" || englishLevel === "b1_b2") {
+    priorities.push("languages");
+  }
+
+  const uniquePriorities = Array.from(new Set(priorities)).slice(0, 5);
+  const nextSections = uniquePriorities
+    .filter((sectionKey) => !careerProfileSectionHasContent(profileData, sectionKey))
+    .slice(0, 3);
+
+  return {
+    focus_sections: nextSections,
+    focus_labels: nextSections.map((sectionKey) => careerProfileSectionLabels[sectionKey] || sectionKey),
+    message: nextSections.length > 0
+      ? `Сначала усилите блоки: ${nextSections.map((sectionKey) => careerProfileSectionLabels[sectionKey] || sectionKey).join(", ")}.`
+      : "Профиль уже выглядит цельно. Можно доработать формулировки и сделать страницу публичной.",
+  };
+}
+
+function buildCareerProfileUrls(slug) {
+  const normalizedSlug = normalizeCareerProfileText(slug, 80) || "";
+  const publicPath = `/career/${encodeURIComponent(normalizedSlug)}`;
+  const publicUrl = buildAppUrl(publicPath);
+  return {
+    public_path: publicPath,
+    public_url: publicUrl,
+    pdf_url: `${publicUrl}?pdf=1`,
+    qr_url: `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(publicUrl)}`,
+  };
+}
+
+function buildCareerProfileResponse(row, userRow, survey) {
+  const safeRow = row || {};
+  const profileData = normalizeCareerProfileData(safeRow.profile_data || {}, userRow);
+  const publicSlug = normalizeCareerProfileText(
+    safeRow.public_slug || buildDefaultCareerProfileSlug(userRow.id),
+    80
+  );
+  const publicEnabled = safeRow.public_enabled === true;
+  const guidance = buildCareerProfileGuidance(survey, profileData);
+  const completionPercent = buildCareerProfileCompletion(profileData, publicEnabled);
+
+  return {
+    public_enabled: publicEnabled,
+    public_slug: publicSlug,
+    updated_at: safeRow.updated_at || null,
+    profile: profileData,
+    guidance,
+    summary: {
+      completion_percent: completionPercent,
+      is_public: publicEnabled,
+      projects_count: profileData.projects.length,
+      skills_count: profileData.skills.length,
+      links_count: profileData.links.length,
+      certificates_count: profileData.certificates.length,
+      top_skills: profileData.skills.slice(0, 5),
+      featured_projects: profileData.projects.slice(0, 3).map((item) => item.title).filter(Boolean),
+    },
+    urls: buildCareerProfileUrls(publicSlug),
+  };
+}
+
 const surveyValueLabels = {
   current_status: {
     school: "Школьник",
@@ -1176,6 +1503,63 @@ async function getRegistrationSurveyForUser(userId) {
     ...result.rows[0].survey_payload,
     submitted_at: result.rows[0].submitted_at,
   };
+}
+
+async function getCareerProfileRowForUser(userId) {
+  if (!userId) {
+    return null;
+  }
+
+  const result = await pool.query(
+    `
+    SELECT
+      id,
+      user_id,
+      public_slug,
+      public_enabled,
+      profile_data,
+      created_at,
+      updated_at
+    FROM career_profiles
+    WHERE user_id = $1
+    LIMIT 1
+    `,
+    [userId]
+  );
+
+  return result.rows[0] || null;
+}
+
+async function getCareerProfileBySlug(publicSlug) {
+  const normalizedSlug = normalizeCareerProfileText(publicSlug, 80);
+  if (!normalizedSlug) {
+    return null;
+  }
+
+  const result = await pool.query(
+    `
+    SELECT
+      cp.id,
+      cp.user_id,
+      cp.public_slug,
+      cp.public_enabled,
+      cp.profile_data,
+      cp.updated_at,
+      u.first_name,
+      u.last_name,
+      u.university,
+      u.bio,
+      u.email
+    FROM career_profiles cp
+    JOIN users u ON u.id = cp.user_id
+    WHERE cp.public_slug = $1
+      AND cp.public_enabled IS TRUE
+    LIMIT 1
+    `,
+    [normalizedSlug]
+  );
+
+  return result.rows[0] || null;
 }
 
 async function getUserReviewForUser(userId) {
@@ -3506,6 +3890,12 @@ function buildAssistantInstructions(context) {
     "Ты встроенный AI-агент сайта KazYouthDiplomacy внутри личного кабинета.",
     "Отвечай по-русски, если пользователь не просит другой язык.",
     "Помогай коротко, практично и по делу: навигация по сайту, рекомендации по стажировкам, возможностям, материалам, подписке и карьерному маршруту.",
+    "Отвечай естественно даже на очень простые сообщения вроде `привет`, `кто ты`, `что ты умеешь`, `с чего начать`.",
+    "Если пользователь просит личный roadmap, опирайся на контекст профиля, survey, roadmap и saved_summary. Дай пошаговый план с ближайшим следующим действием.",
+    "Если пользователь просит подобрать стажировки, гранты, стипендии, статьи или материалы, сначала используй подходящий tool call по каталогу, а потом уже формулируй ответ.",
+    "Если пользователь спрашивает, как подаваться, как улучшить CV, мотивационное письмо, отклик или подготовку к интервью, давай конкретные шаги и при возможности направляй к релевантным материалам через tool calls.",
+    "Если у пользователя активная подписка или есть доступ Plus, используй этот доступ максимально полезно: подбирай релевантные элементы каталога, объясняй почему они подходят и что делать дальше.",
+    "Если у пользователя нет нужного доступа, честно скажи, что ограничено, но все равно помоги тем, что доступно прямо сейчас: общий план, логика выбора и следующий шаг.",
     "Для фактов о пользователе, доступе, подписке, сохранениях и каталоге используй только предоставленный контекст и tool calls.",
     "Не выдумывай дедлайны, статусы оплаты, доступы, количество элементов или содержимое каталога.",
     "Если ответ связан с ограничением Free или Plus, скажи это прямо и предложи следующий шаг на сайте.",
@@ -4959,6 +5349,18 @@ app.post("/logout", (req, res) => {
    Protected Pages
 ====================== */
 
+app.get("/career/:slug", (req, res) =>
+  res.sendFile(path.join(__dirname, "public", "career-public.html"))
+);
+
+app.get("/career-profile", requireAuth, (req, res) =>
+  res.sendFile(path.join(__dirname, "public", "career-profile.html"))
+);
+
+app.get("/career-profile.html", requireAuth, (req, res) =>
+  res.redirect("/career-profile")
+);
+
 app.get("/dashboard", requireAuth, (req, res) =>
   res.sendFile(path.join(__dirname, "public", "dashboard.html"))
 );
@@ -4970,6 +5372,140 @@ app.get("/internships", requireAuth, (req, res) =>
 app.get("/internships.html", requireAuth, (req, res) =>
   res.redirect("/internships")
 );
+
+app.get("/api/career-profile", requireAuth, async (req, res) => {
+  try {
+    const userResult = await pool.query(
+      `
+      SELECT
+        id,
+        first_name,
+        last_name,
+        university,
+        bio,
+        email
+      FROM users
+      WHERE id = $1
+      LIMIT 1
+      `,
+      [req.session.userId]
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const [survey, careerProfileRow] = await Promise.all([
+      getRegistrationSurveyForUser(req.session.userId),
+      getCareerProfileRowForUser(req.session.userId),
+    ]);
+
+    return res.json(buildCareerProfileResponse(careerProfileRow, userResult.rows[0], survey));
+  } catch (err) {
+    console.error("Fetch career profile error:", err);
+    return res.status(500).json({ error: "Failed to fetch career profile" });
+  }
+});
+
+app.put("/api/career-profile", requireAuth, async (req, res) => {
+  try {
+    const userResult = await pool.query(
+      `
+      SELECT
+        id,
+        first_name,
+        last_name,
+        university,
+        bio,
+        email
+      FROM users
+      WHERE id = $1
+      LIMIT 1
+      `,
+      [req.session.userId]
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const user = userResult.rows[0];
+    const [survey, existingProfileRow] = await Promise.all([
+      getRegistrationSurveyForUser(req.session.userId),
+      getCareerProfileRowForUser(req.session.userId),
+    ]);
+
+    const normalizedProfile = normalizeCareerProfileData(req.body && req.body.profile, user);
+    const publicEnabled = req.body && req.body.public_enabled === true;
+    const publicSlug = normalizeCareerProfileText(
+      existingProfileRow && existingProfileRow.public_slug
+        ? existingProfileRow.public_slug
+        : buildDefaultCareerProfileSlug(req.session.userId),
+      80
+    );
+
+    const savedResult = await pool.query(
+      `
+      INSERT INTO career_profiles (
+        user_id,
+        public_slug,
+        public_enabled,
+        profile_data,
+        created_at,
+        updated_at
+      )
+      VALUES ($1, $2, $3, $4::jsonb, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      ON CONFLICT (user_id)
+      DO UPDATE SET
+        public_slug = EXCLUDED.public_slug,
+        public_enabled = EXCLUDED.public_enabled,
+        profile_data = EXCLUDED.profile_data,
+        updated_at = CURRENT_TIMESTAMP
+      RETURNING
+        id,
+        user_id,
+        public_slug,
+        public_enabled,
+        profile_data,
+        created_at,
+        updated_at
+      `,
+      [
+        req.session.userId,
+        publicSlug,
+        publicEnabled,
+        JSON.stringify(normalizedProfile),
+      ]
+    );
+
+    return res.json(buildCareerProfileResponse(savedResult.rows[0], user, survey));
+  } catch (err) {
+    console.error("Save career profile error:", err);
+    return res.status(500).json({ error: "Failed to save career profile" });
+  }
+});
+
+app.get("/api/career-profile/public/:slug", async (req, res) => {
+  try {
+    const careerProfileRow = await getCareerProfileBySlug(req.params.slug);
+    if (!careerProfileRow) {
+      return res.status(404).json({ error: "Career profile not found" });
+    }
+
+    const payload = buildCareerProfileResponse(careerProfileRow, careerProfileRow, null);
+    return res.json({
+      public_enabled: payload.public_enabled,
+      public_slug: payload.public_slug,
+      updated_at: payload.updated_at,
+      profile: payload.profile,
+      summary: payload.summary,
+      urls: payload.urls,
+    });
+  } catch (err) {
+    console.error("Fetch public career profile error:", err);
+    return res.status(500).json({ error: "Failed to fetch public career profile" });
+  }
+});
 
 app.get("/api/account/access", requireAuth, async (req, res) => {
   try {

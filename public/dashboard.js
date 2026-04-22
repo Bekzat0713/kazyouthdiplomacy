@@ -311,6 +311,54 @@ async function loadSavedSummary() {
   }
 }
 
+function renderCareerProfileSummary(payload) {
+  var badge = document.getElementById("dashboardCareerBadge");
+  var text = document.getElementById("dashboardCareerText");
+  var projects = document.getElementById("dashboardCareerProjects");
+  var skills = document.getElementById("dashboardCareerSkills");
+  var links = document.getElementById("dashboardCareerLinks");
+  var certificates = document.getElementById("dashboardCareerCertificates");
+  var publicLink = document.getElementById("dashboardCareerPublicLink");
+
+  if (!badge || !text || !projects || !skills || !links || !certificates || !publicLink) {
+    return;
+  }
+
+  var summary = payload && payload.summary ? payload.summary : {};
+  var urls = payload && payload.urls ? payload.urls : {};
+  var isPublic = payload && payload.public_enabled === true;
+
+  badge.textContent = String(summary.completion_percent || 0) + "%";
+  projects.textContent = String(summary.projects_count || 0);
+  skills.textContent = String(summary.skills_count || 0);
+  links.textContent = String(summary.links_count || 0);
+  certificates.textContent = String(summary.certificates_count || 0);
+  text.textContent = isPublic
+    ? "Публичная страница включена. QR уже может вести работодателя на вашу карьерную визитку."
+    : "Пока это черновик. Заполните ключевые блоки и включите public mode, когда будете готовы.";
+
+  publicLink.hidden = !isPublic;
+  publicLink.href = urls.public_url || "#";
+}
+
+async function loadCareerProfileSummary() {
+  try {
+    var response = await fetch("/api/career-profile", {
+      headers: { Accept: "application/json" },
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      return;
+    }
+
+    var payload = await response.json();
+    renderCareerProfileSummary(payload);
+  } catch (error) {
+    console.error("Failed to load career profile summary:", error);
+  }
+}
+
 async function loadAccountAccess() {
   var publicationsTab = document.getElementById("dashboardPublicationsTab");
   var publicationsCard = document.getElementById("dashboardPublicationsCard");
@@ -402,6 +450,7 @@ function refreshDashboardData() {
 
   void loadAccountAccess();
   void loadSavedSummary();
+  void loadCareerProfileSummary();
 }
 
 function startDashboardPolling() {

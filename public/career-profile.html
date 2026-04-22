@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Career Profile — KazYouthDiplomacy</title>
+  <link rel="stylesheet" href="/web.css">
+</head>
+<body class="career-editor-body" data-assistant-page="dashboard">
+<header class="header">
+  <a href="/" class="logo-wrap">
+    <img src="/logo.png" alt="KazYouthDiplomacy">
+    <span>KazYouthDiplomacy</span>
+  </a>
+  <nav>
+    <a href="/dashboard">Кабинет</a>
+    <a href="/internships">Стажировки</a>
+    <a href="/opportunities">Возможности</a>
+    <a href="/resources">Материалы</a>
+    <form method="POST" action="/logout" style="display:inline;">
+      <button class="nav-btn">Выйти</button>
+    </form>
+  </nav>
+</header>
+
+<section class="dashboard-page career-editor-page">
+  <div class="dashboard-container career-editor-container">
+    <h1>My Career Profile</h1>
+    <p class="career-editor-lead">Соберите свою карьерную визитку: публичную страницу, которую HR сможет открыть по QR без лишней навигации и кабинетного интерфейса.</p>
+
+    <div class="dashboard-tabs">
+      <a href="/dashboard" class="dashboard-tab">Кабинет</a>
+      <a href="/internships" class="dashboard-tab">Стажировки</a>
+      <a href="/opportunities" class="dashboard-tab">Возможности</a>
+      <a href="/resources" class="dashboard-tab">Материалы</a>
+      <a href="/career-profile" class="dashboard-tab active">Career Profile</a>
+      <a href="/subscribe" class="dashboard-tab">Подписка</a>
+    </div>
+
+    <div class="career-editor-grid">
+      <form id="careerProfileForm" class="career-editor-main">
+        <section class="dashboard-card career-editor-card">
+          <div class="dashboard-profile-head">
+            <div>
+              <p class="dashboard-kicker">MVP</p>
+              <h3>Основная информация</h3>
+            </div>
+            <label class="career-visibility-toggle">
+              <input id="careerPublicEnabled" type="checkbox">
+              <span>Публичный режим</span>
+            </label>
+          </div>
+
+          <div class="career-basic-layout">
+            <div class="career-photo-card">
+              <div class="career-photo-card-head">
+                <span class="career-photo-card-label">Фото профиля</span>
+                <p>Выберите аккуратное фото. Оно будет первым элементом на вашей публичной странице.</p>
+              </div>
+
+              <input id="careerPhotoUrl" type="hidden">
+              <div id="careerPhotoPreview" class="career-photo-preview career-photo-preview-large" hidden></div>
+
+              <label class="career-upload-button">
+                <input id="careerPhotoFile" type="file" accept="image/*">
+                <span>Загрузить фото</span>
+              </label>
+
+              <button id="careerPhotoRemove" type="button" class="career-remove-btn career-photo-remove" hidden>Удалить фото</button>
+            </div>
+
+            <div class="career-basic-fields">
+              <div class="career-form-grid">
+                <label class="career-field">
+                  <span>Полное имя</span>
+                  <input id="careerFullName" type="text" maxlength="140" placeholder="Например, Aigerim Sadykova">
+                </label>
+                <label class="career-field">
+                  <span>Специальность / направление</span>
+                  <input id="careerSpecialization" type="text" maxlength="120" placeholder="International Relations Student">
+                </label>
+                <label class="career-field">
+                  <span>Город</span>
+                  <input id="careerCity" type="text" maxlength="80" placeholder="Almaty">
+                </label>
+                <label class="career-field">
+                  <span>Университет</span>
+                  <input id="careerUniversity" type="text" maxlength="160" placeholder="KIMEP University">
+                </label>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="dashboard-card career-editor-card">
+          <div class="dashboard-profile-head">
+            <div>
+              <p class="dashboard-kicker">Career GPS</p>
+              <h3>Подсказки по заполнению</h3>
+            </div>
+            <span id="careerGuidanceBadge" class="dashboard-badge">Фокус</span>
+          </div>
+          <p id="careerGuidanceText">Загружаем рекомендации...</p>
+          <div id="careerGuidanceList" class="career-focus-list"></div>
+        </section>
+
+        <section class="dashboard-card career-editor-card">
+          <div class="dashboard-profile-head">
+            <div>
+              <p class="dashboard-kicker">Story</p>
+              <h3>Обо мне</h3>
+            </div>
+          </div>
+          <label class="career-field">
+            <span>Короткое описание</span>
+            <textarea id="careerAbout" rows="5" maxlength="1200" placeholder="2–4 предложения: кто вы, куда растёте, чем можете быть полезны компании."></textarea>
+          </label>
+        </section>
+
+        <section class="dashboard-card career-editor-card">
+          <div class="dashboard-profile-head">
+            <div>
+              <p class="dashboard-kicker">Skills</p>
+              <h3>Навыки</h3>
+            </div>
+          </div>
+          <label class="career-field">
+            <span>3–10 ключевых навыков</span>
+            <textarea id="careerSkills" rows="4" placeholder="Один навык на строку или через запятую"></textarea>
+          </label>
+        </section>
+
+        <section class="dashboard-card career-editor-card">
+          <div class="career-section-head">
+            <div>
+              <p class="dashboard-kicker">Background</p>
+              <h3>Образование</h3>
+            </div>
+            <button type="button" class="btn secondary career-add-btn" data-add-section="education">Добавить</button>
+          </div>
+          <div id="careerEducationList" class="career-repeat-list"></div>
+        </section>
+
+        <section class="dashboard-card career-editor-card">
+          <div class="career-section-head">
+            <div>
+              <p class="dashboard-kicker">Experience</p>
+              <h3>Опыт</h3>
+            </div>
+            <button type="button" class="btn secondary career-add-btn" data-add-section="experience">Добавить</button>
+          </div>
+          <div id="careerExperienceList" class="career-repeat-list"></div>
+        </section>
+
+        <section class="dashboard-card career-editor-card">
+          <div class="career-section-head">
+            <div>
+              <p class="dashboard-kicker">Portfolio</p>
+              <h3>Проекты</h3>
+            </div>
+            <button type="button" class="btn secondary career-add-btn" data-add-section="projects">Добавить</button>
+          </div>
+          <div id="careerProjectsList" class="career-repeat-list"></div>
+        </section>
+
+        <section class="dashboard-card career-editor-card">
+          <div class="career-section-head">
+            <div>
+              <p class="dashboard-kicker">Proof</p>
+              <h3>Сертификаты</h3>
+            </div>
+            <button type="button" class="btn secondary career-add-btn" data-add-section="certificates">Добавить</button>
+          </div>
+          <div id="careerCertificatesList" class="career-repeat-list"></div>
+        </section>
+
+        <section class="dashboard-card career-editor-card">
+          <div class="career-section-head">
+            <div>
+              <p class="dashboard-kicker">Languages</p>
+              <h3>Языки</h3>
+            </div>
+            <button type="button" class="btn secondary career-add-btn" data-add-section="languages">Добавить</button>
+          </div>
+          <div id="careerLanguagesList" class="career-repeat-list"></div>
+        </section>
+
+        <section class="dashboard-card career-editor-card">
+          <div class="career-section-head">
+            <div>
+              <p class="dashboard-kicker">Links</p>
+              <h3>Ссылки</h3>
+            </div>
+            <button type="button" class="btn secondary career-add-btn" data-add-section="links">Добавить</button>
+          </div>
+          <div id="careerLinksList" class="career-repeat-list"></div>
+        </section>
+
+        <div class="career-editor-actions">
+          <button id="careerSaveButton" type="submit" class="btn primary">Сохранить профиль</button>
+          <span id="careerSaveStatus" class="career-save-status">Изменения ещё не сохранены.</span>
+        </div>
+      </form>
+
+      <aside class="career-editor-sidebar">
+        <section class="dashboard-card career-editor-card career-summary-card">
+          <div class="dashboard-profile-head">
+            <div>
+              <p class="dashboard-kicker">Public View</p>
+              <h3>Публичная страница и QR</h3>
+            </div>
+            <span id="careerCompletionBadge" class="dashboard-badge">0%</span>
+          </div>
+
+          <p id="careerSummaryText">Соберите быстрый профиль для стажировок, грантов и работы.</p>
+
+          <div class="career-summary-metrics">
+            <div class="dashboard-roadmap-item">
+              <span>Проекты</span>
+              <strong id="careerSummaryProjects">0</strong>
+            </div>
+            <div class="dashboard-roadmap-item">
+              <span>Навыки</span>
+              <strong id="careerSummarySkills">0</strong>
+            </div>
+            <div class="dashboard-roadmap-item">
+              <span>Ссылки</span>
+              <strong id="careerSummaryLinks">0</strong>
+            </div>
+            <div class="dashboard-roadmap-item">
+              <span>Сертификаты</span>
+              <strong id="careerSummaryCertificates">0</strong>
+            </div>
+          </div>
+
+          <label class="career-field">
+            <span>Публичная ссылка</span>
+            <input id="careerPublicUrl" type="text" readonly>
+          </label>
+
+          <div class="career-summary-actions">
+            <button id="careerCopyLinkButton" type="button" class="btn secondary">Копировать ссылку</button>
+            <a id="careerOpenPublicButton" href="#" class="btn primary" target="_blank" rel="noopener">Открыть public page</a>
+          </div>
+
+          <div class="career-qr-card">
+            <img id="careerQrImage" src="" alt="QR code for public profile">
+          </div>
+
+          <div class="career-summary-actions">
+            <a id="careerPdfButton" href="#" class="btn secondary" target="_blank" rel="noopener">Download PDF</a>
+          </div>
+
+          <p id="careerUpdatedAt" class="career-updated-at">Профиль ещё не сохранён.</p>
+        </section>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<script src="/career-profile.js" defer></script>
+<script src="/assistant-widget.js" defer></script>
+</body>
+</html>

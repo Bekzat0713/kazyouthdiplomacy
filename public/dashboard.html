@@ -32,6 +32,7 @@
       <a href="/internships" class="dashboard-tab">Стажировки</a>
       <a href="/opportunities" class="dashboard-tab">Возможности</a>
       <a href="/resources" class="dashboard-tab">Материалы</a>
+      <a href="/career-profile" class="dashboard-tab">Career Profile</a>
       <a href="/subscribe" class="dashboard-tab">Подписка</a>
       <a id="dashboardPublicationsTab" href="/opportunities" class="dashboard-tab" hidden>Публикации</a>
       <a id="dashboardSubscriptionReviewTab" href="/subscriptions-review" class="dashboard-tab" hidden>Проверка оплат</a>
@@ -107,6 +108,42 @@
       <div class="dashboard-roadmap-steps-wrap">
         <p class="dashboard-kicker">Маршрут на ближайшее время</p>
         <div id="dashboardRoadmapSteps" class="dashboard-roadmap-steps"></div>
+      </div>
+    </div>
+
+    <div id="dashboardCareerCard" class="dashboard-card">
+      <div class="dashboard-profile-head">
+        <div>
+          <p class="dashboard-kicker">Career Profile</p>
+          <h3>Моя карьерная визитка</h3>
+        </div>
+        <span id="dashboardCareerBadge" class="dashboard-badge">0%</span>
+      </div>
+
+      <p id="dashboardCareerText">Соберите публичный профиль с QR-кодом, чтобы HR сразу видел ваши проекты, навыки, ссылки и PDF без кабинетного интерфейса.</p>
+
+      <div class="dashboard-roadmap-grid">
+        <div class="dashboard-roadmap-item">
+          <span>Проекты</span>
+          <strong id="dashboardCareerProjects">0</strong>
+        </div>
+        <div class="dashboard-roadmap-item">
+          <span>Навыки</span>
+          <strong id="dashboardCareerSkills">0</strong>
+        </div>
+        <div class="dashboard-roadmap-item">
+          <span>Ссылки</span>
+          <strong id="dashboardCareerLinks">0</strong>
+        </div>
+        <div class="dashboard-roadmap-item">
+          <span>Сертификаты</span>
+          <strong id="dashboardCareerCertificates">0</strong>
+        </div>
+      </div>
+
+      <div class="career-summary-actions">
+        <a href="/career-profile" class="btn primary">Открыть редактор</a>
+        <a id="dashboardCareerPublicLink" href="#" class="btn secondary" hidden>Public page</a>
       </div>
     </div>
 

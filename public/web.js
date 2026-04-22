@@ -226,6 +226,184 @@ const HOME_AI_GUEST_ANSWERS = {
     "Сначала определите цель, потом откройте релевантный раздел и сохраните только действительно подходящие варианты. После этого переходите к материалам, чтобы подготовить CV, мотивационное письмо и подачу. На платформе важно не просто смотреть карточки, а собирать понятный следующий шаг."
 };
 
+const HOME_AI_DIRECT_ANSWERS = {
+  "что это за сайт и кому он подходит":
+    "KazYouthDiplomacy - это career GPS для студентов и молодых специалистов. Здесь собраны стажировки, гранты, материалы и personal roadmap, чтобы вы не искали все хаотично по разным каналам.",
+  "чем этот сайт поможет именно мне как студенту или молодому специалисту":
+    "Сайт помогает быстрее перейти от интереса к действиям: понять цель, открыть подходящие возможности, сохранить нужные варианты и подготовиться к подаче.",
+  "с чего мне лучше начать прямо сейчас на платформе":
+    "Лучший старт - пройти Career GPS опрос, после этого открыть нужный раздел, собрать shortlist и перейти к подготовке документов.",
+  "какие первые шаги помогут быстрее найти стажировки гранты или карьерные возможности":
+    "Сначала определите цель, потом откройте релевантный раздел, сохраните только подходящие варианты и переходите к материалам по CV, мотивационному письму и подаче.",
+};
+
+function normalizeHomeAiText(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/ё/g, "е")
+    .replace(/[^0-9a-zа-я\s]/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function getHomeAiLocalAnswer(rawPrompt, state = {}) {
+  const prompt = String(rawPrompt || "").trim();
+  const normalized = normalizeHomeAiText(prompt);
+  const isAuthenticated = Boolean(state.isAuthenticated);
+  const goalLabel = state.currentUser && state.currentUser.goal_label
+    ? String(state.currentUser.goal_label).trim()
+    : "";
+
+  if (!normalized) {
+    return {
+      answer: "Напишите вопрос простыми словами: например `привет`, `что это за сайт`, `с чего начать`, `дай roadmap`, `как податься` или `найди стажировки`.",
+      status: "AI Youth уже под рукой: можно начать с любого короткого вопроса.",
+      tone: "",
+    };
+  }
+
+  if (HOME_AI_DIRECT_ANSWERS[normalized]) {
+    return {
+      answer: HOME_AI_DIRECT_ANSWERS[normalized],
+      status: isAuthenticated
+        ? "Если хотите, могу продолжить глубже: roadmap, подача, стажировки, материалы."
+        : "Для персональных рекомендаций войдите в аккаунт и продолжите диалог.",
+      tone: "",
+    };
+  }
+
+  if (/(^|\s)(привет|здравствуй|здравствуйте|салам|hello|hi)(\s|$)/.test(normalized)) {
+    return {
+      answer: isAuthenticated
+        ? "Привет. Я AI Youth. Могу помочь с навигацией по платформе, personal roadmap, поиском возможностей, материалами по подаче и следующим шагом."
+        : "Привет. Я AI Youth. Уже здесь могу объяснить, что это за сайт, чем он полезен, с чего начать и как двигаться к стажировкам, грантам и первым откликам.",
+      status: isAuthenticated
+        ? "Можно спросить про roadmap, стажировки, гранты, материалы, подписку и подачу."
+        : "Для персонального разбора под ваш профиль потом войдите в аккаунт.",
+      tone: "",
+    };
+  }
+
+  if (
+    normalized.includes("что это за сайт") ||
+    normalized.includes("что за сайт") ||
+    normalized.includes("кому подходит") ||
+    normalized.includes("для кого сайт")
+  ) {
+    return {
+      answer: "KazYouthDiplomacy - это платформа для студентов и молодых специалистов, где собраны стажировки, гранты, карьерные материалы и personal roadmap. Она помогает быстрее понять, куда двигаться и что делать дальше.",
+      status: "Если хотите, следующим сообщением могу подсказать, с какого раздела лучше начать именно вам.",
+      tone: "",
+    };
+  }
+
+  if (
+    normalized.includes("чем поможет") ||
+    normalized.includes("как поможет") ||
+    normalized.includes("какая польза") ||
+    normalized.includes("что мне даст")
+  ) {
+    return {
+      answer: "Платформа помогает в трех вещах: найти подходящие возможности, не потерять дедлайны и перейти от просмотра к реальной подаче. Здесь можно выбрать направление, собрать shortlist и открыть материалы по CV, мотивационному письму и интервью.",
+      status: "Если напишете цель, AI Youth может сузить рекомендации до конкретных шагов.",
+      tone: "",
+    };
+  }
+
+  if (
+    normalized.includes("с чего начать") ||
+    normalized.includes("первые шаги") ||
+    normalized.includes("что делать сначала") ||
+    normalized.includes("как начать")
+  ) {
+    return {
+      answer: "Лучший старт такой: определить цель, пройти Career GPS, открыть релевантный раздел, сохранить подходящие варианты и перейти к подготовке документов. Так вы сразу строите маршрут, а не просто листаете каталог.",
+      status: "Самый полезный первый шаг на платформе сейчас - пройти Career GPS.",
+      tone: "",
+    };
+  }
+
+  if (
+    normalized.includes("roadmap") ||
+    normalized.includes("роадмап") ||
+    normalized.includes("маршрут") ||
+    normalized.includes("план развития")
+  ) {
+    const personalizedLead = goalLabel
+      ? `Судя по вашему профилю, текущая цель связана с направлением: ${goalLabel}. `
+      : "";
+
+    return {
+      answer: isAuthenticated
+        ? `${personalizedLead}Я бы построил личный roadmap так: определить цель на ближайшие 1-3 месяца, собрать 5-10 релевантных возможностей, параллельно подтянуть CV и мотивационное письмо, потом начать регулярные подачи и следить за дедлайнами. Если дадите сферу или цель, я помогу сузить маршрут.`
+        : "Базовый roadmap такой: определить цель, выбрать одно направление, собрать shortlist возможностей, подготовить CV и мотивационное письмо, а затем перейти к регулярным подачам и отслеживанию дедлайнов. Для более личного roadmap лучше войти в аккаунт и пройти Career GPS.",
+      status: isAuthenticated
+        ? "Можно уточнить roadmap под конкретную цель: международные организации, госслужба, private sector, research и так далее."
+        : "Для более личного roadmap нужен аккаунт и данные профиля.",
+      tone: isAuthenticated ? "" : "warning",
+    };
+  }
+
+  if (
+    normalized.includes("стажир") ||
+    normalized.includes("internship") ||
+    normalized.includes("возможност") ||
+    normalized.includes("грант") ||
+    normalized.includes("стипенд")
+  ) {
+    return {
+      answer: isAuthenticated
+        ? "Могу помочь найти подходящие стажировки, гранты и другие возможности. Напишите конкретнее: например `найди стажировки в госорганах`, `дай гранты для студентов`, `что подойдет без опыта`."
+        : "На платформе есть стажировки, гранты, стипендии и другие карьерные возможности. Для персонального подбора под ваш профиль лучше войти в аккаунт, но уже сейчас можно начать с Career GPS и релевантных разделов.",
+      status: isAuthenticated
+        ? "Сформулируйте цель чуть конкретнее, и AI Youth сможет дать более точный ответ."
+        : "Персональный подбор доступен после входа в аккаунт.",
+      tone: isAuthenticated ? "" : "warning",
+    };
+  }
+
+  if (
+    normalized.includes("как податься") ||
+    normalized.includes("как подаваться") ||
+    normalized.includes("подач") ||
+    normalized.includes("отклик") ||
+    normalized.includes("cv") ||
+    normalized.includes("резюме") ||
+    normalized.includes("мотивацион")
+  ) {
+    return {
+      answer: "Логика подачи обычно такая: прочитать требования, проверить дедлайн, адаптировать CV под конкретную программу, подготовить мотивационное письмо, собрать документы и только после этого отправлять заявку. На платформе для этого как раз есть материалы по карьерному старту, CV, интервью и подготовке к подаче.",
+      status: isAuthenticated
+        ? "Можно написать `помоги подготовиться к подаче` или `что улучшить перед откликом`, и я продолжу."
+        : "Для более точной помощи с подачей войдите в аккаунт и откройте материалы платформы.",
+      tone: "",
+    };
+  }
+
+  if (
+    normalized.includes("подписк") ||
+    normalized.includes("plus") ||
+    normalized.includes("доступ") ||
+    normalized.includes("что дает подписка")
+  ) {
+    return {
+      answer: "Подписка нужна там, где важны персонализация и более глубокий доступ. Если коротко, Plus полезен тем, кто хочет не просто смотреть каталог, а получать более практичные рекомендации и двигаться быстрее.",
+      status: "Если хотите, могу отдельно объяснить, когда Plus реально стоит брать, а когда пока можно обойтись базовым режимом.",
+      tone: "",
+    };
+  }
+
+  return {
+    answer: isAuthenticated
+      ? "Я могу помочь с базовой навигацией: roadmap, первые шаги, стажировки, гранты, материалы, подача и доступ. Попробуйте задать вопрос чуть конкретнее."
+      : "Я уже могу помочь с вопросами про сайт, старт, roadmap, возможности и подачу. Для личного разбора под ваш профиль войдите в аккаунт и продолжите диалог там.",
+    status: isAuthenticated
+      ? "Попробуйте уточнить запрос: например `дай roadmap`, `как податься`, `что делать сначала`, `какие стажировки искать`."
+      : "Можно начать с вопроса вроде `с чего начать`, `дай roadmap` или `как податься`.",
+    tone: "",
+  };
+}
+
 function loadHomeAiHistory() {
   try {
     const raw = sessionStorage.getItem(HOME_AI_STORAGE_KEY);
@@ -299,11 +477,11 @@ function setHomeAiSending(state, sending) {
   state.sending = sending;
 
   if (state.input) {
-    state.input.disabled = sending || !state.enabled;
+    state.input.disabled = sending;
   }
 
   if (state.submit) {
-    state.submit.disabled = sending || !state.enabled;
+    state.submit.disabled = sending;
     state.submit.textContent = sending ? "AI Youth думает..." : "Спросить AI Youth";
   }
 }
@@ -344,27 +522,24 @@ async function fetchHomeAiAvailability(state) {
     }
   } catch (_error) {
     state.enabled = false;
-    setHomeAiStatus(state, "AI Youth временно недоступен. Попробуйте еще раз чуть позже.", "warning");
+    setHomeAiStatus(state, "AI Youth временно недоступен. Но я все равно могу дать базовые ответы прямо здесь.", "warning");
   } finally {
     setHomeAiSending(state, false);
   }
 }
 
 function askHomeAiGuestQuestion(state, question) {
-  const answer = HOME_AI_GUEST_ANSWERS[question];
-  if (!answer) {
-    pushHomeAiMessage(
-      state,
-      "assistant",
-      "Сейчас я могу быстро рассказать про сайт, пользу платформы и стартовые шаги. Для живого диалога войдите в аккаунт."
-    );
-    setHomeAiStatus(state, "Для персонального ответа войдите в аккаунт или начните с Career GPS.", "warning");
-    return;
-  }
-
   pushHomeAiMessage(state, "user", question);
-  pushHomeAiMessage(state, "assistant", answer);
-  setHomeAiStatus(state, "Быстрый ответ открыт. Для персональных рекомендаций войдите в аккаунт.", "");
+  const directAnswer = HOME_AI_GUEST_ANSWERS[question];
+  const localAnswer = directAnswer
+    ? {
+        answer: directAnswer,
+        status: "Быстрый ответ открыт. Для персональных рекомендаций войдите в аккаунт.",
+        tone: "",
+      }
+    : getHomeAiLocalAnswer(question, state);
+  pushHomeAiMessage(state, "assistant", localAnswer.answer);
+  setHomeAiStatus(state, localAnswer.status, localAnswer.tone);
 }
 
 async function submitHomeAiPrompt(state, promptText) {
@@ -374,12 +549,13 @@ async function submitHomeAiPrompt(state, promptText) {
   }
 
   if (!state.enabled) {
-    pushHomeAiMessage(
-      state,
-      "assistant",
-      "Для живого диалога с AI Youth нужен вход в аккаунт. Пока можно начать с готовых вопросов выше или пройти Career GPS опрос."
-    );
-    setHomeAiStatus(state, "Войдите в аккаунт, чтобы AI Youth дал персональный ответ.", "warning");
+    pushHomeAiMessage(state, "user", text);
+    if (state.input) {
+      state.input.value = "";
+    }
+    const localAnswer = getHomeAiLocalAnswer(text, state);
+    pushHomeAiMessage(state, "assistant", localAnswer.answer);
+    setHomeAiStatus(state, localAnswer.status, localAnswer.tone || "warning");
     return;
   }
 
@@ -430,12 +606,17 @@ async function submitHomeAiPrompt(state, promptText) {
     );
     setHomeAiStatus(state, "", "");
   } catch (_error) {
+    const localAnswer = getHomeAiLocalAnswer(text, state);
     pushHomeAiMessage(
       state,
       "assistant",
-      "Сервис AI Youth сейчас временно недоступен. Попробуйте еще раз чуть позже."
+      `${localAnswer.answer}\n\nСерверный AI сейчас недоступен, поэтому я ответил в быстром режиме.`
     );
-    setHomeAiStatus(state, "", "");
+    setHomeAiStatus(
+      state,
+      localAnswer.status || "Серверный AI временно недоступен, но быстрые ответы продолжают работать.",
+      "warning"
+    );
   } finally {
     setHomeAiSending(state, false);
     if (state.input) {
@@ -463,6 +644,7 @@ function initHomeAssistantExperience(options = {}) {
   const state = {
     enabled: Boolean(options.isAuthenticated),
     isAuthenticated: Boolean(options.isAuthenticated),
+    currentUser: options.currentUser || null,
     sending: false,
     messagesRoot: root,
     input,
@@ -475,8 +657,8 @@ function initHomeAssistantExperience(options = {}) {
     state.messages = [{
       role: "assistant",
       content: state.isAuthenticated
-        ? "Я AI Youth на главной странице. Могу объяснить, чем полезен сайт, с чего начать и куда вам лучше двигаться дальше."
-        : "Я AI Youth на главной странице. Ниже есть быстрые вопросы про сайт, пользу платформы и первые шаги. Для персонального диалога войдите в аккаунт."
+        ? "Я AI Youth на главной странице. Могу помочь с навигацией по платформе, personal roadmap, поиском возможностей, материалами по подаче и следующим шагом."
+        : "Я AI Youth на главной странице. Здесь можно задать даже простой вопрос вроде `привет`, `с чего начать`, `дай roadmap` или `как податься`, а для персонального разбора потом войти в аккаунт."
     }];
   }
 
@@ -492,15 +674,15 @@ function initHomeAssistantExperience(options = {}) {
 
   if (state.isAuthenticated) {
     modeBadge.textContent = "Живой диалог";
-    hint.textContent = "Можно спросить про сайт, карьерный путь, доступ, стажировки и следующий шаг.";
+    hint.textContent = "Можно спросить про сайт, карьерный путь, roadmap, стажировки, гранты, материалы, подписку и подачу.";
     setHomeAiStatus(state, "Проверяю доступность AI Youth...", "");
     void fetchHomeAiAvailability(state);
   } else {
     modeBadge.textContent = "Быстрые ответы";
-    hint.textContent = "Для персональных ответов войдите в аккаунт. Пока можно начать с быстрых вопросов выше.";
-    input.disabled = true;
-    submit.disabled = true;
-    setHomeAiStatus(state, "AI Youth уже под рукой: начните с готовых вопросов, а для персонального диалога войдите в аккаунт.", "");
+    hint.textContent = "Можно писать свободно: `привет`, `что это за сайт`, `дай roadmap`, `как податься`. Для личных рекомендаций потом войдите в аккаунт.";
+    input.disabled = false;
+    submit.disabled = false;
+    setHomeAiStatus(state, "AI Youth уже под рукой: начните с любого вопроса, а для персонального диалога войдите в аккаунт.", "");
   }
 
   suggestionButtons.forEach((button) => {
