@@ -12424,3 +12424,43 @@ body.career-editor-body {
     max-height: 180px;
   }
 }
+
+.home-figma-stats-grid {
+  width: min(1200px, calc(100% - 48px));
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  flex-wrap: wrap;
+  padding: 48px 0;
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.home-figma-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.home-figma-stat-number {
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 700;
+  color: #1a2332;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.home-figma-stat-label {
+  font-size: 15px;
+  color: #6b7280;
+}
+
+@media (max-width: 640px) {
+  .home-figma-stats-grid {
+    gap: 32px;
+    width: calc(100% - 24px);
+  }
+}
