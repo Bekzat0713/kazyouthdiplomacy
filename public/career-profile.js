@@ -366,16 +366,17 @@ function renderForm(payload) {
 
 function buildLocalPayload() {
   const draftProfile = collectProfileFromForm();
-  const isPublic = document.getElementById("careerPublicEnabled").checked;
+  const draftPublicEnabled = document.getElementById("careerPublicEnabled").checked;
+  const persistedPublicEnabled = careerProfilePayload ? careerProfilePayload.public_enabled === true : false;
   const currentUrls = careerProfilePayload && careerProfilePayload.urls ? careerProfilePayload.urls : {};
   const currentSummary = careerProfilePayload && careerProfilePayload.summary ? careerProfilePayload.summary : {};
 
   return {
-    public_enabled: isPublic,
+    public_enabled: persistedPublicEnabled,
     updated_at: careerProfilePayload ? careerProfilePayload.updated_at : null,
     profile: draftProfile,
     summary: {
-      completion_percent: calculateCompletion(draftProfile, isPublic),
+      completion_percent: calculateCompletion(draftProfile, persistedPublicEnabled),
       projects_count: Array.isArray(draftProfile.projects) ? draftProfile.projects.length : 0,
       skills_count: Array.isArray(draftProfile.skills) ? draftProfile.skills.length : 0,
       links_count: Array.isArray(draftProfile.links) ? draftProfile.links.length : 0,
@@ -384,12 +385,13 @@ function buildLocalPayload() {
       featured_projects: Array.isArray(draftProfile.projects) ? draftProfile.projects.slice(0, 3).map(function (item) {
         return item.title;
       }).filter(Boolean) : [],
-      is_public: isPublic,
+      is_public: persistedPublicEnabled,
     },
     guidance: careerProfilePayload ? careerProfilePayload.guidance : null,
     urls: currentUrls,
     public_slug: careerProfilePayload ? careerProfilePayload.public_slug : "",
     _previous_completion: currentSummary.completion_percent || 0,
+    _pending_public_enabled: draftPublicEnabled !== persistedPublicEnabled ? draftPublicEnabled : null,
   };
 }
 
@@ -398,7 +400,32 @@ function refreshDraftSummary() {
     return;
   }
 
-  renderSummary(buildLocalPayload());
+  const draftPayload = buildLocalPayload();
+  renderSummary(draftPayload);
+
+  if (draftPayload._pending_public_enabled === null || draftPayload._pending_public_enabled === undefined) {
+    return;
+  }
+
+  const summaryText = document.getElementById("careerSummaryText");
+  const openButton = document.getElementById("careerOpenPublicButton");
+  const pdfButton = document.getElementById("careerPdfButton");
+
+  if (summaryText) {
+    summaryText.textContent = draftPayload._pending_public_enabled
+      ? "Public mode will turn on after you save the profile successfully."
+      : "Public mode will turn off after you save these changes.";
+  }
+
+  if (openButton) {
+    openButton.classList.add("is-disabled");
+    openButton.setAttribute("aria-disabled", "true");
+  }
+
+  if (pdfButton) {
+    pdfButton.classList.add("is-disabled");
+    pdfButton.setAttribute("aria-disabled", "true");
+  }
 }
 
 async function loadCareerProfile() {
