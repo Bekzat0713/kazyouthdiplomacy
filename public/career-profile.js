@@ -447,7 +447,12 @@ async function saveCareerProfile(event) {
       body: JSON.stringify(requestPayload),
     });
 
-    const payload = await response.json();
+    let payload = null;
+    try {
+      payload = await response.json();
+    } catch (_error) {
+      payload = null;
+    }
     if (!response.ok) {
       throw new Error(payload && payload.error ? payload.error : "Failed to save profile");
     }
@@ -456,7 +461,7 @@ async function saveCareerProfile(event) {
     setSaveStatus("Профиль сохранён.", "success");
   } catch (error) {
     console.error(error);
-    setSaveStatus("Не удалось сохранить профиль.", "error");
+    setSaveStatus(error && error.message ? error.message : "Failed to save profile", "error");
   } finally {
     saveButton.disabled = false;
   }

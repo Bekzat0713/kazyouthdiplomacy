@@ -328,8 +328,8 @@ app.use(
   })
 );
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "25mb" }));
+app.use(express.urlencoded({ extended: true, limit: "25mb" }));
 
 app.use(
   session({
@@ -7195,6 +7195,28 @@ app.delete("/api/resources/:id", requireAuth, async (req, res) => {
     console.error("Delete resource error:", err);
     return res.status(500).json({ error: "Failed to delete resource" });
   }
+});
+
+app.use((err, req, res, next) => {
+  if (err && (err.type === "entity.too.large" || err.status === 413)) {
+    console.error("Request payload too large:", err.message);
+    if (wantsJson(req)) {
+      return res.status(413).json({
+        error: "Profile payload is too large. Please upload smaller images.",
+      });
+    }
+    return res.status(413).send("Payload too large");
+  }
+
+  if (err) {
+    console.error("Unhandled application error:", err);
+    if (wantsJson(req)) {
+      return res.status(err.status || 500).json({ error: "Internal server error" });
+    }
+    return res.status(err.status || 500).send("Internal server error");
+  }
+
+  return next();
 });
 
 /* ======================
