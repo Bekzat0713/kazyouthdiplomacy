@@ -155,7 +155,7 @@ function updateManagerControls() {
 }
 
 function isCatalogLocked() {
-  return !state.canManage && state.accessTier !== "plus";
+  return false;
 }
 
 function getLockedCatalogMessage() {
@@ -522,6 +522,70 @@ function createSavedControls(internship) {
   return wrap;
 }
 
+async function handleApplyAction(internship) {
+  if (!internship || !internship.id) {
+    return;
+  }
+
+  if (!internship.has_application_url) {
+    showPageStatus("Ссылка для отклика появится позже.", true);
+    return;
+  }
+
+  if (!window.KYD_ACCESS) {
+    showPageStatus("Не удалось проверить доступ. Обновите страницу и попробуйте снова.", true);
+    return;
+  }
+
+  const accessState = await window.KYD_ACCESS.requireSubscription({
+    unauthenticatedRedirect: "/register",
+    title: "Чтобы откликнуться, оформите подписку",
+    message: "Просмотр стажировок уже открыт, а отклик и переход к форме доступны после подписки.",
+    ctaLabel: "Оформить подписку",
+    ctaHref: "/subscribe",
+  });
+
+  if (!accessState) {
+    return;
+  }
+
+  showPageStatus("Открываем форму отклика...");
+
+  try {
+    const response = await fetch(`/api/internships/${internship.id}/apply`, {
+      method: "POST",
+      headers: { Accept: "application/json" },
+    });
+    const payload = await response.json().catch(() => ({}));
+
+    if (response.status === 402) {
+      window.KYD_ACCESS.openSubscriptionModal({
+        title: "Чтобы откликнуться, оформите подписку",
+        message: payload.error || "Подписка нужна для перехода к отклику.",
+        ctaLabel: "Оформить подписку",
+        ctaHref: "/subscribe",
+      });
+      showPageStatus("");
+      return;
+    }
+
+    if (!response.ok) {
+      throw new Error(payload.error || "Не удалось открыть форму отклика");
+    }
+
+    if (payload.apply_url) {
+      window.open(payload.apply_url, "_blank", "noopener,noreferrer");
+      showPageStatus("Ссылка на отклик открыта.");
+      return;
+    }
+
+    throw new Error("Ссылка для отклика недоступна");
+  } catch (error) {
+    showPageStatus(error.message, true);
+    console.error("Apply internship error:", error);
+  }
+}
+
 function createInternshipCard(internship) {
   const card = document.createElement("article");
   card.className = `internship-modern${internship.is_recommended ? " recommended-surface" : ""}`;
@@ -634,16 +698,17 @@ function createInternshipCard(internship) {
   const actions = document.createElement("div");
   actions.className = "card-actions";
 
-  if (isValidHttpUrl(internship.apply_url)) {
-    const applyLink = document.createElement("a");
-    applyLink.className = "btn primary";
-    applyLink.href = internship.apply_url;
-    applyLink.target = "_blank";
-    applyLink.rel = "noopener noreferrer";
+  if (internship.has_application_url) {
+    const applyButton = createTextElement("button", "btn primary", "РћС‚РєР»РёРєРЅСѓС‚СЊСЃСЏ");
+    const applyLink = applyButton;
+    applyLink.type = "button";
+    applyButton.addEventListener("click", () => {
+      void handleApplyAction(internship);
+    });
     applyLink.textContent = "Откликнуться";
-    actions.appendChild(applyLink);
+    actions.appendChild(applyButton);
   } else {
-    const disabledButton = createTextElement("button", "btn secondary", "Контакты уточняются");
+    const disabledButton = createTextElement("button", "btn secondary", "Ссылка на отклик появится позже");
     disabledButton.type = "button";
     disabledButton.disabled = true;
     actions.appendChild(disabledButton);
@@ -760,9 +825,6 @@ async function loadInternships(category) {
     }
     updateManagerControls();
     updateLockedState();
-    if (isCatalogLocked()) {
-      return;
-    }
     renderGoalSection(payload.personalization || {}, state.goalItems);
     applyCurrentFilters();
     return;
@@ -988,7 +1050,16 @@ function handleToggleForm() {
 
 function handleGoalAction() {
   if (!state.featureAccess.recommendations) {
-    window.location.href = "/subscribe";
+    if (window.KYD_ACCESS) {
+      window.KYD_ACCESS.openSubscriptionModal({
+        title: "Персональные рекомендации доступны в подписке",
+        message: "Полный каталог уже открыт, а подборка под вашу цель включается после подписки.",
+        ctaLabel: "Оформить подписку",
+        ctaHref: "/subscribe",
+      });
+    } else {
+      window.location.href = "/subscribe";
+    }
     return;
   }
 

@@ -6,6 +6,7 @@
   <link rel="icon" type="image/png" href="/logo.png" />
   <title>Регистрация - KazYouthDiplomacy</title>
   <link rel="stylesheet" href="/web.css">
+  <link rel="stylesheet" href="/card-nav.css">
 </head>
 <body class="register-page route-page auth-figma-page">
 
@@ -15,12 +16,21 @@
     <span>KazYouthDiplomacy</span>
   </a>
 
-  <nav class="home-figma-nav">
-    <a href="/" class="route-link" data-transition-direction="right">Главная</a>
-    <a href="/register-survey">Опрос</a>
-    <a href="/about" class="route-link" data-transition-direction="left">О нас</a>
-    <a href="/login">Вход</a>
-    <a href="/register" class="nav-btn">Регистрация</a>
+  <nav class="home-figma-nav" aria-label="Основная навигация">
+    <div class="card-nav-links">
+      <a href="/" class="route-link" data-transition-direction="right">Главная</a>
+      <a href="/about" class="route-link" data-transition-direction="left">О нас</a>
+      <a href="/subscribe" class="route-link" data-transition-direction="right">Подписка</a>
+      <a href="/#ai-youth">AI Youth</a>
+      <a href="/#pricing">Тарифы</a>
+      <a href="/#reviews">Отзывы</a>
+      <a href="/register-survey" class="route-link" data-transition-direction="right">Опрос</a>
+      <a href="/register" aria-current="page">Регистрация</a>
+    </div>
+    <div class="card-nav-actions">
+      <a href="/dashboard" class="nav-btn">Кабинет</a>
+      <a href="/login" class="nav-btn">Войти</a>
+    </div>
   </nav>
 </header>
 
@@ -182,6 +192,7 @@
 <script src="/kazakhstan-universities.js"></script>
 <script src="/app-config.js"></script>
 <script src="/app-runtime.js"></script>
+<script src="/card-nav.js" defer></script>
 <script src="/register.js" defer></script>
 <script src="/page-transitions.js" defer></script>
 

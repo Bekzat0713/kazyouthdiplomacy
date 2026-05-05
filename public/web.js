@@ -715,10 +715,117 @@ function initHomeAssistantExperience(options = {}) {
   });
 }
 
+function createHomeOpportunityPreviewCard(item) {
+  const card = document.createElement("article");
+  const title = document.createElement("strong");
+  const description = document.createElement("p");
+  const meta = document.createElement("div");
+
+  card.className = "home-figma-info-card home-figma-info-card-preview";
+  title.textContent = String(item.title || "Возможность");
+  description.textContent = String(item.description_preview || "Описание появится после загрузки.");
+  meta.className = "home-figma-info-card-meta";
+
+  if (item.listing_type) {
+    const kind = document.createElement("span");
+    kind.textContent = item.listing_type === "vacancy" ? "Вакансия" : "Стажировка";
+    meta.appendChild(kind);
+  }
+
+  if (item.organization) {
+    const organization = document.createElement("span");
+    organization.textContent = String(item.organization);
+    meta.appendChild(organization);
+  }
+
+  if (item.location) {
+    const location = document.createElement("span");
+    location.textContent = String(item.location);
+    meta.appendChild(location);
+  }
+
+  if (item.deadline_date) {
+    const deadline = document.createElement("span");
+    deadline.textContent = "Дедлайн: " + String(item.deadline_date);
+    meta.appendChild(deadline);
+  } else if (item.duration) {
+    const duration = document.createElement("span");
+    duration.textContent = String(item.duration);
+    meta.appendChild(duration);
+  }
+
+  card.appendChild(title);
+  card.appendChild(description);
+  if (meta.childNodes.length) {
+    card.appendChild(meta);
+  }
+
+  return card;
+}
+
+function hideLegacyHomeOpportunitiesUi() {
+  const legacyEmptyState = document.getElementById("homeOpportunityPreviewEmpty");
+  const legacyCta = document.getElementById("homeOpportunitiesViewAll");
+  const previewGrid = document.getElementById("homeOpportunityPreviewGrid");
+
+  if (legacyEmptyState) {
+    legacyEmptyState.hidden = true;
+  }
+
+  if (legacyCta) {
+    legacyCta.hidden = true;
+    legacyCta.closest(".home-figma-opportunity-actions")?.setAttribute("hidden", "hidden");
+  }
+
+  if (previewGrid && previewGrid.dataset.placeholderCleared !== "true") {
+    previewGrid.innerHTML = "";
+    previewGrid.dataset.placeholderCleared = "true";
+  }
+}
+
+function renderHomeOpportunityPreview(items) {
+  const grid = document.getElementById("homeOpportunityPreviewGrid");
+  const emptyState = document.querySelector("[data-home-opportunities-empty]");
+  hideLegacyHomeOpportunitiesUi();
+
+  if (!grid || !emptyState) {
+    return;
+  }
+
+  grid.innerHTML = "";
+  const previewItems = Array.isArray(items) ? items.slice(0, 5) : [];
+
+  if (!previewItems.length) {
+    emptyState.hidden = false;
+    return;
+  }
+
+  emptyState.hidden = true;
+  const fragment = document.createDocumentFragment();
+  previewItems.forEach((item) => {
+    fragment.appendChild(createHomeOpportunityPreviewCard(item));
+  });
+  grid.appendChild(fragment);
+}
+
+function syncHomeOpportunitiesCta(isAuthenticated) {
+  const cta = document.querySelector("[data-home-opportunities-cta]");
+  hideLegacyHomeOpportunitiesUi();
+
+  if (!cta) {
+    return;
+  }
+
+  cta.href = isAuthenticated ? "/internships" : "/register";
+  cta.dataset.transitionDirection = isAuthenticated ? "left" : "right";
+}
+
 async function initHomePageExperience() {
   if (!document.body.classList.contains("home-page")) {
     return;
   }
+
+  hideLegacyHomeOpportunitiesUi();
 
   const navLogin = document.getElementById("homeNavLogin");
   const navDashboard = document.getElementById("homeNavDashboard");
@@ -730,7 +837,7 @@ async function initHomePageExperience() {
   const reviewsGrid = document.getElementById("homeReviewsGrid");
 
   try {
-    const [homeStateResponse, reviewsResponse] = await Promise.all([
+    const [homeStateResponse, reviewsResponse, previewResponse] = await Promise.all([
       fetch("/api/home-state", {
         credentials: "include",
         headers: { Accept: "application/json" },
@@ -739,13 +846,21 @@ async function initHomePageExperience() {
         credentials: "include",
         headers: { Accept: "application/json" },
       }),
+      fetch("/api/internships/preview?limit=5", {
+        headers: { Accept: "application/json" },
+      }),
     ]);
 
     const homeState = await homeStateResponse.json().catch(() => ({}));
     const reviewsPayload = await reviewsResponse.json().catch(() => ({}));
+    const previewPayload = await previewResponse.json().catch(() => ({}));
     const isAuthenticated = Boolean(homeState && homeState.is_authenticated);
     const currentUser = homeState && homeState.user ? homeState.user : null;
     const publicReviews = Array.isArray(reviewsPayload.reviews) ? reviewsPayload.reviews : [];
+    const previewItems = Array.isArray(previewPayload.items) ? previewPayload.items : [];
+
+    syncHomeOpportunitiesCta(isAuthenticated);
+    renderHomeOpportunityPreview(previewItems);
 
     if (navLogin) {
       navLogin.hidden = isAuthenticated;
@@ -793,6 +908,9 @@ async function initHomePageExperience() {
     });
   } catch (error) {
     console.error("Home page state error:", error);
+
+    syncHomeOpportunitiesCta(false);
+    renderHomeOpportunityPreview([]);
 
     if (navLogin) {
       navLogin.hidden = false;

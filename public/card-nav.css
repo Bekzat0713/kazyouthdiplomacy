@@ -1,0 +1,235 @@
+.home-figma-header.card-nav-inline-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px 24px;
+}
+
+.home-figma-header.card-nav-inline-header .card-nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid rgba(203, 213, 225, 0.9);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.96);
+  color: #0f172a;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  transition:
+    background 0.22s ease,
+    border-color 0.22s ease,
+    box-shadow 0.22s ease,
+    transform 0.22s ease;
+}
+
+.home-figma-header.card-nav-inline-header .card-nav-toggle:hover,
+.home-figma-header.card-nav-inline-header .card-nav-toggle:focus-visible {
+  background: #ffffff;
+  border-color: rgba(148, 163, 184, 0.95);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.1);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.home-figma-header.card-nav-inline-header .card-nav-toggle span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  margin: 2px 0;
+  border-radius: 999px;
+  background: currentColor;
+  transition: transform 0.22s ease, opacity 0.22s ease;
+}
+
+.home-figma-header.card-nav-inline-header[data-mobile-nav-open="true"] .card-nav-toggle span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.home-figma-header.card-nav-inline-header[data-mobile-nav-open="true"] .card-nav-toggle span:nth-child(2) {
+  opacity: 0;
+}
+
+.home-figma-header.card-nav-inline-header[data-mobile-nav-open="true"] .card-nav-toggle span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+.home-figma-header.card-nav-inline-header nav.card-nav-inline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-left: auto;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.home-figma-header.card-nav-inline-header .card-nav-links,
+.home-figma-header.card-nav-inline-header .card-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.home-figma-header.card-nav-inline-header .card-nav-links {
+  flex: 1 1 auto;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+
+.home-figma-header.card-nav-inline-header .card-nav-actions {
+  flex: 0 0 auto;
+  justify-content: flex-end;
+}
+
+.home-figma-header.card-nav-inline-header .home-figma-nav-logout {
+  display: inline-flex;
+  margin: 0;
+}
+
+.home-figma-header.card-nav-inline-header nav.card-nav-inline a:not(.nav-btn),
+.home-figma-header.card-nav-inline-header nav.card-nav-inline .card-nav-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  color: #475569;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background 0.22s ease,
+    color 0.22s ease,
+    border-color 0.22s ease;
+}
+
+.home-figma-header.card-nav-inline-header nav.card-nav-inline a:not(.nav-btn):hover,
+.home-figma-header.card-nav-inline-header nav.card-nav-inline a:not(.nav-btn):focus-visible {
+  color: #0f172a;
+  background: rgba(241, 245, 249, 0.96);
+  outline: none;
+}
+
+.home-figma-header.card-nav-inline-header nav.card-nav-inline a[aria-current="page"]:not(.nav-btn) {
+  color: #0f172a;
+  background: rgba(241, 245, 249, 0.96);
+}
+
+.home-figma-header.card-nav-inline-header .card-nav-actions .nav-btn,
+.home-figma-header.card-nav-inline-header .card-nav-actions .home-figma-nav-logout .nav-btn {
+  min-height: 42px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  font-size: 0.94rem;
+  font-weight: 700;
+  box-shadow: none;
+}
+
+.home-figma-header.card-nav-inline-header .card-nav-actions .nav-btn[aria-current="page"] {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+@media (max-width: 1100px) {
+  .home-figma-header.card-nav-inline-header {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+  }
+
+  .home-figma-header.card-nav-inline-header .card-nav-toggle {
+    display: inline-flex;
+  }
+
+  .home-figma-header.card-nav-inline-header .logo-wrap {
+    min-width: 0;
+  }
+
+  .home-figma-header.card-nav-inline-header .logo-wrap span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .home-figma-header.card-nav-inline-header nav.card-nav-inline {
+    display: none;
+    grid-column: 1 / -1;
+    margin-left: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(226, 232, 240, 0.98);
+    border-radius: 18px;
+    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+    backdrop-filter: blur(16px);
+  }
+
+  .home-figma-header.card-nav-inline-header[data-mobile-nav-open="true"] nav.card-nav-inline {
+    display: flex;
+  }
+
+  .home-figma-header.card-nav-inline-header .card-nav-links,
+  .home-figma-header.card-nav-inline-header .card-nav-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+
+  .home-figma-header.card-nav-inline-header .card-nav-links {
+    justify-content: flex-start;
+  }
+
+  .home-figma-header.card-nav-inline-header .card-nav-actions {
+    padding-top: 10px;
+    border-top: 1px solid rgba(226, 232, 240, 0.9);
+  }
+
+  .home-figma-header.card-nav-inline-header nav.card-nav-inline a:not(.nav-btn),
+  .home-figma-header.card-nav-inline-header .card-nav-actions .nav-btn,
+  .home-figma-header.card-nav-inline-header .card-nav-actions .home-figma-nav-logout,
+  .home-figma-header.card-nav-inline-header .card-nav-actions .home-figma-nav-logout .nav-btn {
+    width: 100%;
+  }
+
+  .home-figma-header.card-nav-inline-header nav.card-nav-inline a:not(.nav-btn),
+  .home-figma-header.card-nav-inline-header .card-nav-actions .nav-btn {
+    justify-content: flex-start;
+    min-height: 44px;
+    padding: 11px 14px;
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .home-figma-header.card-nav-inline-header {
+    padding: 12px 14px;
+    gap: 12px;
+  }
+
+  .home-figma-header.card-nav-inline-header nav.card-nav-inline {
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  .home-figma-header.card-nav-inline-header nav.card-nav-inline a:not(.nav-btn),
+  .home-figma-header.card-nav-inline-header .card-nav-actions .nav-btn {
+    font-size: 0.92rem;
+  }
+}

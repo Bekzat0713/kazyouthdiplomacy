@@ -1,0 +1,102 @@
+.access-modal-open {
+  overflow: hidden;
+}
+
+.access-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 210;
+  background: rgba(15, 23, 42, 0.3);
+  backdrop-filter: blur(8px);
+}
+
+.access-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 211;
+  width: min(460px, calc(100vw - 32px));
+  padding: 28px;
+  border: 1px solid rgba(226, 232, 240, 0.96);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 28px 80px rgba(15, 23, 42, 0.16);
+  transform: translate(-50%, -50%);
+}
+
+.access-modal-head {
+  margin-bottom: 12px;
+}
+
+.access-modal-title {
+  margin: 0;
+  color: #0f172a;
+  font-size: clamp(1.4rem, 2.8vw, 1.8rem);
+  line-height: 1.08;
+}
+
+.access-modal-message {
+  margin: 0;
+  color: #475569;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.access-modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.home-figma-card-grid-preview {
+  align-items: stretch;
+}
+
+.home-figma-info-card-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  justify-content: space-between;
+}
+
+.home-figma-info-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: #64748b;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.home-figma-opportunity-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
+}
+
+@media (max-width: 640px) {
+  .access-modal {
+    width: min(460px, calc(100vw - 20px));
+    padding: 22px 18px;
+    border-radius: 20px;
+  }
+
+  .access-modal-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .access-modal-actions .btn {
+    width: 100%;
+  }
+
+  .home-figma-opportunity-actions {
+    margin-top: 22px;
+  }
+
+  .home-figma-opportunity-actions .btn {
+    width: 100%;
+  }
+}

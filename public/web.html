@@ -6,6 +6,8 @@
   <title>KazYouthDiplomacy - Career GPS</title>
   <link rel="icon" type="image/png" href="/logo.png" />
   <link rel="stylesheet" href="/web.css" />
+  <link rel="stylesheet" href="/card-nav.css" />
+  <link rel="stylesheet" href="/access-control.css" />
 </head>
 <body class="home-page route-page home-figma-page">
 <div class="site-splash" id="site-splash" aria-hidden="true">
@@ -27,19 +29,24 @@
     <span>KazYouthDiplomacy</span>
   </a>
 
-  <nav class="home-figma-nav">
-    <a href="#ai-youth">AI Youth</a>
-    <a href="#opportunities">Возможности</a>
-    <a href="#pricing">Тарифы</a>
-    <a href="#faq">Вопросы</a>
-    <a href="#reviews">Отзывы</a>
-    <a href="/subscribe" class="route-link" data-transition-direction="right">Подписка</a>
-    <a href="/about" class="route-link" data-transition-direction="left">О нас</a>
-    <a id="homeNavDashboard" href="/dashboard" class="nav-btn" hidden>Кабинет</a>
-    <form id="homeNavLogoutForm" method="POST" action="/logout" class="home-figma-nav-logout" hidden>
-      <button class="nav-btn" type="submit">Выйти</button>
-    </form>
-    <a id="homeNavLogin" href="/login" class="nav-btn">Войти</a>
+  <nav class="home-figma-nav" aria-label="Основная навигация">
+    <div class="card-nav-links">
+      <a href="/" aria-current="page">Главная</a>
+      <a href="/about" class="route-link" data-transition-direction="left">О нас</a>
+      <a href="/subscribe" class="route-link" data-transition-direction="right">Подписка</a>
+      <a href="#ai-youth">AI Youth</a>
+      <a href="#pricing">Тарифы</a>
+      <a href="#reviews">Отзывы</a>
+      <a href="/register-survey" class="route-link" data-transition-direction="right">Опрос</a>
+      <a href="/register" class="route-link" data-transition-direction="right">Регистрация</a>
+    </div>
+    <div class="card-nav-actions">
+      <a id="homeNavDashboard" href="/dashboard" class="nav-btn" hidden>Кабинет</a>
+      <form id="homeNavLogoutForm" method="POST" action="/logout" class="home-figma-nav-logout" hidden>
+        <button class="nav-btn" type="submit">Выйти</button>
+      </form>
+      <a id="homeNavLogin" href="/login" class="nav-btn">Войти</a>
+    </div>
   </nav>
 </header>
 
@@ -88,6 +95,10 @@
           </div>
         </a>
       </div>
+    </div>
+    <p id="homeOpportunityPreviewEmpty" class="internships-empty" hidden>Список возможностей появится чуть позже.</p>
+    <div class="home-figma-opportunity-actions">
+      <a id="homeOpportunitiesViewAll" href="/register" class="btn primary route-link" data-transition-direction="right">Смотреть все возможности</a>
     </div>
   </section>
 
@@ -182,7 +193,7 @@
       <p>На главной остаётся только понятный вход в продукт, а детали человек открывает уже осознанно.</p>
     </div>
 
-    <div class="home-figma-card-grid">
+    <div id="homeOpportunityPreviewGrid" class="home-figma-card-grid home-figma-card-grid-preview" aria-live="polite">
       <article class="home-figma-info-card">
         <strong>Стажировки</strong>
         <p>Локальные и международные internship-программы для студентов и выпускников.</p>
@@ -212,6 +223,10 @@
         <strong>Личный кабинет</strong>
         <p>Сохранённые возможности, прогресс и понятная структура работы с платформой.</p>
       </article>
+    </div>
+    <p data-home-opportunities-empty class="internships-empty" hidden>Список возможностей появится чуть позже.</p>
+    <div class="home-figma-opportunity-actions">
+      <a data-home-opportunities-cta href="/register" class="btn primary route-link" data-transition-direction="right">Смотреть все возможности</a>
     </div>
   </section>
 
@@ -457,6 +472,8 @@
   </div>
 </footer>
 
+<script src="/card-nav.js" defer></script>
+<script src="/access-control.js" defer></script>
 <script src="/web.js" defer></script>
 <script src="/page-transitions.js" defer></script>
 </body>

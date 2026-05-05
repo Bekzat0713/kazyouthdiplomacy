@@ -3125,14 +3125,121 @@ function buildAccessState(hasPaidPlusAccess, subscription = null, options = {}) 
   const hasFeatureAccess = options.hasFeatureAccess != null
     ? Boolean(options.hasFeatureAccess)
     : Boolean(hasPaidPlusAccess);
+  const featureAccess = {
+    ...buildFeatureAccess(hasFeatureAccess),
+    ...(options.featureAccessOverrides && typeof options.featureAccessOverrides === "object"
+      ? options.featureAccessOverrides
+      : {}),
+  };
 
   return {
     access_tier: hasPaidPlusAccess ? "plus" : "free",
     has_plus_access: Boolean(hasPaidPlusAccess),
     has_manager_access: Boolean(options.hasManagerAccess),
-    feature_access: buildFeatureAccess(hasFeatureAccess),
+    feature_access: featureAccess,
     access_policy: buildAccessPolicy(hasPaidPlusAccess, subscription),
   };
+}
+
+function buildViewerUserState(userRow, options = {}) {
+  return {
+    id: Number(userRow.id),
+    display_name: buildDisplayNameFromUser(userRow),
+    first_name: normalizeProfileText(userRow.first_name),
+    has_review: Boolean(options.hasReview),
+    goal_label: String(options.goalLabel || "").trim(),
+    isSubscribed: Boolean(options.isSubscribed),
+    access_tier: String(options.accessTier || "free"),
+    has_plus_access: Boolean(options.hasPlusAccess),
+    has_manager_access: Boolean(options.hasManagerAccess),
+    has_full_access: Boolean(options.hasFullAccess),
+  };
+}
+
+async function buildViewerStatePayload(req) {
+  if (!req.session.userId) {
+    return {
+      is_authenticated: false,
+      access_tier: "guest",
+      has_plus_access: false,
+      subscription: null,
+      access_policy: null,
+      user: null,
+    };
+  }
+
+  const userResult = await pool.query(
+    `
+    SELECT id, first_name, last_name, birth_date, university, workplace, email, is_verified
+    FROM users
+    WHERE id = $1
+    LIMIT 1
+    `,
+    [req.session.userId]
+  );
+
+  if (userResult.rows.length === 0) {
+    return {
+      is_authenticated: false,
+      access_tier: "guest",
+      has_plus_access: false,
+      subscription: null,
+      access_policy: null,
+      user: null,
+    };
+  }
+
+  const [
+    survey,
+    review,
+    subscription,
+    canManageInternshipsValue,
+    canManageOpportunitiesValue,
+    canManageSubscriptionsValue,
+  ] = await Promise.all([
+    getRegistrationSurveyForUser(req.session.userId),
+    getUserReviewForUser(req.session.userId),
+    getCurrentSubscriptionForUser(req.session.userId),
+    canManageInternships(req),
+    canManageOpportunities(req),
+    canManageSubscriptions(req),
+  ]);
+
+  const entitlement = deriveUserEntitlements({
+    subscription,
+    canManageInternships: canManageInternshipsValue,
+    canManageOpportunities: canManageOpportunitiesValue,
+    canManageSubscriptions: canManageSubscriptionsValue,
+  });
+  const accessState = buildAccessState(entitlement.hasPaidPlusAccess, subscription, {
+    hasFeatureAccess: entitlement.hasFullAccess,
+    hasManagerAccess: entitlement.hasManagerAccess,
+  });
+
+  return {
+    is_authenticated: true,
+    access_tier: accessState.access_tier,
+    has_plus_access: accessState.has_plus_access,
+    subscription: serializeSubscription(subscription),
+    access_policy: accessState.access_policy,
+    user: buildViewerUserState(userResult.rows[0], {
+      hasReview: Boolean(review),
+      goalLabel: getSurveyLabel("main_goal", survey?.main_goal) || "",
+      isSubscribed: entitlement.hasPaidPlusAccess,
+      accessTier: accessState.access_tier,
+      hasPlusAccess: accessState.has_plus_access,
+      hasManagerAccess: accessState.has_manager_access,
+      hasFullAccess: entitlement.hasFullAccess,
+    }),
+  };
+}
+
+function respondWithSubscriptionRequired(res, message, options = {}) {
+  return res.status(402).json({
+    error: message || "Subscription required.",
+    code: "subscription_required",
+    redirect: options.redirect || "/subscribe",
+  });
 }
 
 function getPreviewLimit(entityType) {
@@ -4534,52 +4641,132 @@ app.get("/health", async (req, res) => {
 
 app.get("/api/home-state", async (req, res) => {
   try {
-    if (!req.session.userId) {
-      return res.json({
-        is_authenticated: false,
-        user: null,
-      });
+    if (req.session.userId) {
+      applyNoStoreHeaders(res);
     }
 
-    applyNoStoreHeaders(res);
-
-    const userResult = await pool.query(
-      `
-      SELECT id, first_name, last_name, birth_date, university, workplace, email, is_verified
-      FROM users
-      WHERE id = $1
-      LIMIT 1
-      `,
-      [req.session.userId]
-    );
-
-    if (userResult.rows.length === 0) {
-      return res.json({
-        is_authenticated: false,
-        user: null,
-      });
-    }
-
-    const [survey, review] = await Promise.all([
-      getRegistrationSurveyForUser(req.session.userId),
-      getUserReviewForUser(req.session.userId),
-    ]);
-
-    const user = userResult.rows[0];
-
-    return res.json({
-      is_authenticated: true,
-      user: {
-        id: user.id,
-        display_name: buildDisplayNameFromUser(user),
-        first_name: normalizeProfileText(user.first_name),
-        has_review: Boolean(review),
-        goal_label: getSurveyLabel("main_goal", survey?.main_goal) || "",
-      },
-    });
+    return res.json(await buildViewerStatePayload(req));
   } catch (err) {
     console.error("Home state error:", err);
     return res.status(500).json({ error: "Failed to load home state" });
+  }
+});
+
+app.get("/api/viewer-state", async (req, res) => {
+  try {
+    if (req.session.userId) {
+      applyNoStoreHeaders(res);
+    }
+
+    return res.json(await buildViewerStatePayload(req));
+  } catch (err) {
+    console.error("Viewer state error:", err);
+    return res.status(500).json({ error: "Failed to load viewer state" });
+  }
+});
+
+app.get("/api/internships/preview", async (req, res) => {
+  const limit = clampNumber(req.query.limit, 1, 12, 5);
+  const fallbackItems = [
+    {
+      id: 0,
+      listing_type: "internship",
+      title: "Стажировка в международных программах",
+      organization: "KazYouthDiplomacy",
+      description_preview: "Подборка стартовых возможностей для студентов и выпускников: аналитика, координация проектов и сопровождение заявок.",
+      location: "Астана",
+      duration: "2 месяца",
+      deadline_date: null,
+    },
+    {
+      id: -1,
+      listing_type: "internship",
+      title: "Internship in Policy Research",
+      organization: "International Programs Desk",
+      description_preview: "Исследовательская стажировка с фокусом на public policy, международные кейсы и подготовку кратких аналитических заметок.",
+      location: "Онлайн",
+      duration: "8 недель",
+      deadline_date: null,
+    },
+    {
+      id: -2,
+      listing_type: "internship",
+      title: "Стажировка в молодежных инициативах",
+      organization: "Youth Projects Hub",
+      description_preview: "Практический трек для тех, кто хочет поработать с событиями, коммуникациями и запуском молодежных инициатив.",
+      location: "Алматы",
+      duration: "1 месяц",
+      deadline_date: null,
+    },
+    {
+      id: -3,
+      listing_type: "internship",
+      title: "Digital Communications Internship",
+      organization: "Global Outreach Team",
+      description_preview: "Роль для кандидатов, которым интересны digital-коммуникации, контент, международные партнерства и social media.",
+      location: "Гибрид",
+      duration: "10 недель",
+      deadline_date: null,
+    },
+    {
+      id: -4,
+      listing_type: "internship",
+      title: "Стажировка по карьерной навигации",
+      organization: "Career Support Lab",
+      description_preview: "Стажировка с акцентом на карьерные треки, поиск возможностей, сбор материалов и сопровождение студентов.",
+      location: "Онлайн",
+      duration: "6 недель",
+      deadline_date: null,
+    },
+  ];
+
+  try {
+    const result = await pool.query(
+      `
+      SELECT
+        id,
+        listing_type,
+        title,
+        organization,
+        description,
+        location,
+        duration,
+        deadline_date,
+        created_at
+      FROM internships
+      ORDER BY
+        CASE
+          WHEN COALESCE(NULLIF(TRIM(LOWER(listing_type)), ''), 'internship') = 'internship' THEN 0
+          ELSE 1
+        END,
+        created_at DESC,
+        id DESC
+      LIMIT $1
+      `,
+      [limit]
+    );
+
+    const items = result.rows.map((row) => ({
+      id: Number(row.id),
+      listing_type: normalizeInternshipListingType(row.listing_type),
+      title: row.title,
+      organization: row.organization,
+      description_preview: String(row.description || "").trim().slice(0, 180),
+      location: row.location || "",
+      duration: row.duration || "",
+      deadline_date: serializeDateOnly(row.deadline_date),
+    }));
+    const prioritizedItems = items
+      .filter((item) => item.listing_type === "internship")
+      .concat(items.filter((item) => item.listing_type !== "internship"))
+      .slice(0, limit);
+
+    return res.json({
+      items: prioritizedItems.length ? prioritizedItems : fallbackItems.slice(0, limit),
+    });
+  } catch (err) {
+    console.error("Internship preview error:", err);
+    return res.status(500).json({ error: "Failed to load internships preview" });
   }
 });
 
@@ -5554,6 +5741,15 @@ app.get("/api/account/access", requireAuth, async (req, res) => {
 
     return res.json({
       email: normalizeEmail(req.session.email),
+      user: buildViewerUserState(userResult.rows[0], {
+        hasReview: false,
+        goalLabel: getSurveyLabel("main_goal", registrationSurvey?.main_goal) || "",
+        isSubscribed: entitlement.hasPaidPlusAccess,
+        accessTier: entitlement.hasPaidPlusAccess ? "plus" : "free",
+        hasPlusAccess: entitlement.hasPaidPlusAccess,
+        hasManagerAccess: entitlement.hasManagerAccess,
+        hasFullAccess: entitlement.hasFullAccess,
+      }),
       profile: buildUserProfile(userResult.rows[0]),
       subscription: serializeSubscription(subscription),
       roadmap: actualRoadmap,
@@ -5749,6 +5945,13 @@ app.get("/api/internships", requireAuth, async (req, res) => {
       subscription,
       canManageInternships: canManage,
     });
+    const accessState = buildAccessState(entitlement.hasPaidPlusAccess, subscription, {
+      hasFeatureAccess: entitlement.hasFullAccess,
+      hasManagerAccess: entitlement.hasManagerAccess,
+      featureAccessOverrides: {
+        full_catalog: true,
+      },
+    });
 
     const sql = category === "all" || category === "recommended"
       ? `
@@ -5812,6 +6015,9 @@ app.get("/api/internships", requireAuth, async (req, res) => {
         registrationSurvey,
         inferInternshipMetadata(row)
       );
+      const applyUrl = String(row.apply_url || "").trim();
+      const hasApplicationUrl = /^https?:\/\//i.test(applyUrl);
+      const canApply = hasApplicationUrl && entitlement.hasFullAccess;
 
       return {
         id: row.id,
@@ -5822,7 +6028,10 @@ app.get("/api/internships", requireAuth, async (req, res) => {
         category: row.category,
         location: row.location,
         duration: row.duration,
-        apply_url: row.apply_url,
+        apply_url: canApply ? applyUrl : null,
+        has_application_url: hasApplicationUrl,
+        can_apply: canApply,
+        requires_subscription_to_apply: hasApplicationUrl && !canApply,
         deadline_date: serializeDateOnly(row.deadline_date),
         target_goals: recommendation.metadata.target_goals,
         required_english_level: recommendation.metadata.required_english_level,
@@ -5851,14 +6060,85 @@ app.get("/api/internships", requireAuth, async (req, res) => {
 
     return res.json({
       can_manage: canManage,
-      internships: accessPolicy.visible_items,
-      for_goal: accessPolicy.for_goal_items,
-      personalization: accessPolicy.personalization,
-      ...accessPolicy.access,
+      internships,
+      for_goal: entitlement.hasFullAccess
+        ? internships.filter((item) => item.is_recommended).slice(0, 4)
+        : [],
+      personalization: entitlement.hasFullAccess
+        ? {
+            ...buildPersonalizationMeta(registrationSurvey, internships, "internships"),
+            upgrade_required: false,
+          }
+        : {
+            ...buildPersonalizationMeta(registrationSurvey, internships, "internships"),
+            upgrade_required: true,
+            section_title: "Personal recommendations are available in Plus",
+            section_description: "The internships catalog is open, while personal matches and application tracking are enabled after subscription.",
+          },
+      ...accessState,
     });
   } catch (err) {
     console.error("Fetch internships error:", err);
     return res.status(500).json({ error: "Failed to fetch internships" });
+  }
+});
+
+app.post("/api/internships/:id/apply", requireAuth, async (req, res) => {
+  const internshipId = Number.parseInt(req.params.id, 10);
+
+  if (!Number.isInteger(internshipId) || internshipId <= 0) {
+    return res.status(400).json({ error: "Invalid internship id" });
+  }
+
+  try {
+    const [subscription, canManageInternshipsValue] = await Promise.all([
+      getCurrentSubscriptionForUser(req.session.userId),
+      canManageInternships(req),
+    ]);
+    const entitlement = deriveUserEntitlements({
+      subscription,
+      canManageInternships: canManageInternshipsValue,
+    });
+    const internshipResult = await pool.query(
+      `
+      SELECT id, title, apply_url
+      FROM internships
+      WHERE id = $1
+      LIMIT 1
+      `,
+      [internshipId]
+    );
+
+    if (internshipResult.rows.length === 0) {
+      return res.status(404).json({ error: "Internship not found" });
+    }
+
+    const internship = internshipResult.rows[0];
+    const applyUrl = String(internship.apply_url || "").trim();
+
+    if (!/^https?:\/\//i.test(applyUrl)) {
+      return res.status(400).json({ error: "This internship does not have an application link yet." });
+    }
+
+    if (!entitlement.hasFullAccess) {
+      return respondWithSubscriptionRequired(
+        res,
+        "Subscription required to apply for this internship.",
+        { redirect: "/subscribe" }
+      );
+    }
+
+    await logUserAction(req.session.userId, "internship", internshipId, "apply_opened", null);
+
+    return res.json({
+      ok: true,
+      internship_id: internshipId,
+      title: internship.title,
+      apply_url: applyUrl,
+    });
+  } catch (err) {
+    console.error("Open internship apply link error:", err);
+    return res.status(500).json({ error: "Failed to open internship apply link" });
   }
 });
 
