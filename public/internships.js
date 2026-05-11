@@ -574,7 +574,7 @@ async function handleApplyAction(internship) {
     }
 
     if (payload.apply_url) {
-      window.open(payload.apply_url, "_blank", "noopener,noreferrer");
+      openApplyDestination(payload.apply_url);
       showPageStatus("Ссылка на отклик открыта.");
       return;
     }
@@ -583,6 +583,27 @@ async function handleApplyAction(internship) {
   } catch (error) {
     showPageStatus(error.message, true);
     console.error("Apply internship error:", error);
+  }
+}
+
+function openApplyDestination(url) {
+  const targetUrl = String(url || "").trim();
+  if (!targetUrl) {
+    return;
+  }
+
+  const prefersSameTab =
+    window.matchMedia("(pointer: coarse)").matches ||
+    window.innerWidth <= 768;
+
+  if (prefersSameTab) {
+    window.location.assign(targetUrl);
+    return;
+  }
+
+  const popup = window.open(targetUrl, "_blank", "noopener,noreferrer");
+  if (!popup) {
+    window.location.assign(targetUrl);
   }
 }
 
