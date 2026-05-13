@@ -13,6 +13,7 @@
     "express": "^5.2.1",
     "express-rate-limit": "^8.3.2",
     "express-session": "^1.19.0",
+    "gsap": "^3.12.5",
     "helmet": "^8.1.0",
     "nodemailer": "^8.0.4",
     "pg": "^8.19.0"

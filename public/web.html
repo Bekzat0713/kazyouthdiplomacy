@@ -3,11 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KazYouthDiplomacy - Career GPS</title>
+  <title>KazYouthDiplomacy - AI Career GPS</title>
+  <meta
+    name="description"
+    content="KazYouthDiplomacy помогает студентам находить стажировки, гранты и карьерные возможности без хаотичного поиска."
+  />
   <link rel="icon" type="image/png" href="/logo.png" />
   <link rel="stylesheet" href="/web.css" />
   <link rel="stylesheet" href="/card-nav.css" />
   <link rel="stylesheet" href="/access-control.css" />
+  <link rel="stylesheet" href="/home-premium.css" />
 </head>
 <body class="home-page route-page home-figma-page">
 <div class="site-splash" id="site-splash" aria-hidden="true">
@@ -23,395 +28,387 @@
   </div>
 </div>
 
-<header class="header home-figma-header">
-  <a href="/" class="logo-wrap logo-intro" aria-label="KazYouthDiplomacy">
+<header class="header home-figma-header premium-nav" id="siteHeader">
+  <a href="/" class="logo-wrap logo-intro premium-brand" aria-label="KazYouthDiplomacy">
     <img src="/logo.png" alt="KazYouthDiplomacy logo" />
     <span>KazYouthDiplomacy</span>
   </a>
 
-  <nav class="home-figma-nav" aria-label="Основная навигация">
-    <div class="card-nav-links">
-      <a href="/" aria-current="page">Главная</a>
-      <a href="/about" class="route-link" data-transition-direction="left">О нас</a>
-      <a href="/subscribe" class="route-link" data-transition-direction="right">Подписка</a>
+  <nav class="home-figma-nav premium-nav-menu" aria-label="Основная навигация">
+    <div class="card-nav-links premium-nav-links">
+      <a href="#homeHero" aria-current="page">Главная</a>
+      <a href="#opportunities">Возможности</a>
       <a href="#ai-youth">AI Youth</a>
       <a href="#pricing">Тарифы</a>
       <a href="#reviews">Отзывы</a>
-      <a href="/register-survey" class="route-link" data-transition-direction="right">Опрос</a>
-      <a href="/register" class="route-link" data-transition-direction="right">Регистрация</a>
     </div>
-    <div class="card-nav-actions">
-      <a id="homeNavDashboard" href="/dashboard" class="nav-btn" hidden>Кабинет</a>
+    <div class="card-nav-actions premium-nav-actions">
+      <a id="homeNavDashboard" href="/dashboard" class="nav-btn premium-nav-secondary" hidden>Кабинет</a>
       <form id="homeNavLogoutForm" method="POST" action="/logout" class="home-figma-nav-logout" hidden>
-        <button class="nav-btn" type="submit">Выйти</button>
+        <button class="nav-btn premium-nav-secondary" type="submit">Выйти</button>
       </form>
-      <a id="homeNavLogin" href="/login" class="nav-btn">Войти</a>
+      <a id="homeNavLogin" href="/login" class="nav-btn premium-nav-login">Войти</a>
+      <a href="/register-survey" class="nav-btn premium-nav-cta route-link" data-transition-direction="right">Начать</a>
     </div>
   </nav>
 </header>
 
-<main class="home-figma-main">
-  <section class="hero home-figma-hero" id="homeHero">
-    <div class="home-figma-shell">
-      <div class="home-figma-copy">
-        <span class="home-figma-kicker">Career GPS for students</span>
-        <h1>
-          <span class="home-figma-title-line">Возможности для</span>
-          <span class="home-figma-title-line home-figma-title-line-bottom">молодежи</span>
-        </h1>
-        <p>
-          Международные стажировки, гранты и карьерные возможности собраны в одном
-          понятном маршруте для студентов и молодых специалистов.
+<main class="home-figma-main premium-home-main">
+  <section class="hero home-figma-hero premium-hero" id="homeHero">
+    <div class="premium-hero-grid">
+      <div class="premium-hero-copy">
+        <span class="home-figma-kicker premium-kicker home-motion">AI Career GPS for students</span>
+        <h1 class="home-motion">Глобальные возможности без хаоса</h1>
+        <p class="premium-hero-lead home-motion">
+          KazYouthDiplomacy собирает стажировки, гранты, дедлайны и персональный roadmap в одной аккуратной платформе для студентов и молодых специалистов.
         </p>
 
-        <div class="home-figma-hero-actions">
-          <a href="/register-survey" class="btn primary home-figma-primary-cta">Пройти короткий опрос</a>
-          <a href="#pricing" class="btn secondary home-figma-secondary-cta">Сравнить Free и Plus</a>
+        <div class="premium-hero-actions home-motion">
+          <a href="/register-survey" class="btn primary home-figma-primary-cta route-link" data-transition-direction="right">
+            Построить мой маршрут
+          </a>
+          <a href="#opportunities" class="btn secondary home-figma-secondary-cta">Смотреть возможности</a>
         </div>
 
-        <article class="home-figma-launch-banner">
-          <span class="home-figma-launch-badge">NEW</span>
-          <div class="home-figma-launch-copy">
-            <strong>Новая функция: My Career Profile</strong>
-            <p>Соберите карьерную визитку с фото, проектами, сертификатами, публичной страницей и QR-кодом для HR.</p>
-          </div>
-          <a href="/career-profile" class="home-figma-launch-link route-link" data-transition-direction="right">Открыть</a>
-        </article>
+        <div class="premium-hero-proof home-motion" aria-label="Показатели платформы">
+          <span><strong>100+</strong> возможностей</span>
+          <span><strong>11</strong> стран</span>
+          <span><strong>AI</strong> roadmap</span>
+        </div>
       </div>
 
-      <div class="home-figma-visual" aria-hidden="true">
-        <div class="home-figma-visual-frame">
-          <div class="home-figma-logo-glow">
-            <img src="/logo.png" alt="" class="home-figma-logo-mark" />
-            <img src="/logo.png" alt="" class="home-figma-logo-mark home-figma-logo-mark-echo" />
+      <div class="premium-hero-visual home-motion" aria-label="Превью продукта KazYouthDiplomacy">
+        <div class="hero-dashboard">
+          <div class="hero-dashboard-top">
+            <div>
+              <span class="dashboard-eyebrow">Opportunity OS</span>
+              <strong>Career command center</strong>
+            </div>
+            <span class="dashboard-status">Live</span>
+          </div>
+
+          <div class="dashboard-search-row">
+            <span class="search-dot" aria-hidden="true"></span>
+            <span>Find public policy internships in Europe</span>
+          </div>
+
+          <div class="dashboard-layout">
+            <div class="dashboard-main-list">
+              <article class="dashboard-opportunity-card premium-float">
+                <span class="opportunity-type">Internship</span>
+                <strong>Policy Research Fellowship</strong>
+                <p>Berlin · Hybrid · Deadline in 12 days</p>
+                <div class="dashboard-tags">
+                  <span>Policy</span>
+                  <span>Research</span>
+                  <span>Plus match</span>
+                </div>
+              </article>
+
+              <article class="dashboard-opportunity-card premium-float premium-float-delay">
+                <span class="opportunity-type">Grant</span>
+                <strong>Youth Leadership Program</strong>
+                <p>Online · Fully funded · Deadline in 21 days</p>
+                <div class="dashboard-tags">
+                  <span>Leadership</span>
+                  <span>Global</span>
+                </div>
+              </article>
+            </div>
+
+            <aside class="dashboard-roadmap-panel premium-float premium-float-slow">
+              <span class="roadmap-label">AI roadmap</span>
+              <ol>
+                <li><span></span>Define target field</li>
+                <li><span></span>Shortlist 6 programs</li>
+                <li><span></span>Prepare CV and motivation letter</li>
+              </ol>
+            </aside>
           </div>
         </div>
 
-        <a href="/register-survey" class="home-figma-status-card home-figma-status-card-cta">
-          <span class="home-figma-status-icon"></span>
-          <div>
-            <strong>Пройти опрос</strong>
-            <p>Узнай свой уровень и получи личный маршрут развития за пару минут.</p>
-          </div>
-        </a>
+        <div class="hero-floating-card hero-floating-deadline premium-float" aria-hidden="true">
+          <span>Next deadline</span>
+          <strong>14 May</strong>
+          <p>Application checklist ready</p>
+        </div>
+
+        <div class="hero-floating-card hero-floating-ai premium-float premium-float-delay" aria-hidden="true">
+          <span>AI Youth</span>
+          <strong>4 matches found</strong>
+          <p>Based on your goals and profile</p>
+        </div>
       </div>
-    </div>
-    <p id="homeOpportunityPreviewEmpty" class="internships-empty" hidden>Список возможностей появится чуть позже.</p>
-    <div class="home-figma-opportunity-actions">
-      <a id="homeOpportunitiesViewAll" href="/register" class="btn primary route-link" data-transition-direction="right">Смотреть все возможности</a>
     </div>
   </section>
 
-  <section class="home-figma-section home-figma-ai" id="ai-youth" data-scroll-reveal>
-    <div class="home-figma-ai-shell">
-      <div class="home-figma-ai-copy">
-        <span class="home-figma-kicker">AI Youth</span>
-        <h2>Видимый AI-помощник, с которого логично начать знакомство с платформой.</h2>
-        <p>
-          AI Youth не выглядит как обычная техподдержка. Он объясняет, что это за сайт, чем он полезен,
-          какие возможности здесь открываются и с какого первого шага лучше начать именно вам.
-        </p>
-        <div class="home-figma-ai-benefits">
-          <article class="home-figma-ai-benefit">
-            <strong>Что это за сайт</strong>
-            <p>Быстро объяснит продукт, кому он подходит и где в нем начинается реальная польза.</p>
-          </article>
-          <article class="home-figma-ai-benefit">
-            <strong>Чем он поможет</strong>
-            <p>Покажет, какие разделы, материалы и карьерные возможности стоит открыть сначала.</p>
-          </article>
-          <article class="home-figma-ai-benefit">
-            <strong>С чего начать</strong>
-            <p>Подскажет первые шаги: опрос, подбор цели, доступ к откликам и следующее действие.</p>
-          </article>
+  <section class="home-figma-section premium-feature-strip" id="features" data-scroll-reveal>
+    <div class="premium-strip-grid">
+      <article>
+        <span>01</span>
+        <strong>Подбор без шума</strong>
+        <p>Возможности разложены по типу, срокам и уровню готовности.</p>
+      </article>
+      <article>
+        <span>02</span>
+        <strong>Roadmap вместо вкладок</strong>
+        <p>AI Youth превращает интерес в понятную последовательность действий.</p>
+      </article>
+      <article>
+        <span>03</span>
+        <strong>Фокус на подаче</strong>
+        <p>Сохраняйте варианты, отслеживайте дедлайны и двигайтесь к откликам.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="home-figma-section home-figma-opportunities premium-section" id="opportunities" data-scroll-reveal>
+    <div class="home-figma-section-head premium-section-head">
+      <span class="home-figma-kicker premium-kicker">Featured opportunities</span>
+      <h2>Карточки возможностей, которые легко сравнивать и быстро отбирать.</h2>
+      <p>На главной показывается живое превью каталога. После входа пользователь открывает полный список, сохраняет варианты и работает с дедлайнами.</p>
+    </div>
+
+    <div id="homeOpportunityPreviewGrid" class="home-figma-card-grid home-figma-card-grid-preview premium-opportunity-grid" aria-live="polite">
+      <article class="home-figma-info-card premium-opportunity-card">
+        <div class="premium-opportunity-top">
+          <span class="premium-opportunity-category">Internship</span>
+          <span class="premium-opportunity-deadline">12 days</span>
         </div>
+        <strong>Policy Research Fellowship</strong>
+        <p>Berlin · Hybrid</p>
+        <div class="premium-opportunity-tags">
+          <span>Policy</span>
+          <span>Research</span>
+          <span>Plus match</span>
+        </div>
+        <a href="/register" class="premium-card-link route-link" data-transition-direction="right">Открыть</a>
+      </article>
+
+      <article class="home-figma-info-card premium-opportunity-card">
+        <div class="premium-opportunity-top">
+          <span class="premium-opportunity-category">Grant</span>
+          <span class="premium-opportunity-deadline">21 days</span>
+        </div>
+        <strong>Youth Leadership Program</strong>
+        <p>Online · Fully funded</p>
+        <div class="premium-opportunity-tags">
+          <span>Leadership</span>
+          <span>Global</span>
+          <span>Remote</span>
+        </div>
+        <a href="/register" class="premium-card-link route-link" data-transition-direction="right">Открыть</a>
+      </article>
+
+      <article class="home-figma-info-card premium-opportunity-card">
+        <div class="premium-opportunity-top">
+          <span class="premium-opportunity-category">Program</span>
+          <span class="premium-opportunity-deadline">8 weeks</span>
+        </div>
+        <strong>Digital Diplomacy Track</strong>
+        <p>Astana · Hybrid</p>
+        <div class="premium-opportunity-tags">
+          <span>Communications</span>
+          <span>Events</span>
+        </div>
+        <a href="/register" class="premium-card-link route-link" data-transition-direction="right">Открыть</a>
+      </article>
+    </div>
+    <p data-home-opportunities-empty class="internships-empty premium-empty" hidden>Список возможностей появится чуть позже.</p>
+    <div class="home-figma-opportunity-actions premium-section-actions">
+      <a data-home-opportunities-cta href="/register" class="btn primary route-link" data-transition-direction="right">Смотреть все возможности</a>
+    </div>
+  </section>
+
+  <section class="home-figma-section home-figma-ai premium-ai-section" id="ai-youth" data-scroll-reveal>
+    <div class="home-figma-ai-shell premium-ai-shell">
+      <div class="home-figma-ai-copy premium-ai-copy">
+        <span class="home-figma-kicker premium-kicker">AI Youth</span>
+        <h2>Главная wow-фича: AI-помощник, который превращает цель в карьерный маршрут.</h2>
+        <p>
+          Не просто чат поддержки. AI Youth помогает понять следующий шаг, отобрать возможности, собрать roadmap и не потерять важные дедлайны.
+        </p>
+
+        <div class="premium-prompt-stack" aria-label="Примеры запросов">
+          <button class="premium-prompt-chip" type="button" data-home-ai-question="Какие первые шаги помогут быстрее найти стажировки, гранты или карьерные возможности?">Find internships for me</button>
+          <button class="premium-prompt-chip" type="button" data-home-ai-question="С чего мне лучше начать прямо сейчас на платформе?">Build my career roadmap</button>
+          <button class="premium-prompt-chip" type="button" data-home-ai-question="Чем этот сайт поможет именно мне как студенту или молодому специалисту?">Suggest exchange programs</button>
+        </div>
+
+        <div class="premium-roadmap-preview">
+          <div class="premium-roadmap-head">
+            <span>Generated roadmap</span>
+            <strong>Next 30 days</strong>
+          </div>
+          <div class="premium-roadmap-step">
+            <span>Week 1</span>
+            <p>Определить фокус и собрать shortlist программ.</p>
+          </div>
+          <div class="premium-roadmap-step">
+            <span>Week 2</span>
+            <p>Подготовить CV, мотивационное письмо и proof-профиль.</p>
+          </div>
+          <div class="premium-roadmap-step">
+            <span>Week 3</span>
+            <p>Подать первые заявки и отслеживать дедлайны.</p>
+          </div>
+        </div>
+
         <div class="home-figma-ai-actions">
-          <a href="/register-survey" class="btn primary">Пройти Career GPS</a>
-          <a href="/login" id="homeAiLoginCta" class="btn secondary">Войти и задать свой вопрос</a>
+          <a href="/register-survey" class="btn primary route-link" data-transition-direction="right">Пройти Career GPS</a>
+          <a href="/login" id="homeAiLoginCta" class="btn secondary">Войти и задать вопрос</a>
           <a href="/dashboard" id="homeAiDashboardCta" class="btn secondary" hidden>Открыть мой кабинет</a>
         </div>
       </div>
-      <div class="home-figma-ai-panel">
+
+      <div class="home-figma-ai-panel premium-ai-panel">
         <div class="home-figma-ai-panel-head">
           <div>
-            <span class="home-figma-ai-panel-kicker">Career GPS AI</span>
+            <span class="home-figma-ai-panel-kicker">Assistant interface</span>
             <h3>AI Youth</h3>
-            <p>Спрашивайте про сайт, пользу для вас и первые практические шаги.</p>
+            <p>Задайте вопрос о стажировках, грантах, roadmap или первом шаге.</p>
           </div>
           <span id="homeAiModeBadge" class="home-figma-ai-mode-badge">Быстрые ответы</span>
         </div>
+
         <div id="homeAiSuggestionGrid" class="home-figma-ai-suggestions">
           <button class="home-figma-ai-suggestion" type="button" data-home-ai-question="Что это за сайт и кому он подходит?">Что это за сайт?</button>
           <button class="home-figma-ai-suggestion" type="button" data-home-ai-question="Чем этот сайт поможет именно мне как студенту или молодому специалисту?">Чем сайт поможет?</button>
           <button class="home-figma-ai-suggestion" type="button" data-home-ai-question="С чего мне лучше начать прямо сейчас на платформе?">С чего начать?</button>
-          <button class="home-figma-ai-suggestion" type="button" data-home-ai-question="Какие первые шаги помогут быстрее найти стажировки, гранты или карьерные возможности?">Какие первые шаги самые важные?</button>
+          <button class="home-figma-ai-suggestion" type="button" data-home-ai-question="Какие первые шаги помогут быстрее найти стажировки, гранты или карьерные возможности?">Какие шаги важны?</button>
         </div>
-        <div id="homeAiMessages" class="home-figma-ai-messages" aria-live="polite"></div>
-        <p id="homeAiStatus" class="home-figma-ai-status"></p>
+
+        <div id="homeAiMessages" class="home-figma-ai-messages" aria-live="polite">
+          <article class="home-figma-ai-message home-figma-ai-message-assistant">
+            <span class="home-figma-ai-message-badge">AI</span>
+            <p class="home-figma-ai-message-text">Я помогу найти релевантные возможности, собрать roadmap и понять, с чего начать прямо сейчас.</p>
+          </article>
+        </div>
+        <p id="homeAiStatus" class="home-figma-ai-status">AI Youth готовит быстрые ответы и персональный режим после входа.</p>
         <form id="homeAiForm" class="home-figma-ai-form">
           <textarea
             id="homeAiInput"
             class="home-figma-ai-input"
             rows="3"
             maxlength="2000"
-            placeholder="Напишите свой вопрос для AI Youth..."
+            placeholder="Напишите вопрос для AI Youth..."
           ></textarea>
           <div class="home-figma-ai-form-actions">
-            <span id="homeAiHint" class="home-figma-ai-hint">Можно начать с готовых вопросов выше.</span>
-            <button id="homeAiSubmit" class="btn primary" type="submit">Спросить AI Youth</button>
+            <span id="homeAiHint" class="home-figma-ai-hint">Можно начать с готовых запросов выше.</span>
+            <button id="homeAiSubmit" class="btn primary" type="submit">Спросить AI</button>
           </div>
         </form>
       </div>
     </div>
   </section>
 
-<section class="home-figma-section home-figma-stats" data-scroll-reveal>
-  <div class="home-figma-stats-grid">
-    <div class="home-figma-stat">
-      <span class="home-figma-stat-number">500+</span>
-      <span class="home-figma-stat-label">пользователей</span>
-    </div>
-    <div class="home-figma-stat">
-      <span class="home-figma-stat-number">13</span>
-      <span class="home-figma-stat-label">городов</span>
-    </div>
-    <div class="home-figma-stat">
-      <span class="home-figma-stat-number">11</span>
-      <span class="home-figma-stat-label">стран</span>
-    </div>
-    <div class="home-figma-stat">
-      <span class="home-figma-stat-number">100+</span>
-      <span class="home-figma-stat-label">возможностей</span>
-    </div>
-  </div>
-</section>
-
-  <section class="home-figma-section home-figma-opportunities" id="opportunities" data-scroll-reveal>
-    <div class="home-figma-section-head">
-      <span class="home-figma-kicker">Opportunities</span>
-      <h2>Главные возможности собраны в одном аккуратном интерфейсе.</h2>
-      <p>На главной остаётся только понятный вход в продукт, а детали человек открывает уже осознанно.</p>
+  <section class="home-figma-section home-figma-cta premium-pricing-section" id="pricing" data-scroll-reveal>
+    <div class="home-figma-section-head premium-section-head premium-pricing-head">
+      <span class="home-figma-kicker premium-kicker">Pricing</span>
+      <h2>Три понятных уровня доступа без лишней витрины.</h2>
+      <p>Free помогает оценить платформу. Plus открывает полный каталог, roadmap, сохранения и инструменты для системной подачи.</p>
     </div>
 
-    <div id="homeOpportunityPreviewGrid" class="home-figma-card-grid home-figma-card-grid-preview" aria-live="polite">
-      <article class="home-figma-info-card">
-        <strong>Стажировки</strong>
-        <p>Локальные и международные internship-программы для студентов и выпускников.</p>
-      </article>
-
-      <article class="home-figma-info-card">
-        <strong>Гранты</strong>
-        <p>Возможности финансирования для проектов, обучения и участия в программах.</p>
-      </article>
-
-      <article class="home-figma-info-card">
-        <strong>Стипендии</strong>
-        <p>Образовательные треки, обмены и академические программы с поддержкой.</p>
-      </article>
-
-      <article class="home-figma-info-card">
-        <strong>Roadmap</strong>
-        <p>Личный маршрут развития от стартовой точки до следующей серьёзной возможности.</p>
-      </article>
-
-      <article class="home-figma-info-card">
-        <strong>Материалы</strong>
-        <p>Подборка ресурсов и ориентиров, которые помогают готовиться качественно.</p>
-      </article>
-
-      <article class="home-figma-info-card">
-        <strong>Личный кабинет</strong>
-        <p>Сохранённые возможности, прогресс и понятная структура работы с платформой.</p>
-      </article>
-    </div>
-    <p data-home-opportunities-empty class="internships-empty" hidden>Список возможностей появится чуть позже.</p>
-    <div class="home-figma-opportunity-actions">
-      <a data-home-opportunities-cta href="/register" class="btn primary route-link" data-transition-direction="right">Смотреть все возможности</a>
-    </div>
-  </section>
-
-  <section class="home-figma-section home-figma-cta" data-scroll-reveal>
-    <div class="home-figma-section-head" id="pricing">
-      <span class="home-figma-kicker">Pricing</span>
-      <h2>Сравните Free и Plus ещё до регистрации и сразу поймите, когда апгрейд действительно нужен.</h2>
-      <p>Тарифы и выгоды открыты на главной. Для активации Plus нужен аккаунт, но цены и наполнение теперь видны сразу.</p>
-    </div>
-
-    <div class="home-figma-pricing-grid">
-      <article class="home-figma-price-card">
+    <div class="home-figma-pricing-grid premium-pricing-grid">
+      <article class="home-figma-price-card premium-price-card">
         <span class="home-figma-price-label">Free</span>
-        <h3>Мягкий старт</h3>
+        <h3>Start</h3>
         <p class="home-figma-price-value">0 ₸</p>
+        <p class="premium-price-note">Для знакомства с продуктом</p>
         <ul>
-          <li>Часть базы стажировок, возможностей и материалов без оплаты</li>
-          <li>Можно оценить интерфейс, темп и полезность платформы</li>
-          <li>Подходит, если хотите сначала посмотреть продукт изнутри</li>
+          <li>Ограниченный preview каталога</li>
+          <li>Базовый доступ к материалам</li>
+          <li>Понимание, подходит ли платформа под вашу цель</li>
         </ul>
+        <a href="/register-survey" class="btn secondary route-link" data-transition-direction="right">Начать бесплатно</a>
       </article>
 
-      <article class="home-figma-price-card">
-        <span class="home-figma-price-label">Plus • 1 месяц</span>
-        <h3>Plus Start</h3>
-        <p class="home-figma-price-value">1090 ₸</p>
-        <ul>
-          <li>Полный каталог возможностей, стажировок и материалов</li>
-          <li>Персональный roadmap и подборки под вашу цель</li>
-          <li>Удобный формат, чтобы быстро проверить эффект от Plus</li>
-        </ul>
-      </article>
-
-      <article class="home-figma-price-card featured">
-        <span class="home-figma-price-label">Plus • 3 месяца</span>
-        <h3>Plus Growth</h3>
+      <article class="home-figma-price-card premium-price-card featured">
+        <span class="premium-recommended-badge">Recommended</span>
+        <span class="home-figma-price-label">Plus · 3 месяца</span>
+        <h3>Growth</h3>
         <p class="home-figma-price-value">2790 ₸</p>
+        <p class="premium-price-note">Лучший баланс для карьерного цикла</p>
         <ul>
-          <li>Лучший баланс по цене и времени для карьерного цикла</li>
-          <li>Хватает, чтобы пройти несколько откликов и дедлайнов подряд</li>
-          <li>Оптимальный вариант для системной работы с roadmap и сохранениями</li>
+          <li>Полный каталог возможностей и стажировок</li>
+          <li>AI roadmap и персональные подборки</li>
+          <li>Сохранения, дедлайны и фокус на подаче</li>
         </ul>
+        <a href="/subscribe" class="btn primary route-link" data-transition-direction="right">Выбрать Growth</a>
       </article>
 
-      <article class="home-figma-price-card">
-        <span class="home-figma-price-label">Plus • 6 месяцев</span>
-        <h3>Plus Long Run</h3>
+      <article class="home-figma-price-card premium-price-card">
+        <span class="home-figma-price-label">Plus · 6 месяцев</span>
+        <h3>Long Run</h3>
         <p class="home-figma-price-value">5990 ₸</p>
+        <p class="premium-price-note">Для долгого международного трека</p>
         <ul>
-          <li>Выгоднее для длинного карьерного трека и международных программ</li>
-          <li>Меньше отвлечений на продление и больше фокуса на результате</li>
-          <li>Подходит тем, кто хочет использовать платформу как рабочий инструмент</li>
+          <li>Доступ на несколько волн дедлайнов</li>
+          <li>Меньше отвлечений на продление</li>
+          <li>Удобно для подготовки профиля и заявок</li>
         </ul>
+        <a href="/subscribe" class="btn secondary route-link" data-transition-direction="right">Открыть тариф</a>
       </article>
     </div>
 
-    <div class="home-figma-pricing-cta">
-      <a href="/subscribe" class="btn primary route-link" data-transition-direction="right">Открыть все тарифы</a>
+    <div class="premium-trust-row" aria-label="Доверие и условия">
+      <span>Secure account</span>
+      <span>Manual Plus activation</span>
+      <span>Cancel anytime</span>
     </div>
   </section>
 
-  <section class="home-figma-section home-figma-faq" id="faq" data-scroll-reveal>
-    <div class="home-figma-section-head">
-      <span class="home-figma-kicker">FAQ</span>
-      <h2>Вопросы, которые чаще всего появляются перед оплатой Plus.</h2>
-      <p>Этот блок помогает быстро понять, за что человек платит прямо сейчас и какой результат получает уже в первые дни.</p>
+  <section class="home-figma-section home-figma-reviews premium-reviews-section" id="reviews" data-scroll-reveal>
+    <div class="home-figma-section-head premium-section-head">
+      <span class="home-figma-kicker premium-kicker">Reviews</span>
+      <h2>Истории пользователей, которым стало проще перейти от поиска к подаче.</h2>
+      <p>Отзывы показывают главный результат платформы: меньше хаоса, больше ясности и быстрее первые реальные отклики.</p>
     </div>
 
-    <div class="home-figma-faq-grid">
-      <details class="home-figma-faq-item" open>
-        <summary>Что я получу сразу после оплаты Plus?</summary>
-        <p>Сразу после активации открываются полный каталог возможностей, персональный roadmap, подборки под вашу цель, сохранения и контроль дедлайнов.</p>
-      </details>
-
-      <details class="home-figma-faq-item">
-        <summary>Чем Plus отличается от Free на практике?</summary>
-        <p>Free помогает посмотреть платформу, а Plus убирает хаотичный поиск: вы видите полный доступ, персональные рекомендации и понятный следующий шаг вместо разрозненных каналов и ссылок.</p>
-      </details>
-
-      <details class="home-figma-faq-item">
-        <summary>Какой результат я увижу в первую неделю?</summary>
-        <p>Обычно за первую неделю пользователь собирает релевантный список возможностей, понимает свой следующий карьерный шаг и перестаёт тратить время на хаотичный мониторинг разных источников.</p>
-      </details>
-
-      <details class="home-figma-faq-item">
-        <summary>Подойдёт ли Plus, если у меня мало опыта?</summary>
-        <p>Да. Платформа особенно полезна тем, кто только начинает: она помогает сузить фокус, увидеть реальные варианты без большого опыта и выстроить маршрут роста.</p>
-      </details>
-
-      <details class="home-figma-faq-item">
-        <summary>Что если я пока не уверен в своей цели?</summary>
-        <p>Тогда Plus особенно полезен. Roadmap и подборки помогают быстро понять, куда двигаться дальше: в стажировки, гранты, учебные программы или карьерные возможности.</p>
-      </details>
-
-      <details class="home-figma-faq-item">
-        <summary>Почему лучше взять Plus сейчас, а не потом?</summary>
-        <p>Потому что дедлайны не ждут. Чем раньше у вас появляется полный доступ и ясный маршрут, тем быстрее вы переходите от просмотра вариантов к реальным откликам и подаче заявок.</p>
-      </details>
-    </div>
-  </section>
-
-  <section class="home-figma-section home-figma-reviews" id="reviews" data-scroll-reveal>
-    <div class="home-figma-section-head">
-      <span class="home-figma-kicker">Reviews</span>
-      <h2>Отзывы и истории, которые усиливают доверие перед подпиской.</h2>
-      <p>Пока здесь размещены демонстрационные истории в том формате, как будут выглядеть реальные отзывы пользователей после сбора обратной связи.</p>
-    </div>
-
-    <div class="home-figma-review-grid" id="homeReviewsGrid">
-      <article class="home-figma-review-card">
+    <div class="home-figma-review-grid premium-review-grid" id="homeReviewsGrid">
+      <article class="home-figma-review-card premium-review-card">
         <div class="home-figma-review-top">
           <span class="home-figma-review-tag">Отзыв</span>
           <strong>Аружан, 19 лет</strong>
-          <span class="home-figma-review-meta">Алматы • 2 курс • цель: международная стажировка</span>
+          <span class="home-figma-review-meta">Алматы · 2 курс · цель: международная стажировка</span>
           <span class="home-figma-review-headline">Поиск стал быстрее и спокойнее</span>
         </div>
-        <p>“До Plus я держала открытыми десятки вкладок и всё равно боялась пропустить нормальную программу. Здесь я быстро собрала релевантные варианты под свой профиль и наконец начала подаваться, а не просто сохранять ссылки в заметки.”</p>
-        <span class="home-figma-review-note">Результат: меньше хаотичного поиска и больше реальных откликов за первую неделю</span>
+        <p>“До Plus я держала открытыми десятки вкладок и всё равно боялась пропустить нормальную программу. Здесь я быстро собрала релевантные варианты под свой профиль.”</p>
+        <span class="home-figma-review-note">Результат: меньше хаотичного поиска и больше реальных откликов</span>
       </article>
 
-      <article class="home-figma-review-card">
+      <article class="home-figma-review-card premium-review-card">
         <div class="home-figma-review-top">
           <span class="home-figma-review-tag">Отзыв</span>
           <strong>Нуржан, 22 года</strong>
-          <span class="home-figma-review-meta">Астана • выпускник • цель: первая работа в международной сфере</span>
+          <span class="home-figma-review-meta">Астана · выпускник · цель: первая работа</span>
           <span class="home-figma-review-headline">Появился понятный маршрут действий</span>
         </div>
-        <p>“Мне было важно не просто увидеть список возможностей, а понять, что делать дальше по шагам. После активации Plus roadmap реально помог собрать последовательность действий: что подтянуть, куда откликаться и на чём фокусироваться в ближайший месяц.”</p>
-        <span class="home-figma-review-note">Результат: появилась ясность по следующему карьерному шагу и приоритетам</span>
+        <p>“Мне было важно не просто увидеть список, а понять, что делать дальше. Roadmap помог собрать последовательность: что подтянуть, куда откликаться и на чём фокусироваться.”</p>
+        <span class="home-figma-review-note">Результат: ясность по следующему карьерному шагу</span>
       </article>
 
-      <article class="home-figma-review-card">
+      <article class="home-figma-review-card premium-review-card">
         <div class="home-figma-review-top">
           <span class="home-figma-review-tag">Отзыв</span>
           <strong>Диана, 20 лет</strong>
-          <span class="home-figma-review-meta">Шымкент • студентка • цель: гранты и short-term programs</span>
+          <span class="home-figma-review-meta">Шымкент · студентка · цель: гранты</span>
           <span class="home-figma-review-headline">Нашлись именно мои возможности</span>
         </div>
-        <p>“Мне понравилось, что в Plus я увидела не просто общую базу, а подборки, которые реально подходят под мою цель. Раньше я тратила часы на Telegram и сайты, а здесь намного быстрее поняла, на какие программы стоит обратить внимание в первую очередь.”</p>
-        <span class="home-figma-review-note">Результат: быстрее найден релевантный список программ под конкретную цель</span>
-      </article>
-
-      <article class="home-figma-review-card">
-        <div class="home-figma-review-top">
-          <span class="home-figma-review-tag">Отзыв</span>
-          <strong>Алихан, 21 год</strong>
-          <span class="home-figma-review-meta">Караганда • студент • цель: internships в аналитике и policy</span>
-          <span class="home-figma-review-headline">Дедлайны перестали теряться</span>
-        </div>
-        <p>“Раньше я постоянно сохранял что-то в разные места и потом забывал про дедлайны. Здесь всё стало гораздо собраннее: отмечаю важные возможности, вижу приоритеты и не теряю те заявки, которые действительно хочу довести до подачи.”</p>
-        <span class="home-figma-review-note">Результат: больше контроля над дедлайнами и сохранёнными заявками</span>
-      </article>
-
-      <article class="home-figma-review-card">
-        <div class="home-figma-review-top">
-          <span class="home-figma-review-tag">Отзыв</span>
-          <strong>Мадина, 18 лет</strong>
-          <span class="home-figma-review-meta">Тараз • 1 курс • цель: понять, с чего вообще начать</span>
-          <span class="home-figma-review-headline">Стало легче стартовать без опыта</span>
-        </div>
-        <p>“Я переживала, что у меня пока слишком мало опыта и мне рано смотреть такие возможности. Но как раз Plus помог убрать этот страх: я увидела варианты для старта и поняла, какие шаги можно делать уже сейчас, а не когда-нибудь потом.”</p>
-        <span class="home-figma-review-note">Результат: снизился барьер входа и стало понятнее, как стартовать без большого опыта</span>
-      </article>
-
-      <article class="home-figma-review-card">
-        <div class="home-figma-review-top">
-          <span class="home-figma-review-tag">Отзыв</span>
-          <strong>Тимур, 23 года</strong>
-          <span class="home-figma-review-meta">Павлодар • молодой специалист • цель: усилить профиль для программ abroad</span>
-          <span class="home-figma-review-headline">Появилась уверенность в следующем шаге</span>
-        </div>
-        <p>“Самое полезное для меня было не количество карточек, а ощущение, что я наконец двигаюсь в правильную сторону. После Plus я за несколько дней составил себе рабочий план, отобрал ближайшие варианты и начал улучшать профиль под конкретные программы.”</p>
-        <span class="home-figma-review-note">Результат: появился рабочий план действий на ближайшие недели</span>
+        <p>“В Plus я увидела не просто общую базу, а подборки под мою цель. Намного быстрее поняла, на какие программы стоит обратить внимание в первую очередь.”</p>
+        <span class="home-figma-review-note">Результат: релевантный shortlist под конкретную цель</span>
       </article>
     </div>
 
-    <div class="home-figma-review-cta">
+    <div class="home-figma-review-cta premium-section-actions">
       <a href="#review-form" class="btn primary">Оставить отзыв</a>
     </div>
 
-    <article class="home-figma-review-form-card" id="review-form">
+    <article class="home-figma-review-form-card premium-review-form-card" id="review-form">
       <div class="home-figma-review-form-copy">
         <span class="home-figma-review-tag">Your review</span>
-        <h3>Оставьте отзыв прямо на сайте</h3>
-        <p id="homeReviewFormLead">Поделитесь, что изменилось после платформы: стало легче искать возможности, появился маршрут или удалось быстрее перейти к откликам.</p>
+        <h3>Поделитесь результатом после платформы</h3>
+        <p id="homeReviewFormLead">Расскажите, что изменилось: стало легче искать возможности, появился маршрут или удалось быстрее перейти к откликам.</p>
       </div>
 
       <div id="homeReviewGuestState" class="home-figma-review-guest" hidden>
@@ -427,12 +424,12 @@
 
         <label class="home-figma-review-field">
           <span>Короткий заголовок</span>
-          <input id="homeReviewHeadline" name="headline" type="text" maxlength="120" placeholder="Например, поиск стал быстрее и понятнее" required />
+          <input id="homeReviewHeadline" name="headline" type="text" maxlength="120" placeholder="Например, поиск стал быстрее" required />
         </label>
 
         <label class="home-figma-review-field">
           <span>Что изменилось после платформы</span>
-          <input id="homeReviewResult" name="result_summary" type="text" maxlength="180" placeholder="Например, собрал 6 релевантных программ и начал подаваться" required />
+          <input id="homeReviewResult" name="result_summary" type="text" maxlength="180" placeholder="Например, собрал 6 программ и начал подаваться" required />
         </label>
 
         <label class="home-figma-review-field">
@@ -443,39 +440,39 @@
         <div id="homeReviewStatus" class="home-figma-review-status" hidden></div>
         <button id="homeReviewSubmit" class="btn primary" type="submit">Опубликовать отзыв</button>
       </form>
-    </div>
+    </article>
   </section>
 
-  <section class="home-figma-section home-figma-cta" data-scroll-reveal>
-    <div class="home-figma-cta-box">
-      <span class="home-figma-kicker">Start now</span>
-      <h2>Один главный шаг для пользователя: начать с короткого опроса.</h2>
-      <p>Так человек быстрее понимает, какой маршрут ему подходит и какие возможности открывать дальше.</p>
-      <a href="/register-survey" class="btn primary">Начать сейчас</a>
+  <section class="home-figma-section premium-final-cta" data-scroll-reveal>
+    <div class="home-figma-cta-box premium-final-box">
+      <span class="home-figma-kicker premium-kicker">Start now</span>
+      <h2>Начните с короткого Career GPS и получите понятный первый шаг.</h2>
+      <p>За пару минут платформа поймёт ваш фокус и подскажет, какие возможности открывать дальше.</p>
+      <a href="/register-survey" class="btn primary route-link" data-transition-direction="right">Начать сейчас</a>
     </div>
   </section>
 </main>
 
-<footer class="home-figma-footer">
+<footer class="home-figma-footer premium-footer">
   <div class="home-figma-footer-shell">
     <div>
       <strong>KazYouthDiplomacy</strong>
-      <p>Career GPS для студентов, стажировок и образовательных возможностей.</p>
+      <p>AI Career GPS для студентов, стажировок, грантов и международных возможностей.</p>
     </div>
 
     <div class="home-figma-footer-links">
-  <a href="/about" class="route-link" data-transition-direction="left">О нас</a>
-  <a href="/subscribe" class="route-link" data-transition-direction="right">Подписка</a>
-  <a href="/login">Войти</a>
-  <a href="https://t.me/perlll1" target="_blank" rel="noreferrer">Написать нам</a>
-</div>
+      <a href="#opportunities">Возможности</a>
+      <a href="#ai-youth">AI Youth</a>
+      <a href="/subscribe" class="route-link" data-transition-direction="right">Тарифы</a>
+      <a href="https://t.me/perlll1" target="_blank" rel="noreferrer">Написать нам</a>
+    </div>
   </div>
 </footer>
 
 <script src="/card-nav.js" defer></script>
 <script src="/access-control.js" defer></script>
+<script src="/vendor/gsap.min.js" defer></script>
 <script src="/web.js" defer></script>
 <script src="/page-transitions.js" defer></script>
 </body>
 </html>
-

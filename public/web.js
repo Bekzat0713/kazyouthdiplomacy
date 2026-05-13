@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (document.body.classList.contains("home-page") && splash) {
     const TRANSITION_KEY = "kyd_route_transition_v1";
     const TRANSITION_TTL_MS = 4500;
+    const shouldSkipSplash = new URLSearchParams(window.location.search).has("nosplash");
     let hasFreshRouteTransition = false;
 
     try {
@@ -26,24 +27,23 @@ document.addEventListener("DOMContentLoaded", () => {
       hasFreshRouteTransition = false;
     }
 
-    if (hasFreshRouteTransition) {
+    if (hasFreshRouteTransition || shouldSkipSplash) {
       splash.remove();
       document.body.classList.add("splash-finished");
-      return;
-    }
+    } else {
+      const splashDuration = prefersReducedMotion ? 700 : 2850;
 
-    const splashDuration = prefersReducedMotion ? 700 : 2850;
-
-    document.body.classList.add("splash-active");
-
-    window.setTimeout(() => {
-      document.body.classList.remove("splash-active");
-      document.body.classList.add("splash-finished");
+      document.body.classList.add("splash-active");
 
       window.setTimeout(() => {
-        splash.remove();
-      }, 900);
-    }, splashDuration);
+        document.body.classList.remove("splash-active");
+        document.body.classList.add("splash-finished");
+
+        window.setTimeout(() => {
+          splash.remove();
+        }, 900);
+      }, splashDuration);
+    }
   }
 
   // 1) Smooth-scroll buttons in achievement sections (if present).
@@ -158,7 +158,74 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   }
+
+  initPremiumHomeMotion(prefersReducedMotion);
 });
+
+function initPremiumHomeMotion(prefersReducedMotion) {
+  if (!document.body.classList.contains("home-page")) {
+    return;
+  }
+
+  const header = document.getElementById("siteHeader") || document.querySelector(".home-figma-header");
+  if (header) {
+    let ticking = false;
+    const syncHeaderState = () => {
+      header.classList.toggle("premium-nav-scrolled", window.scrollY > 12);
+      ticking = false;
+    };
+
+    syncHeaderState();
+    window.addEventListener("scroll", () => {
+      if (ticking) {
+        return;
+      }
+
+      ticking = true;
+      window.requestAnimationFrame(syncHeaderState);
+    }, { passive: true });
+  }
+
+  const gsap = window.gsap;
+  if (prefersReducedMotion || !gsap) {
+    document.querySelectorAll(".home-motion").forEach((element) => {
+      element.style.opacity = "1";
+      element.style.visibility = "visible";
+      element.style.transform = "none";
+    });
+    return;
+  }
+
+  gsap.fromTo(
+    ".home-motion",
+    { y: 24 },
+    {
+      y: 0,
+      duration: 0.88,
+      stagger: 0.08,
+      ease: "power3.out",
+      delay: 0.12,
+      clearProps: "transform",
+    }
+  );
+
+  gsap.to(".hero-dashboard", {
+    y: -7,
+    duration: 4.6,
+    repeat: -1,
+    yoyo: true,
+    ease: "sine.inOut",
+  });
+
+  gsap.to(".premium-float", {
+    y: -9,
+    duration: 3.6,
+    repeat: -1,
+    yoyo: true,
+    ease: "sine.inOut",
+    stagger: 0.24,
+  });
+}
 
 function createReviewCard(review) {
   const card = document.createElement("article");
@@ -715,50 +782,115 @@ function initHomeAssistantExperience(options = {}) {
   });
 }
 
-function createHomeOpportunityPreviewCard(item) {
+function formatHomeOpportunityDeadline(item) {
+  if (item && item.deadline_date) {
+    const date = new Date(`${item.deadline_date}T00:00:00`);
+    if (!Number.isNaN(date.getTime())) {
+      return date.toLocaleDateString("ru-RU", {
+        day: "numeric",
+        month: "short",
+      });
+    }
+
+    return String(item.deadline_date);
+  }
+
+  if (item && item.duration) {
+    return String(item.duration);
+  }
+
+  return "Rolling";
+}
+
+function getHomeOpportunityCategory(item) {
+  const listingType = String(item && item.listing_type || "").toLowerCase();
+  const title = String(item && item.title || "").toLowerCase();
+
+  if (listingType === "vacancy") {
+    return "Вакансия";
+  }
+
+  if (title.includes("grant") || title.includes("грант")) {
+    return "Грант";
+  }
+
+  if (title.includes("fellowship")) {
+    return "Fellowship";
+  }
+
+  return "Стажировка";
+}
+
+function buildHomeOpportunityTags(item) {
+  const tags = [];
+  const location = String(item && item.location || "").trim();
+  const organization = String(item && item.organization || "").trim();
+  const listingType = String(item && item.listing_type || "").toLowerCase();
+  const title = String(item && item.title || "").toLowerCase();
+
+  if (location) {
+    tags.push(location);
+  }
+
+  if (listingType === "vacancy") {
+    tags.push("Career");
+  } else {
+    tags.push("Internship");
+  }
+
+  if (title.includes("policy") || title.includes("research") || title.includes("аналит")) {
+    tags.push("Research");
+  } else if (title.includes("digital") || title.includes("communication") || title.includes("коммуника")) {
+    tags.push("Digital");
+  } else if (organization) {
+    tags.push(organization);
+  }
+
+  return Array.from(new Set(tags)).slice(0, 3);
+}
+
+function createHomeOpportunityPreviewCard(item, isAuthenticated = false) {
   const card = document.createElement("article");
+  const top = document.createElement("div");
+  const category = document.createElement("span");
+  const deadline = document.createElement("span");
   const title = document.createElement("strong");
   const description = document.createElement("p");
-  const meta = document.createElement("div");
+  const tags = document.createElement("div");
+  const link = document.createElement("a");
 
-  card.className = "home-figma-info-card home-figma-info-card-preview";
+  card.className = "home-figma-info-card home-figma-info-card-preview premium-opportunity-card";
+  top.className = "premium-opportunity-top";
+  category.className = "premium-opportunity-category";
+  deadline.className = "premium-opportunity-deadline";
+  tags.className = "premium-opportunity-tags";
+  link.className = "premium-card-link route-link";
+  link.href = isAuthenticated ? "/internships" : "/register";
+  link.dataset.transitionDirection = isAuthenticated ? "left" : "right";
+  link.textContent = "Открыть";
+  category.textContent = getHomeOpportunityCategory(item);
+  deadline.textContent = formatHomeOpportunityDeadline(item);
   title.textContent = String(item.title || "Возможность");
-  description.textContent = String(item.description_preview || "Описание появится после загрузки.");
-  meta.className = "home-figma-info-card-meta";
+  description.textContent = [
+    item.organization ? String(item.organization) : "",
+    item.description_preview ? String(item.description_preview) : "Описание появится после загрузки.",
+  ].filter(Boolean).join(" · ");
 
-  if (item.listing_type) {
-    const kind = document.createElement("span");
-    kind.textContent = item.listing_type === "vacancy" ? "Вакансия" : "Стажировка";
-    meta.appendChild(kind);
-  }
+  buildHomeOpportunityTags(item).forEach((tagText) => {
+    const tag = document.createElement("span");
+    tag.textContent = tagText;
+    tags.appendChild(tag);
+  });
 
-  if (item.organization) {
-    const organization = document.createElement("span");
-    organization.textContent = String(item.organization);
-    meta.appendChild(organization);
-  }
-
-  if (item.location) {
-    const location = document.createElement("span");
-    location.textContent = String(item.location);
-    meta.appendChild(location);
-  }
-
-  if (item.deadline_date) {
-    const deadline = document.createElement("span");
-    deadline.textContent = "Дедлайн: " + String(item.deadline_date);
-    meta.appendChild(deadline);
-  } else if (item.duration) {
-    const duration = document.createElement("span");
-    duration.textContent = String(item.duration);
-    meta.appendChild(duration);
-  }
-
+  top.appendChild(category);
+  top.appendChild(deadline);
+  card.appendChild(top);
   card.appendChild(title);
   card.appendChild(description);
-  if (meta.childNodes.length) {
-    card.appendChild(meta);
+  if (tags.childNodes.length) {
+    card.appendChild(tags);
   }
+  card.appendChild(link);
 
   return card;
 }
@@ -766,7 +898,6 @@ function createHomeOpportunityPreviewCard(item) {
 function hideLegacyHomeOpportunitiesUi() {
   const legacyEmptyState = document.getElementById("homeOpportunityPreviewEmpty");
   const legacyCta = document.getElementById("homeOpportunitiesViewAll");
-  const previewGrid = document.getElementById("homeOpportunityPreviewGrid");
 
   if (legacyEmptyState) {
     legacyEmptyState.hidden = true;
@@ -776,14 +907,9 @@ function hideLegacyHomeOpportunitiesUi() {
     legacyCta.hidden = true;
     legacyCta.closest(".home-figma-opportunity-actions")?.setAttribute("hidden", "hidden");
   }
-
-  if (previewGrid && previewGrid.dataset.placeholderCleared !== "true") {
-    previewGrid.innerHTML = "";
-    previewGrid.dataset.placeholderCleared = "true";
-  }
 }
 
-function renderHomeOpportunityPreview(items) {
+function renderHomeOpportunityPreview(items, isAuthenticated = false) {
   const grid = document.getElementById("homeOpportunityPreviewGrid");
   const emptyState = document.querySelector("[data-home-opportunities-empty]");
   hideLegacyHomeOpportunitiesUi();
@@ -803,7 +929,7 @@ function renderHomeOpportunityPreview(items) {
   emptyState.hidden = true;
   const fragment = document.createDocumentFragment();
   previewItems.forEach((item) => {
-    fragment.appendChild(createHomeOpportunityPreviewCard(item));
+    fragment.appendChild(createHomeOpportunityPreviewCard(item, isAuthenticated));
   });
   grid.appendChild(fragment);
 }
@@ -811,6 +937,7 @@ function renderHomeOpportunityPreview(items) {
 function syncHomeOpportunitiesCta(isAuthenticated) {
   const cta = document.querySelector("[data-home-opportunities-cta]");
   hideLegacyHomeOpportunitiesUi();
+  document.body.dataset.homeAuthenticated = isAuthenticated ? "true" : "false";
 
   if (!cta) {
     return;
@@ -860,7 +987,7 @@ async function initHomePageExperience() {
     const previewItems = Array.isArray(previewPayload.items) ? previewPayload.items : [];
 
     syncHomeOpportunitiesCta(isAuthenticated);
-    renderHomeOpportunityPreview(previewItems);
+    renderHomeOpportunityPreview(previewItems, isAuthenticated);
 
     if (navLogin) {
       navLogin.hidden = isAuthenticated;
@@ -910,7 +1037,7 @@ async function initHomePageExperience() {
     console.error("Home page state error:", error);
 
     syncHomeOpportunitiesCta(false);
-    renderHomeOpportunityPreview([]);
+    renderHomeOpportunityPreview([], false);
 
     if (navLogin) {
       navLogin.hidden = false;
