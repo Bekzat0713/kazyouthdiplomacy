@@ -54,6 +54,14 @@
   letter-spacing: inherit !important;
 }
 
+/* ── CRITICAL: preserve hidden attribute — beats any display !important ─ */
+/* Without this, every `display: X !important` rule above would make
+   hidden elements visible (HTML hidden = display:none with 0 specificity). */
+.inner-premium-page [hidden],
+[hidden] {
+  display: none !important;
+}
+
 .inner-premium-page h1,
 .inner-premium-page h2,
 .inner-premium-page h3,
