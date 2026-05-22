@@ -54,13 +54,6 @@
   letter-spacing: inherit !important;
 }
 
-/* ── CRITICAL: preserve hidden attribute — beats any display !important ─ */
-/* Without this, every `display: X !important` rule above would make
-   hidden elements visible (HTML hidden = display:none with 0 specificity). */
-.inner-premium-page [hidden],
-[hidden] {
-  display: none !important;
-}
 
 .inner-premium-page h1,
 .inner-premium-page h2,
@@ -2622,4 +2615,19 @@ body.inner-premium-page {
     flex-shrink: 0 !important;
     white-space: nowrap !important;
   }
+}
+
+/* ================================================================
+   HIDDEN ATTRIBUTE OVERRIDE — MUST BE LAST IN FILE
+   ================================================================
+   Problem: every "display: X !important" rule above overrides the
+   HTML [hidden] attribute (which is just display:none with 0
+   specificity). With equal !important, the LAST rule in source wins.
+   This rule uses `html` element prefix to achieve higher specificity
+   (0,2,1) vs class-only rules (0,2,0), guaranteeing it always wins
+   regardless of position. Admin tabs, forms, cards stay hidden when
+   JS sets element.hidden = true.
+   ================================================================ */
+html .inner-premium-page [hidden] {
+  display: none !important;
 }
