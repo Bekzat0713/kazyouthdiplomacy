@@ -982,7 +982,7 @@ body.inner-premium-page {
   background: transparent !important;
   color: var(--premium-text) !important;
   font-family: 'DM Sans', system-ui, sans-serif !important;
-  font-size: 14px !important;
+  font-size: 16px !important; /* 16px prevents iOS Safari zoom on focus */
   outline: none !important;
 }
 
@@ -2135,6 +2135,7 @@ body.inner-premium-page {
   }
 
   .inner-premium-page .dashboard-container > h1,
+  .inner-premium-page .dashboard-page-head h1,
   .inner-premium-page .internships-header h1,
   .inner-premium-page .subscribe-head h1,
   .inner-premium-page .opportunities-header h1,
@@ -2614,6 +2615,127 @@ body.inner-premium-page {
   .inner-premium-page .dashboard-tab {
     flex-shrink: 0 !important;
     white-space: nowrap !important;
+  }
+}
+
+/* ================================================================
+   MOBILE FIXES — COMPREHENSIVE
+   ================================================================ */
+
+/* Filter chips: horizontal scroll on all pages (not just dashboard tabs) */
+@media (max-width: 640px) {
+  .inner-premium-page .filters-modern {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    gap: 6px !important;
+    padding-bottom: 4px !important;
+  }
+  .inner-premium-page .filters-modern::-webkit-scrollbar {
+    display: none !important;
+  }
+  .inner-premium-page .filters-modern .filter {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  /* Opportunity & resource controls row: stack on mobile */
+  .inner-premium-page .opportunities-controls,
+  .inner-premium-page .resources-controls {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+
+  /* Card actions: stack buttons vertically on small screens */
+  .inner-premium-page .card-actions {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .inner-premium-page .card-actions .btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Onboarding banner: reduce padding */
+  .inner-premium-page .onboarding-inner {
+    padding: 18px 16px 16px !important;
+  }
+  .inner-premium-page .onboarding-head {
+    gap: 8px !important;
+  }
+  .inner-premium-page #onboardingWelcomeTitle {
+    font-size: 1.15rem !important;
+  }
+
+  /* Dashboard welcome line */
+  .inner-premium-page .dashboard-welcome-line {
+    font-size: 13px !important;
+  }
+
+  /* Internships hero-top: stack on mobile */
+  .inner-premium-page .internships-hero-top {
+    flex-wrap: wrap !important;
+  }
+
+  /* Internships advanced filters: full-width on small screens */
+  .inner-premium-page .internships-advanced-filters {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .inner-premium-page .internships-advanced-field {
+    width: 100% !important;
+  }
+  .inner-premium-page .internships-advanced-input {
+    width: 100% !important;
+  }
+
+  /* Opportunity & resource form grids: force 1 column */
+  .opportunity-form-grid,
+  .resource-form-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Career metrics: 2x2 grid on mobile */
+  .career-editor-body .career-summary-metrics {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Career summary actions */
+  .career-summary-actions {
+    flex-direction: column !important;
+  }
+  .career-summary-actions .btn {
+    width: 100% !important;
+  }
+
+  /* Internships filter chip: make filter count smaller */
+  .inner-premium-page .internships-filter-chip-count {
+    font-size: 10px !important;
+    padding: 0 5px !important;
+    min-width: 16px !important;
+  }
+}
+
+/* Very small screens (< 380px) */
+@media (max-width: 380px) {
+  .inner-premium-page .dashboard-container > h1,
+  .inner-premium-page .dashboard-page-head h1,
+  .inner-premium-page .internships-header h1,
+  .inner-premium-page .opportunities-header h1,
+  .inner-premium-page .resources-header h1 {
+    font-size: 26px !important;
+  }
+
+  .inner-premium-page .btn {
+    font-size: 13px !important;
+    padding: 0 14px !important;
+  }
+
+  .inner-premium-page .internships-summary-pill {
+    font-size: 10px !important;
   }
 }
 
