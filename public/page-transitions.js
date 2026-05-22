@@ -1,15 +1,22 @@
 /**
- * KazYouthDiplomacy — Page Transitions
- * Safe cross-browser fade. Disabled on iOS Safari (known rAF/opacity bugs).
+ * KazYouthDiplomacy — Page Transitions v5
+ *
+ * Strategy:
+ *   OUT  – fade the *departing* page to opacity 0 before navigating.
+ *   IN   – slide the *arriving* page up from a slight offset.
+ *         The arriving page is NEVER set to opacity 0 — avoids
+ *         any risk of black-screen hangs on iOS Safari / slow devices.
+ *
+ * iOS / Safari: transitions disabled entirely via UA detection.
  */
 (function () {
   'use strict';
 
   /* ── Detect iOS / Safari — transitions disabled there ───── */
   var ua = navigator.userAgent || '';
-  var isIOS     = /iPhone|iPad|iPod/i.test(ua);
-  var isSafari  = /^((?!chrome|android).)*safari/i.test(ua);
-  var noAnim    = isIOS || isSafari;
+  var isIOS    = /iPhone|iPad|iPod/i.test(ua);
+  var isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+  var noAnim   = isIOS || isSafari;
 
   /* Always ensure the page is visible on load */
   function ensureVisible() {
@@ -26,9 +33,9 @@
     return;
   }
 
-  var DURATION_OUT = 220;
-  var DURATION_IN  = 380;
-  var KEY          = 'kyd_pt_v4';
+  var DURATION_OUT = 200;
+  var DURATION_IN  = 340;
+  var KEY          = 'kyd_pt_v5';
   var TTL          = 4000;
 
   /* ── SessionStorage ──────────────────────────────────────── */
@@ -79,12 +86,12 @@
 
     var html = document.documentElement;
     html.style.transition =
-      'opacity '  + DURATION_OUT + 'ms ease,' +
+      'opacity '   + DURATION_OUT + 'ms ease,' +
       'transform ' + DURATION_OUT + 'ms ease';
     html.style.opacity   = '0';
-    html.style.transform = 'translateY(-8px)';
+    html.style.transform = 'translateY(-6px)';
 
-    /* Safety: navigate even if transition callback fails */
+    /* Safety: navigate even if transitionend never fires */
     var done = false;
     function navigate() {
       if (done) return;
@@ -98,32 +105,33 @@
   function playIn() {
     if (window.location.pathname === '/') return;
 
-    var html = document.documentElement;
     var hasEntry = consume();
 
+    /* No session key — page visited directly, no animation needed */
     if (!hasEntry) {
       ensureVisible();
       return;
     }
 
-    /* Start hidden */
-    html.style.transition = 'none';
-    html.style.opacity    = '0';
-    html.style.transform  = 'translateY(10px)';
+    var html = document.documentElement;
 
-    /* Hard safety: page MUST become visible within 600ms regardless */
-    var safetyTimer = setTimeout(ensureVisible, 600);
-
+    /*
+     * SAFE slide-in:
+     *   - Opacity stays at 1 the entire time — page is always readable.
+     *   - Only translateY is animated, from +10px to 0.
+     *   - One rAF pair to allow the browser to paint the initial state.
+     *   - ensureVisible() called after to clean up any stale inline styles.
+     */
     requestAnimationFrame(function () {
+      html.style.transition = 'none';
+      html.style.transform  = 'translateY(10px)';
+
       requestAnimationFrame(function () {
-        clearTimeout(safetyTimer);
         html.style.transition =
-          'opacity '  + DURATION_IN + 'ms cubic-bezier(0.16,1,0.3,1),' +
           'transform ' + DURATION_IN + 'ms cubic-bezier(0.16,1,0.3,1)';
-        html.style.opacity   = '1';
         html.style.transform = 'translateY(0)';
 
-        setTimeout(ensureVisible, DURATION_IN + 80);
+        setTimeout(ensureVisible, DURATION_IN + 60);
       });
     });
   }
