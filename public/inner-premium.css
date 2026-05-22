@@ -2037,50 +2037,91 @@ body.inner-premium-page {
    ============================================================ */
 
 @media (max-width: 1100px) {
-  /* Mobile nav */
+  /* Mobile nav — flex row: brand LEFT, toggle RIGHT, dropdown absolute */
   body.inner-premium-page .home-figma-header.card-nav-inline-header,
   .inner-premium-page .home-figma-header.card-nav-inline-header {
-    display: grid !important;
-    grid-template-columns: 40px minmax(0, 1fr) !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
     align-items: center !important;
+    justify-content: space-between !important;
     gap: 10px !important;
-    padding: 10px !important;
+    padding: 10px 14px !important;
+    position: fixed !important;   /* already fixed globally; re-declare so overflow:visible works */
+    overflow: visible !important; /* allow absolute dropdown to escape header bounds */
   }
 
+  /* Brand stays on left (JS inserts toggle before brand, so toggle has DOM order 1;
+     we use CSS order to visually swap: brand=1, toggle=2) */
+  .inner-premium-page .home-figma-header.card-nav-inline-header .logo-wrap,
+  .inner-premium-page .home-figma-header.card-nav-inline-header .premium-brand {
+    order: 1 !important;
+    flex: 0 0 auto !important;
+  }
+
+  /* Toggle button goes to the RIGHT */
   .inner-premium-page .home-figma-header.card-nav-inline-header .card-nav-toggle {
     display: inline-flex !important;
+    order: 2 !important;
+    flex-shrink: 0 !important;
+    margin-left: auto !important;
   }
 
+  /* Dropdown: absolute, floats below header, never expands header height */
   .inner-premium-page .home-figma-header.card-nav-inline-header nav.card-nav-inline {
     display: none !important;
-    grid-column: 1 / -1 !important;
+    position: absolute !important;
+    top: calc(100% + 6px) !important;
+    left: 0 !important;
+    right: 0 !important;
+    order: 3 !important;
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 10px !important;
-    padding: 12px !important;
-    border-radius: 8px !important;
-    border: 1px solid var(--premium-line) !important;
-    background: rgba(255, 255, 255, 0.97) !important;
-    box-shadow: var(--premium-shadow-sm) !important;
+    padding: 14px !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(8, 148, 199, 0.18) !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    box-shadow:
+      0 20px 48px rgba(8, 23, 44, 0.14),
+      0 4px 12px rgba(8, 23, 44, 0.08) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    z-index: 1100 !important;
   }
 
   .inner-premium-page .home-figma-header.card-nav-inline-header[data-mobile-nav-open="true"] nav.card-nav-inline {
     display: flex !important;
   }
 
-  .inner-premium-page .premium-nav-links,
-  .inner-premium-page .premium-nav-actions {
+  /* Nav links + actions: stack vertically inside dropdown */
+  .inner-premium-page .home-figma-header.card-nav-inline-header nav.card-nav-inline .premium-nav-links,
+  .inner-premium-page .home-figma-header.card-nav-inline-header nav.card-nav-inline .card-nav-links,
+  .inner-premium-page .home-figma-header.card-nav-inline-header nav.card-nav-inline .premium-nav-actions,
+  .inner-premium-page .home-figma-header.card-nav-inline-header nav.card-nav-inline .card-nav-actions {
     width: 100% !important;
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 4px !important;
+    justify-content: flex-start !important;
   }
 
-  .inner-premium-page .premium-nav-links a,
-  .inner-premium-page .premium-nav-actions .nav-btn,
-  .inner-premium-page .premium-nav-actions form button {
+  .inner-premium-page .home-figma-header.card-nav-inline-header nav.card-nav-inline .premium-nav-links a,
+  .inner-premium-page .home-figma-header.card-nav-inline-header nav.card-nav-inline .card-nav-links a,
+  .inner-premium-page .home-figma-header.card-nav-inline-header nav.card-nav-inline .premium-nav-actions .nav-btn,
+  .inner-premium-page .home-figma-header.card-nav-inline-header nav.card-nav-inline .premium-nav-actions form button,
+  .inner-premium-page .home-figma-header.card-nav-inline-header nav.card-nav-inline .card-nav-actions .nav-btn,
+  .inner-premium-page .home-figma-header.card-nav-inline-header nav.card-nav-inline .card-nav-actions form button {
     width: 100% !important;
     justify-content: flex-start !important;
+    min-height: 44px !important;
+  }
+
+  /* Actions separator */
+  .inner-premium-page .home-figma-header.card-nav-inline-header nav.card-nav-inline .premium-nav-actions,
+  .inner-premium-page .home-figma-header.card-nav-inline-header nav.card-nav-inline .card-nav-actions {
+    padding-top: 10px !important;
+    border-top: 1px solid rgba(8, 23, 44, 0.08) !important;
   }
 
   .inner-premium-page .plans-grid {
@@ -2119,6 +2160,7 @@ body.inner-premium-page {
   body.inner-premium-page .home-figma-header {
     top: 10px !important;
     width: calc(100% - 20px) !important;
+    overflow: visible !important;
   }
 
   .inner-premium-page .dashboard-page,
