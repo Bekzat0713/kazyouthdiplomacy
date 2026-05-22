@@ -6,27 +6,95 @@
   <link rel="icon" type="image/png" href="/logo.png" />
   <title>Личный кабинет — KazYouthDiplomacy</title>
   <link rel="stylesheet" href="/web.css">
+  <link rel="stylesheet" href="/card-nav.css">
+  <link rel="stylesheet" href="/access-control.css">
+  <link rel="stylesheet" href="/inner-premium.css">
 </head>
-<body data-assistant-page="dashboard">
+<body class="inner-premium-page" data-assistant-page="dashboard">
 
-<header class="header">
-  <a href="/" class="logo-wrap">
-    <img src="/logo.png" alt="KazYouthDiplomacy">
+<header class="header home-figma-header premium-nav" id="siteHeader">
+  <a href="/" class="logo-wrap premium-brand" aria-label="KazYouthDiplomacy">
+    <img src="/logo.png" alt="KazYouthDiplomacy logo" />
     <span>KazYouthDiplomacy</span>
   </a>
-  <nav>
-    <a href="/internships">Стажировки</a>
-    <a href="/opportunities">Возможности</a>
-    <a href="/resources">Материалы</a>
-    <form method="POST" action="/logout" style="display:inline;">
-      <button class="nav-btn">Выйти</button>
-    </form>
+  <nav class="home-figma-nav premium-nav-menu" aria-label="Основная навигация">
+    <div class="card-nav-links premium-nav-links">
+      <a href="/dashboard" aria-current="page">Кабинет</a>
+      <a href="/internships">Стажировки</a>
+      <a href="/opportunities">Возможности</a>
+      <a href="/resources">Материалы</a>
+    </div>
+    <div class="card-nav-actions premium-nav-actions">
+      <form method="POST" action="/logout">
+        <button class="nav-btn" type="submit">Выйти</button>
+      </form>
+    </div>
   </nav>
 </header>
 
 <section class="dashboard-page">
   <div class="dashboard-container">
-    <h1>Личный кабинет</h1>
+    <div class="dashboard-page-head">
+      <h1 id="dashboardPageTitle">Личный кабинет</h1>
+      <p id="dashboardWelcomeLine" class="dashboard-welcome-line" aria-live="polite" hidden></p>
+    </div>
+
+    <!-- ── Onboarding welcome banner (hidden until onboarding.js shows it) ── -->
+    <div id="onboardingBanner" class="onboarding-banner" hidden aria-live="polite">
+      <div class="onboarding-inner">
+
+        <div class="onboarding-head">
+          <div class="onboarding-title-row">
+            <h2 id="onboardingWelcomeTitle">Добро пожаловать! 👋</h2>
+            <p class="onboarding-subtitle">Начните с 3 шагов — обычно занимает 10 минут</p>
+          </div>
+          <button id="onboardingDismiss" class="onboarding-dismiss" type="button" aria-label="Закрыть приветствие">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="onboarding-steps">
+          <div class="onboarding-step">
+            <div class="onboarding-step-num">01</div>
+            <div class="onboarding-step-body">
+              <strong>Career Profile</strong>
+              <span>Создайте публичную визитку с QR-кодом для HR</span>
+            </div>
+            <a href="/career-profile" class="onboarding-step-link">Начать <span aria-hidden="true">→</span></a>
+          </div>
+
+          <div class="onboarding-step">
+            <div class="onboarding-step-num">02</div>
+            <div class="onboarding-step-body">
+              <strong>Стажировки</strong>
+              <span>Персональные рекомендации по вашей цели</span>
+            </div>
+            <a href="/internships" class="onboarding-step-link">Открыть <span aria-hidden="true">→</span></a>
+          </div>
+
+          <div class="onboarding-step">
+            <div class="onboarding-step-num">03</div>
+            <div class="onboarding-step-body">
+              <strong>Материалы</strong>
+              <span>CV-шаблоны, гайды по грантам и интервью</span>
+            </div>
+            <a href="/resources" class="onboarding-step-link">Изучить <span aria-hidden="true">→</span></a>
+          </div>
+        </div>
+
+        <div class="onboarding-progress-row">
+          <span class="onboarding-progress-label">
+            Прогресс профиля: <strong id="onboardingProgressVal">0%</strong>
+          </span>
+          <div class="onboarding-progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+            <div class="onboarding-progress-fill" id="onboardingProgressFill"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
 
     <div class="dashboard-tabs">
       <a href="/internships" class="dashboard-tab">Стажировки</a>
@@ -223,7 +291,11 @@
   </div>
 </section>
 
+<script src="/card-nav.js" defer></script>
+<script src="/access-control.js" defer></script>
+<script src="/page-transitions.js" defer></script>
 <script src="/dashboard.js" defer></script>
+<script src="/onboarding.js" defer></script>
 <script src="/assistant-widget.js" defer></script>
 </body>
 </html>

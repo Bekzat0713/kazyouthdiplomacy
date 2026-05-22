@@ -6,13 +6,29 @@
   <link rel="icon" type="image/png" href="/logo.png" />
   <title>Подписка - KazYouthDiplomacy</title>
   <link rel="stylesheet" href="/web.css">
+  <link rel="stylesheet" href="/card-nav.css">
+  <link rel="stylesheet" href="/access-control.css">
+  <link rel="stylesheet" href="/inner-premium.css">
 </head>
-<body class="subscribe-page route-page" data-assistant-page="subscribe">
+<body class="subscribe-page route-page inner-premium-page" data-assistant-page="subscribe">
 
-<header class="header">
-  <a href="/" class="logo-wrap">
+<header class="header home-figma-header premium-nav" id="siteHeader">
+  <a href="/" class="logo-wrap premium-brand" aria-label="KazYouthDiplomacy">
+    <img src="/logo.png" alt="KazYouthDiplomacy logo" />
     <span>KazYouthDiplomacy</span>
   </a>
+  <nav class="home-figma-nav premium-nav-menu" aria-label="Основная навигация">
+    <div class="card-nav-links premium-nav-links">
+      <a href="/dashboard">Кабинет</a>
+      <a href="/internships">Стажировки</a>
+      <a href="/opportunities">Возможности</a>
+    </div>
+    <div class="card-nav-actions premium-nav-actions">
+      <form method="POST" action="/logout">
+        <button class="nav-btn" type="submit">Выйти</button>
+      </form>
+    </div>
+  </nav>
 </header>
 
 <a
@@ -219,6 +235,7 @@
   </div>
 </aside>
 
+<script src="/card-nav.js" defer></script>
 <script src="/app-config.js"></script>
 <script src="/app-runtime.js"></script>
 <script src="/page-transitions.js" defer></script>

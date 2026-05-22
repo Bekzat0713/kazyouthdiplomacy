@@ -6,19 +6,29 @@
   <link rel="icon" type="image/png" href="/logo.png" />
   <title>Материалы - KazYouthDiplomacy</title>
   <link rel="stylesheet" href="/web.css">
+  <link rel="stylesheet" href="/card-nav.css">
+  <link rel="stylesheet" href="/access-control.css">
+  <link rel="stylesheet" href="/inner-premium.css">
 </head>
-<body data-assistant-page="resources">
+<body class="inner-premium-page" data-assistant-page="resources">
 
-<header class="header">
-  <a href="/dashboard" class="logo-wrap">
-    <img src="/logo.png" alt="KazYouthDiplomacy">
+<header class="header home-figma-header premium-nav" id="siteHeader">
+  <a href="/" class="logo-wrap premium-brand" aria-label="KazYouthDiplomacy">
+    <img src="/logo.png" alt="KazYouthDiplomacy logo" />
     <span>KazYouthDiplomacy</span>
   </a>
-  <nav>
-    <a href="/dashboard">Кабинет</a>
-    <a href="/internships">Стажировки</a>
-    <a href="/opportunities">Возможности</a>
-    <a href="/subscribe">Подписка</a>
+  <nav class="home-figma-nav premium-nav-menu" aria-label="Основная навигация">
+    <div class="card-nav-links premium-nav-links">
+      <a href="/dashboard">Кабинет</a>
+      <a href="/internships">Стажировки</a>
+      <a href="/opportunities">Возможности</a>
+      <a href="/resources" aria-current="page">Материалы</a>
+    </div>
+    <div class="card-nav-actions premium-nav-actions">
+      <form method="POST" action="/logout">
+        <button class="nav-btn" type="submit">Выйти</button>
+      </form>
+    </div>
   </nav>
 </header>
 
@@ -121,9 +131,27 @@
   </form>
 
   <div id="resourcesGrid" class="resources-grid"></div>
-  <p id="resourcesEmpty" class="opportunities-empty" hidden>По выбранному фильтру материалов пока нет.</p>
+  <div id="resourcesEmpty" class="premium-empty-state" hidden>
+    <div class="premium-empty-icon" aria-hidden="true">
+      <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+        <circle cx="28" cy="28" r="27" stroke="rgba(8,148,199,0.18)" stroke-width="1.5"/>
+        <rect x="18" y="16" width="20" height="26" rx="3" stroke="rgba(8,148,199,0.35)" stroke-width="1.5"/>
+        <path d="M22 23h12M22 28h12M22 33h7" stroke="rgba(8,148,199,0.45)" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="36" cy="20" r="4" fill="rgba(8,148,199,0.12)" stroke="rgba(8,148,199,0.35)" stroke-width="1.2"/>
+        <path d="M34.5 20l1 1 2-2" stroke="rgba(8,148,199,0.6)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h3>Материалов пока нет</h3>
+    <p>По этому фильтру гайдов и шаблонов не найдено. В разделе «Все» уже есть CV-чеклисты, советы по интервью и карьерные маршруты.</p>
+    <button type="button" class="btn secondary" onclick="document.querySelector('.filter[data-type=all]')?.click()">
+      Показать все материалы
+    </button>
+  </div>
 </section>
 
+<script src="/card-nav.js" defer></script>
+<script src="/access-control.js" defer></script>
+<script src="/page-transitions.js" defer></script>
 <script src="/resources.js" defer></script>
 <script src="/assistant-widget.js" defer></script>
 </body>

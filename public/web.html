@@ -9,6 +9,9 @@
     content="KazYouthDiplomacy помогает студентам находить стажировки, гранты и карьерные возможности без хаотичного поиска."
   />
   <link rel="icon" type="image/png" href="/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" />
   <link rel="stylesheet" href="/web.css" />
   <link rel="stylesheet" href="/card-nav.css" />
   <link rel="stylesheet" href="/access-control.css" />
@@ -16,16 +19,28 @@
 </head>
 <body class="home-page route-page home-figma-page">
 <div class="site-splash" id="site-splash" aria-hidden="true">
-  <div class="site-splash-inner">
-    <div class="splash-bowl" aria-hidden="true">
-      <img src="/intro-logo.png" alt="" class="site-splash-logo-base" />
-      <div class="site-splash-water-fill">
-        <img src="/intro-logo.png" alt="" class="site-splash-logo-water" />
-      </div>
-      <span class="site-splash-shine"></span>
-    </div>
-    <p class="site-splash-title">KazYouthDiplomacy</p>
+  <div class="splash-bg" aria-hidden="true">
+    <span class="splash-orb splash-orb-1"></span>
+    <span class="splash-orb splash-orb-2"></span>
+    <span class="splash-orb splash-orb-3"></span>
   </div>
+  <div class="site-splash-inner">
+    <div class="splash-stage" aria-hidden="true">
+      <span class="splash-ring splash-ring-1"></span>
+      <span class="splash-ring splash-ring-2"></span>
+      <span class="splash-ring splash-ring-3"></span>
+      <div class="splash-logo-wrap">
+        <img src="/logo.png" alt="" class="splash-logo-img" />
+        <span class="splash-logo-glow"></span>
+        <span class="splash-shine"></span>
+      </div>
+    </div>
+    <div class="splash-text-block">
+      <p class="site-splash-title">KazYouthDiplomacy</p>
+      <p class="splash-tagline">Твой путь в международную карьеру</p>
+    </div>
+  </div>
+  <span class="splash-progress" aria-hidden="true"></span>
 </div>
 
 <header class="header home-figma-header premium-nav" id="siteHeader">
@@ -166,7 +181,7 @@
     <div class="home-figma-section-head premium-section-head">
       <span class="home-figma-kicker premium-kicker">Featured opportunities</span>
       <h2>Карточки возможностей, которые легко сравнивать и быстро отбирать.</h2>
-      <p>На главной показывается живое превью каталога. После входа пользователь открывает полный список, сохраняет варианты и работает с дедлайнами.</p>
+      <p>Отфильтруйте по типу, стране или срокам — и сосредоточьтесь на подаче, а не на поиске.</p>
     </div>
 
     <div id="homeOpportunityPreviewGrid" class="home-figma-card-grid home-figma-card-grid-preview premium-opportunity-grid" aria-live="polite">
@@ -224,9 +239,9 @@
     <div class="home-figma-ai-shell premium-ai-shell">
       <div class="home-figma-ai-copy premium-ai-copy">
         <span class="home-figma-kicker premium-kicker">AI Youth</span>
-        <h2>Главная wow-фича: AI-помощник, который превращает цель в карьерный маршрут.</h2>
+        <h2>Следующий шаг всегда понятен.</h2>
         <p>
-          Не просто чат поддержки. AI Youth помогает понять следующий шаг, отобрать возможности, собрать roadmap и не потерять важные дедлайны.
+          AI Youth помогает разобраться с направлением, отобрать подходящие возможности и не упустить важные дедлайны.
         </p>
 
         <div class="premium-prompt-stack" aria-label="Примеры запросов">
@@ -305,8 +320,8 @@
   <section class="home-figma-section home-figma-cta premium-pricing-section" id="pricing" data-scroll-reveal>
     <div class="home-figma-section-head premium-section-head premium-pricing-head">
       <span class="home-figma-kicker premium-kicker">Pricing</span>
-      <h2>Три понятных уровня доступа без лишней витрины.</h2>
-      <p>Free помогает оценить платформу. Plus открывает полный каталог, roadmap, сохранения и инструменты для системной подачи.</p>
+      <h2>Выберите уровень, который подходит вашей цели.</h2>
+      <p>Free — чтобы сориентироваться. Plus — чтобы системно двигаться к реальным откликам.</p>
     </div>
 
     <div class="home-figma-pricing-grid premium-pricing-grid">

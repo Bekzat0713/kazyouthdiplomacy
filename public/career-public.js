@@ -85,6 +85,7 @@ function renderProfile(payload) {
 
   app.innerHTML = `
     <section class="career-public-shell">
+
       <article class="career-public-hero">
         <div class="career-public-topbar">
           <span class="career-public-kicker">Career Profile</span>
@@ -98,25 +99,27 @@ function renderProfile(payload) {
 
           <div class="career-public-hero-copy">
             <h1>${escapeHtml(profile.full_name || "Career Profile")}</h1>
-            <p class="career-public-meta">${escapeHtml(metaLine || "Career визитка кандидата")}</p>
+            ${metaLine ? `<p class="career-public-meta">${escapeHtml(metaLine)}</p>` : ""}
             ${renderTagList(featuredSkills, "career-public-skill-list")}
-            <div class="career-public-actions">
-              <a class="btn primary" href="${escapeHtml(urls.pdf_url || "#")}" target="_blank" rel="noopener">Download PDF</a>
-              <a class="btn secondary" href="${escapeHtml(urls.public_url || "#")}" target="_blank" rel="noopener">Открыть ссылку</a>
-            </div>
             <div class="career-public-contacts">
-              ${renderLinkButtons(profile.links, "Контакты и ссылки появятся после заполнения блока Links.")}
+              ${renderLinkButtons(profile.links, "")}
+            </div>
+            <div class="career-public-actions">
+              ${urls.pdf_url ? `<a class="btn primary" href="${escapeHtml(urls.pdf_url)}" target="_blank" rel="noopener">Download PDF</a>` : ""}
             </div>
           </div>
         </div>
       </article>
 
+      ${profile.about ? `
       <section class="career-public-section">
         <p class="dashboard-kicker">About</p>
         <h2>Обо мне</h2>
-        <p class="career-public-about">${escapeHtml(profile.about || "Кандидат ещё не добавил описание.")}</p>
+        <p class="career-public-about">${escapeHtml(profile.about)}</p>
       </section>
+      ` : ""}
 
+      ${featuredProjects.length ? `
       <section class="career-public-section">
         <div class="career-public-section-head">
           <div>
@@ -125,18 +128,19 @@ function renderProfile(payload) {
           </div>
         </div>
         <div class="career-public-card-grid">
-          ${renderDetailCards(featuredProjects, function (item) {
+          ${featuredProjects.map(function (item) {
             return `
               <article class="career-public-card">
                 <strong>${escapeHtml(item.title || "Проект")}</strong>
-                ${item.stack ? `<span>${escapeHtml(item.stack)}</span>` : ""}
+                ${item.stack ? `<span class="career-public-card-stack">${escapeHtml(item.stack)}</span>` : ""}
                 ${item.summary ? `<p>${escapeHtml(item.summary)}</p>` : ""}
-                ${item.link_url ? `<a href="${escapeHtml(item.link_url)}" target="_blank" rel="noopener">Открыть проект</a>` : ""}
+                ${item.link_url ? `<a href="${escapeHtml(item.link_url)}" target="_blank" rel="noopener">Открыть проект →</a>` : ""}
               </article>
             `;
-          }, "Здесь появятся проекты кандидата.")}
+          }).join("")}
         </div>
       </section>
+      ` : ""}
 
       <section class="career-public-columns">
         <div class="career-public-section">
@@ -186,7 +190,7 @@ function renderProfile(payload) {
                   <strong>${escapeHtml(item.title || "Сертификат")}</strong>
                   ${item.issuer ? `<span>${escapeHtml(item.issuer)}</span>` : ""}
                   ${item.year ? `<small>${escapeHtml(item.year)}</small>` : ""}
-                  ${item.link_url ? `<a href="${escapeHtml(item.link_url)}" target="_blank" rel="noopener">Открыть подтверждение</a>` : ""}
+                  ${item.link_url ? `<a href="${escapeHtml(item.link_url)}" target="_blank" rel="noopener">Открыть подтверждение →</a>` : ""}
                 </article>
               `;
             }, "Сертификаты пока не добавлены.")}
@@ -208,6 +212,12 @@ function renderProfile(payload) {
           </div>
         </div>
       </section>
+
+      <footer class="career-public-footer">
+        <img src="/logo.png" alt="KazYouthDiplomacy" />
+        <span>Powered by <a href="/" target="_blank" rel="noopener">KazYouthDiplomacy</a></span>
+      </footer>
+
     </section>
   `;
 
