@@ -98,7 +98,8 @@ function updateManagerControls() {
 }
 
 function isCatalogLocked() {
-  return !state.canManage && state.accessTier !== "plus";
+  // Catalog is always visible — free users browse but can't open source URLs
+  return false;
 }
 
 function getLockedCatalogMessage() {
@@ -324,7 +325,8 @@ function createOpportunityCard(opportunity) {
   const actions = document.createElement("div");
   actions.className = "card-actions";
 
-  if (isValidHttpUrl(opportunity.source_url)) {
+  if (opportunity.can_open_source && isValidHttpUrl(opportunity.source_url)) {
+    // Plus user — direct link
     const sourceLink = document.createElement("a");
     sourceLink.className = "btn primary";
     sourceLink.href = opportunity.source_url;
@@ -332,7 +334,20 @@ function createOpportunityCard(opportunity) {
     sourceLink.rel = "noopener noreferrer";
     sourceLink.textContent = "Открыть источник";
     actions.appendChild(sourceLink);
-  } else {
+  } else if (opportunity.requires_subscription_to_open) {
+    // Free user — locked button triggers subscription modal
+    const lockedBtn = createTextElement("button", "btn primary source-locked-btn", "🔒 Открыть источник");
+    lockedBtn.type = "button";
+    lockedBtn.addEventListener("click", () => {
+      window.KYD_ACCESS && window.KYD_ACCESS.openSubscriptionModal({
+        title: "Источник доступен в Plus",
+        message: "На Free вы видите весь каталог, а переход к источнику открывается после подписки Plus.",
+        ctaLabel: "Оформить подписку",
+        ctaHref: "/subscribe",
+      });
+    });
+    actions.appendChild(lockedBtn);
+  } else if (!opportunity.has_source_url) {
     const disabledButton = createTextElement("button", "btn secondary", "Источник уточняется");
     disabledButton.type = "button";
     disabledButton.disabled = true;

@@ -410,6 +410,20 @@ body.inner-premium-page .home-figma-header nav a:hover {
   pointer-events: none !important;
 }
 
+/* Source-locked button: looks like primary but signals "Plus required" */
+.inner-premium-page .source-locked-btn {
+  background: linear-gradient(160deg, rgba(8,148,199,0.55) 0%, rgba(2,119,168,0.55) 100%) !important;
+  border-color: rgba(2, 119, 168, 0.4) !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+}
+.inner-premium-page .source-locked-btn:hover,
+.inner-premium-page .source-locked-btn:focus-visible {
+  background: linear-gradient(160deg, rgba(8,148,199,0.7) 0%, rgba(2,119,168,0.7) 100%) !important;
+  box-shadow: 0 6px 18px rgba(8,148,199,0.2) !important;
+  transform: translateY(-1px) !important;
+}
+
 /* ============================================================
    KICKERS / LABELS / BADGES
    ============================================================ */

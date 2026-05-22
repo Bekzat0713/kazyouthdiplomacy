@@ -6232,12 +6232,18 @@ app.get("/api/opportunities", requireAuth, async (req, res) => {
       "opportunity",
       result.rows.map((row) => Number(row.id))
     );
+    const entitlement = deriveUserEntitlements({
+      subscription,
+      canManageOpportunities: canManage,
+    });
     const opportunities = result.rows.map((row) => {
       const recommendation = buildRecommendationForItem(
         row,
         registrationSurvey,
         inferOpportunityMetadata(row)
       );
+      const hasSourceUrl = /^https?:\/\//i.test(String(row.source_url || "").trim());
+      const canOpenSource = hasSourceUrl && entitlement.hasFullAccess;
 
       return {
         id: row.id,
@@ -6248,7 +6254,10 @@ app.get("/api/opportunities", requireAuth, async (req, res) => {
         country: row.country,
         deadline: row.deadline,
         deadline_date: serializeDateOnly(row.deadline_date),
-        source_url: row.source_url,
+        source_url: canOpenSource ? row.source_url : null,
+        has_source_url: hasSourceUrl,
+        can_open_source: canOpenSource,
+        requires_subscription_to_open: hasSourceUrl && !canOpenSource,
         image_url: row.image_url,
         target_goals: recommendation.metadata.target_goals,
         required_english_level: recommendation.metadata.required_english_level,
@@ -6263,10 +6272,6 @@ app.get("/api/opportunities", requireAuth, async (req, res) => {
       };
     });
 
-    const entitlement = deriveUserEntitlements({
-      subscription,
-      canManageOpportunities: canManage,
-    });
     const accessPolicy = applyCatalogAccessPolicy(opportunities, {
       hasFullAccess: entitlement.hasFullAccess,
       hasPaidPlusAccess: entitlement.hasPaidPlusAccess,
@@ -6278,10 +6283,15 @@ app.get("/api/opportunities", requireAuth, async (req, res) => {
       subscription,
     });
 
+    // Free users see all cards but with locked source URLs
+    const visibleItems = entitlement.hasFullAccess
+      ? accessPolicy.visible_items
+      : opportunities;
+
     return res.json({
       can_manage: canManage,
-      opportunities: accessPolicy.visible_items,
-      for_goal: accessPolicy.for_goal_items,
+      opportunities: visibleItems,
+      for_goal: entitlement.hasFullAccess ? accessPolicy.for_goal_items : [],
       personalization: accessPolicy.personalization,
       ...accessPolicy.access,
     });
@@ -6352,6 +6362,8 @@ app.get("/api/resources", requireAuth, async (req, res) => {
         registrationSurvey,
         inferResourceMetadata(row)
       );
+      const hasSourceUrl = /^https?:\/\//i.test(String(row.source_url || "").trim());
+      const canOpenSource = hasSourceUrl && entitlement.hasFullAccess;
 
       return {
         id: row.id,
@@ -6359,7 +6371,10 @@ app.get("/api/resources", requireAuth, async (req, res) => {
         summary: row.summary,
         body: row.body,
         resource_type: row.resource_type,
-        source_url: row.source_url,
+        source_url: canOpenSource ? row.source_url : null,
+        has_source_url: hasSourceUrl,
+        can_open_source: canOpenSource,
+        requires_subscription_to_open: hasSourceUrl && !canOpenSource,
         target_goals: recommendation.metadata.target_goals,
         required_english_level: recommendation.metadata.required_english_level,
         experience_level: recommendation.metadata.experience_level,
@@ -6383,10 +6398,15 @@ app.get("/api/resources", requireAuth, async (req, res) => {
       subscription,
     });
 
+    // Free users see all resources but with locked source URLs
+    const visibleItems = entitlement.hasFullAccess
+      ? accessPolicy.visible_items
+      : resources;
+
     return res.json({
       can_manage: canManage,
-      resources: accessPolicy.visible_items,
-      for_goal: accessPolicy.for_goal_items,
+      resources: visibleItems,
+      for_goal: entitlement.hasFullAccess ? accessPolicy.for_goal_items : [],
       personalization: accessPolicy.personalization,
       ...accessPolicy.access,
     });
