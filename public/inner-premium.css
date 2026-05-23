@@ -2630,16 +2630,39 @@ body.inner-premium-page {
    ::before (blueprint grid with mask-image) + ::after (ambient glow) + backdrop-filter
    together exceed iOS WebKit GPU memory limits and crash the tab. */
 @media (max-width: 1024px) {
+  /* Disable fixed decorative layers — primary iOS WebKit crash cause */
   .inner-premium-page::before,
   .inner-premium-page::after {
     display: none !important;
   }
 
+  /* Nav header: remove backdrop-filter + infinite gradient animation */
   body.inner-premium-page .home-figma-header,
   body.inner-premium-page .premium-nav {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     background: rgba(248, 251, 255, 0.97) !important;
+    background-size: auto !important;
+    animation: none !important;
+  }
+
+  /* Mobile nav dropdown: remove backdrop-filter */
+  body.inner-premium-page .home-figma-header.card-nav-inline-header nav.card-nav-inline {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(255, 255, 255, 0.99) !important;
+  }
+
+  /* Disable infinite pulse animation on summary pill dot */
+  .inner-premium-page .internships-summary-pill::before {
+    animation: none !important;
+  }
+
+  /* Disable dashboard tabs blur */
+  .inner-premium-page .dashboard-tabs {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(255, 255, 255, 0.85) !important;
   }
 }
 
