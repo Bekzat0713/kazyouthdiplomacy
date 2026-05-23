@@ -78,6 +78,7 @@
     linear-gradient(rgba(8, 148, 199, 0.032) 1px, transparent 1px),
     linear-gradient(90deg, rgba(8, 148, 199, 0.032) 1px, transparent 1px);
   background-size: 40px 40px;
+  -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.1) 60%, transparent 100%);
   mask-image: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.1) 60%, transparent 100%);
 }
 
@@ -105,8 +106,8 @@
    ============================================================ */
 
 @keyframes innerReveal {
-  from { opacity: 0; transform: translate3d(0, 18px, 0); }
-  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+  from { transform: translate3d(0, 14px, 0); }
+  to   { transform: translate3d(0, 0, 0); }
 }
 
 @keyframes innerRevealFade {
@@ -119,7 +120,9 @@
 .inner-premium-page .subscribe-layout,
 .inner-premium-page .opportunities-page,
 .inner-premium-page .resources-page {
-  animation: innerReveal 0.54s var(--premium-ease) both;
+  /* opacity deliberately NOT animated — avoids black screen on iOS Safari.
+     Page is always visible; only a subtle translateY provides entrance feel. */
+  animation: innerReveal 0.5s var(--premium-ease) both;
   position: relative;
   z-index: 1;
 }
@@ -2622,11 +2625,21 @@ body.inner-premium-page {
   }
 }
 
-/* 8. Blueprint grid: reduce on small screens (performance) */
-@media (max-width: 640px) {
-  .inner-premium-page::before {
-    background-size: 32px 32px !important;
-    opacity: 0.6 !important;
+/* 8. Mobile: disable GPU-heavy fixed pseudo-elements to prevent iOS Safari WebKit crash
+   ("повторно возникла проблема" / "A problem repeatedly occurred").
+   ::before (blueprint grid with mask-image) + ::after (ambient glow) + backdrop-filter
+   together exceed iOS WebKit GPU memory limits and crash the tab. */
+@media (max-width: 1024px) {
+  .inner-premium-page::before,
+  .inner-premium-page::after {
+    display: none !important;
+  }
+
+  body.inner-premium-page .home-figma-header,
+  body.inner-premium-page .premium-nav {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(248, 251, 255, 0.97) !important;
   }
 }
 
