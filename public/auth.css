@@ -1,0 +1,582 @@
+/* ============================================================
+   auth.css — Clean redesign for all auth / public pages
+   Overrides web.css gradient blobs with clean white SaaS look
+   Accent: #3b6ef6 | Bg: #ffffff | Subtle: #f0f4ff
+============================================================ */
+
+:root {
+  --auth-accent:      #3b6ef6;
+  --auth-accent-soft: rgba(59, 110, 246, 0.08);
+  --auth-accent-ring: rgba(59, 110, 246, 0.16);
+  --auth-border:      #e5e7eb;
+  --auth-text:        #1a2332;
+  --auth-muted:       #6b7280;
+  --auth-bg:          #ffffff;
+  --auth-panel:       #f0f4ff;
+}
+
+/* ─── Background: pure white, no gradient blobs ─── */
+
+.auth-figma-page,
+body.login-page,
+body.register-page,
+body.register-survey-page,
+body.forgot-password-page,
+body.reset-password-page {
+  background: var(--auth-bg) !important;
+}
+
+/* ─── Nav: full-width clean bar ─── */
+
+.auth-figma-page .home-figma-header,
+.auth-figma-page .header,
+body.login-page .home-figma-header,
+body.login-page .header,
+body.register-page .home-figma-header,
+body.register-page .header,
+body.register-survey-page .home-figma-header,
+body.register-survey-page .header,
+body.forgot-password-page .home-figma-header,
+body.forgot-password-page .header,
+body.reset-password-page .home-figma-header,
+body.reset-password-page .header {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  height: 62px !important;
+  padding: 0 clamp(16px, 4vw, 48px) !important;
+  border-radius: 0 !important;
+  border-bottom: 1px solid var(--auth-border) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  box-shadow: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  z-index: 100 !important;
+}
+
+@media (max-width: 768px) {
+  .auth-figma-page .home-figma-header,
+  .auth-figma-page .header,
+  body.login-page .home-figma-header,
+  body.login-page .header,
+  body.register-page .home-figma-header,
+  body.register-page .header,
+  body.register-survey-page .home-figma-header,
+  body.register-survey-page .header,
+  body.forgot-password-page .home-figma-header,
+  body.forgot-password-page .header,
+  body.reset-password-page .home-figma-header,
+  body.reset-password-page .header {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+/* Nav pseudo-elements: hide */
+.auth-figma-page .home-figma-header::before,
+.auth-figma-page .home-figma-header::after,
+.auth-figma-page .header::before,
+.auth-figma-page .header::after,
+body.login-page .home-figma-header::before,
+body.login-page .home-figma-header::after,
+body.login-page .header::before,
+body.login-page .header::after,
+body.register-page .home-figma-header::before,
+body.register-page .home-figma-header::after,
+body.register-survey-page .home-figma-header::before,
+body.register-survey-page .home-figma-header::after,
+body.forgot-password-page .header::before,
+body.forgot-password-page .header::after,
+body.reset-password-page .header::before,
+body.reset-password-page .header::after {
+  display: none !important;
+}
+
+/* Logo text color */
+.auth-figma-page .logo-wrap span,
+body.login-page .logo-wrap span,
+body.register-page .logo-wrap span,
+body.register-survey-page .logo-wrap span,
+body.forgot-password-page .logo-wrap span,
+body.reset-password-page .logo-wrap span {
+  color: var(--auth-text) !important;
+  font-weight: 700 !important;
+}
+
+/* Nav links */
+.auth-figma-page .home-figma-nav,
+body.login-page .home-figma-nav,
+body.register-page .home-figma-nav,
+body.register-survey-page .home-figma-nav {
+  gap: 4px !important;
+}
+
+.auth-figma-page .card-nav-links a,
+body.login-page .card-nav-links a,
+body.register-page .card-nav-links a,
+body.register-survey-page .card-nav-links a {
+  color: var(--auth-muted) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  padding: 6px 12px !important;
+  border-radius: 8px !important;
+  transition: color 0.15s, background 0.15s !important;
+  text-decoration: none !important;
+  background: transparent !important;
+}
+
+.auth-figma-page .card-nav-links a:hover,
+body.login-page .card-nav-links a:hover,
+body.register-page .card-nav-links a:hover,
+body.register-survey-page .card-nav-links a:hover,
+.auth-figma-page .card-nav-links a[aria-current],
+body.login-page .card-nav-links a[aria-current],
+body.register-page .card-nav-links a[aria-current],
+body.register-survey-page .card-nav-links a[aria-current] {
+  color: var(--auth-text) !important;
+  background: rgba(15, 23, 42, 0.05) !important;
+}
+
+/* Nav action button */
+.auth-figma-page .card-nav-actions .nav-btn,
+body.login-page .card-nav-actions .nav-btn,
+body.login-page .card-nav-actions a.nav-btn,
+body.register-page .card-nav-actions .nav-btn,
+body.register-survey-page .card-nav-actions .nav-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  height: 36px !important;
+  padding: 0 16px !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: var(--auth-text) !important;
+  border: 1px solid var(--auth-border) !important;
+  background: var(--auth-bg) !important;
+  text-decoration: none !important;
+  transition: background 0.15s, border-color 0.15s !important;
+}
+
+.auth-figma-page .card-nav-actions .nav-btn:last-child,
+body.login-page .card-nav-actions .nav-btn:last-child,
+body.register-page .card-nav-actions .nav-btn:last-child,
+body.register-survey-page .card-nav-actions .nav-btn:last-child {
+  color: #ffffff !important;
+  background: var(--auth-accent) !important;
+  border-color: var(--auth-accent) !important;
+}
+
+/* ─── Main content offset ─── */
+
+.auth-figma-main {
+  padding-top: 104px !important;
+}
+
+/* ─── Left panel: clean solid #f0f4ff instead of gradient blobs ─── */
+
+.auth-figma-copy-panel {
+  background: var(--auth-panel) !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.auth-figma-copy-panel::before,
+.auth-figma-copy-panel::after {
+  display: none !important;
+}
+
+.auth-figma-copy-panel h1 {
+  color: var(--auth-text) !important;
+}
+
+.auth-figma-copy-panel p {
+  color: var(--auth-muted) !important;
+}
+
+/* ─── Kicker badge ─── */
+
+.home-figma-kicker {
+  display: inline-flex !important;
+  align-items: center !important;
+  height: 28px !important;
+  padding: 0 12px !important;
+  border-radius: 999px !important;
+  background: var(--auth-accent-soft) !important;
+  border: 1px solid var(--auth-accent-ring) !important;
+  color: var(--auth-accent) !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+}
+
+/* ─── Chips ─── */
+
+.auth-figma-chip {
+  background: rgba(59, 110, 246, 0.08) !important;
+  border-color: rgba(59, 110, 246, 0.14) !important;
+  color: var(--auth-accent) !important;
+}
+
+/* ─── Right card: white, clean shadow ─── */
+
+.auth-figma-card {
+  background: #ffffff !important;
+  border-color: var(--auth-border) !important;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.06) !important;
+}
+
+/* Card badge */
+.auth-figma-card-badge {
+  background: var(--auth-accent-soft) !important;
+  border-color: var(--auth-accent-ring) !important;
+  color: var(--auth-accent) !important;
+}
+
+/* ─── Input fields ─── */
+
+.auth-figma-page .auth-figma-field input,
+.auth-figma-page .register-card input,
+.auth-figma-page .login-card input {
+  border-color: var(--auth-border) !important;
+  background: #ffffff !important;
+  color: var(--auth-text) !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  transition: border-color 0.15s, box-shadow 0.15s !important;
+}
+
+.auth-figma-page .auth-figma-field input:focus,
+.auth-figma-page .register-card input:focus,
+.auth-figma-page .login-card input:focus {
+  border-color: var(--auth-accent) !important;
+  box-shadow: 0 0 0 3px var(--auth-accent-ring) !important;
+  outline: none !important;
+}
+
+/* ─── Submit button ─── */
+
+.auth-figma-page .btn.primary,
+.auth-figma-page .auth-figma-submit {
+  background: var(--auth-accent) !important;
+  border-color: var(--auth-accent) !important;
+  color: #ffffff !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  transition: background 0.15s, transform 0.12s !important;
+}
+
+.auth-figma-page .btn.primary:hover,
+.auth-figma-page .auth-figma-submit:hover {
+  background: #2d5ce8 !important;
+  transform: translateY(-1px) !important;
+}
+
+/* ─── Secondary button ─── */
+
+.auth-figma-page .btn.secondary,
+.auth-figma-page .auth-figma-secondary-btn {
+  background: #ffffff !important;
+  border: 1px solid var(--auth-border) !important;
+  color: var(--auth-text) !important;
+  border-radius: 12px !important;
+}
+
+/* ─── Links ─── */
+
+.auth-figma-links a {
+  color: var(--auth-accent) !important;
+}
+
+.auth-figma-links a:hover {
+  color: #2d5ce8 !important;
+}
+
+/* ─── Progress bar ─── */
+
+.auth-figma-page .survey-progress-track {
+  background: #eef2ff !important;
+  border-color: var(--auth-accent-ring) !important;
+}
+
+.auth-figma-page .survey-progress-fill {
+  background: var(--auth-accent) !important;
+}
+
+/* ─── Survey options ─── */
+
+.auth-figma-page .survey-option {
+  border-color: var(--auth-border) !important;
+  background: #ffffff !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  transition: border-color 0.15s, background 0.15s !important;
+}
+
+.auth-figma-page .survey-option:hover {
+  border-color: rgba(59, 110, 246, 0.3) !important;
+  background: #f8faff !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.auth-figma-page .survey-option:has(input:checked) {
+  border-color: var(--auth-accent) !important;
+  background: var(--auth-accent-soft) !important;
+}
+
+.auth-figma-page .survey-option input {
+  accent-color: var(--auth-accent) !important;
+}
+
+/* ─── Verify code wrap ─── */
+
+.auth-verify-code-wrap {
+  background: var(--auth-accent-soft) !important;
+  border-color: var(--auth-accent-ring) !important;
+  border-radius: 16px !important;
+}
+
+/* ─── Highlight / metric cards ─── */
+
+.auth-figma-highlight-card,
+.auth-figma-metric-card {
+  background: #ffffff !important;
+  border-color: var(--auth-border) !important;
+  box-shadow: none !important;
+}
+
+/* ─── Form error ─── */
+
+.auth-figma-page .form-error {
+  border-radius: 12px !important;
+}
+
+/* ========================================================
+   FORGOT / RESET PASSWORD — centered minimal card layout
+======================================================== */
+
+.forgot-password-page,
+.reset-password-page {
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 100vh !important;
+  background: var(--auth-bg) !important;
+}
+
+.forgot-password-page .header,
+.reset-password-page .header {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  height: 62px !important;
+  padding: 0 clamp(16px, 4vw, 48px) !important;
+  border-radius: 0 !important;
+  border-bottom: 1px solid var(--auth-border) !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+  display: flex !important;
+  align-items: center !important;
+  z-index: 100 !important;
+}
+
+.forgot-password-page .logo-wrap span,
+.reset-password-page .logo-wrap span {
+  color: var(--auth-text) !important;
+  font-weight: 700 !important;
+}
+
+/* Center the login-card on these pages */
+.forgot-password-page .auth-centered-main,
+.reset-password-page .auth-centered-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 20px 48px;
+}
+
+.auth-simple-card {
+  width: 100%;
+  max-width: 440px;
+  background: #ffffff;
+  border: 1px solid var(--auth-border);
+  border-radius: 20px;
+  padding: clamp(28px, 5vw, 40px);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.auth-simple-card .auth-simple-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: var(--auth-accent-soft);
+  border: 1px solid var(--auth-accent-ring);
+  color: var(--auth-accent);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.auth-simple-card h1 {
+  margin: 0 0 8px;
+  color: var(--auth-text);
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.auth-simple-card > p {
+  margin: 0 0 24px;
+  color: var(--auth-muted);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.auth-simple-form {
+  display: grid;
+  gap: 16px;
+}
+
+.auth-simple-field {
+  display: grid;
+  gap: 8px;
+}
+
+.auth-simple-field span {
+  color: var(--auth-text);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.auth-simple-field input {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid var(--auth-border);
+  background: #ffffff;
+  color: var(--auth-text);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  box-sizing: border-box;
+}
+
+.auth-simple-field input:focus {
+  border-color: var(--auth-accent);
+  box-shadow: 0 0 0 3px var(--auth-accent-ring);
+}
+
+.auth-simple-submit {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 24px;
+  border-radius: 12px;
+  border: none;
+  background: var(--auth-accent);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.12s;
+}
+
+.auth-simple-submit:hover {
+  background: #2d5ce8;
+  transform: translateY(-1px);
+}
+
+.auth-simple-back {
+  display: block;
+  margin-top: 20px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--auth-muted);
+}
+
+.auth-simple-back a {
+  color: var(--auth-accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-simple-back a:hover {
+  color: #2d5ce8;
+}
+
+.auth-simple-message {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.auth-simple-message[data-state="success"] {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  color: #065f46;
+}
+
+.auth-simple-message[data-state="error"],
+.forgot-password-page .form-error,
+.reset-password-page .form-error {
+  background: rgba(239, 68, 68, 0.06) !important;
+  border: 1px solid rgba(239, 68, 68, 0.16) !important;
+  border-radius: 10px !important;
+  color: #b42318 !important;
+  padding: 12px 14px !important;
+  font-size: 14px !important;
+  box-shadow: none !important;
+}
+
+/* ─── About page: clean white, no gradient blobs ─── */
+
+.about-figma-page {
+  background: #ffffff !important;
+}
+
+.about-figma-page .home-figma-header {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+
+@media (max-width: 768px) {
+  .about-figma-page .home-figma-header {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+/* ─── Mobile: hide long nav on auth pages ─── */
+
+@media (max-width: 900px) {
+  .auth-figma-page .card-nav-links,
+  body.login-page .card-nav-links,
+  body.register-page .card-nav-links,
+  body.register-survey-page .card-nav-links {
+    display: none !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-simple-card {
+    border-radius: 16px;
+    padding: 24px 20px;
+  }
+}
