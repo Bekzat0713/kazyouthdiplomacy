@@ -179,192 +179,167 @@
 
 
 /* ================================================================
-   PUBLIC PAGE — Full Premium Redesign
+   PUBLIC PAGE — Light SaaS Redesign (KazYouthDiplomacy brand)
 ================================================================ */
 
-/* ── Reset & Base ── */
-html:has(.career-public-body),
 .career-public-body {
-  background: #060b14 !important;
-  color: #dce9f8;
-}
+  --cp-accent:       #3b6ef6;
+  --cp-accent-soft:  rgba(59,110,246,0.08);
+  --cp-accent-mid:   rgba(59,110,246,0.15);
+  --cp-text:         #0f1117;
+  --cp-muted:        #6b7280;
+  --cp-faint:        #9ca3af;
+  --cp-border:       rgba(59,110,246,0.12);
+  --cp-border-std:   #e5e7eb;
+  --cp-card:         #ffffff;
+  --cp-bg-soft:      #f8faff;
+  --cp-shadow-sm:    0 1px 3px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
+  --cp-shadow-md:    0 4px 16px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.05);
+  --cp-shadow-blue:  0 4px 24px rgba(59,110,246,0.09);
+  --cp-ease:         cubic-bezier(0.22, 1, 0.36, 1);
 
-.career-public-body {
   margin: 0;
   min-height: 100dvh;
-  font-family: 'DM Sans', 'SF Pro Text', -apple-system, sans-serif;
+  font-family: 'DM Sans', system-ui, sans-serif;
   font-size: 16px;
   line-height: 1.6;
-  /* Subtle grid overlay */
-  background-image:
-    linear-gradient(rgba(8, 148, 199, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(8, 148, 199, 0.04) 1px, transparent 1px),
-    radial-gradient(ellipse at 15% 0%, rgba(8, 148, 199, 0.22) 0%, transparent 42%),
-    radial-gradient(ellipse at 88% 96%, rgba(56, 189, 248, 0.1) 0%, transparent 38%),
-    linear-gradient(180deg, #060b14 0%, #080f1c 50%, #060b14 100%) !important;
-  background-size: 48px 48px, 48px 48px, 100% 100%, 100% 100%, 100% 100% !important;
+  color: var(--cp-text);
+}
+
+html:has(.career-public-body),
+.career-public-body {
+  background:
+    radial-gradient(ellipse 70% 55% at 88% 4%,  rgba(59,110,246,0.09) 0%, transparent 60%),
+    radial-gradient(ellipse 55% 45% at 4%  88%, rgba(99,102,241,0.07) 0%, transparent 55%),
+    linear-gradient(180deg, #f0f4ff 0%, #eef2ff 28%, #f8faff 58%, #ffffff 100%) !important;
+  color: #0f1117;
 }
 
 /* ── Shell ── */
-.career-public-app {
-  position: relative;
-  z-index: 1;
-}
+.career-public-app { position: relative; z-index: 1; }
 
 .career-public-shell {
-  max-width: 960px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 52px 24px 88px;
+  padding: 56px 32px 96px;
 }
 
 /* ================================================================
-   HERO CARD
+   HERO
 ================================================================ */
 
 .career-public-hero {
   position: relative;
   overflow: hidden;
-  border-radius: 28px;
-  border: 1px solid rgba(56, 189, 248, 0.18);
-  background:
-    radial-gradient(ellipse at 0% 0%, rgba(8, 148, 199, 0.18) 0%, transparent 55%),
-    radial-gradient(ellipse at 100% 100%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
-    linear-gradient(160deg, rgba(10, 18, 35, 0.97) 0%, rgba(8, 14, 26, 0.98) 100%);
+  border-radius: 24px;
+  border: 1px solid var(--cp-border-std);
+  background: var(--cp-card);
   padding: 40px;
-  box-shadow:
-    0 0 0 1px rgba(56, 189, 248, 0.06),
-    0 32px 80px rgba(0, 0, 0, 0.55),
-    0 8px 24px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  animation: cpFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  box-shadow: var(--cp-shadow-md), var(--cp-shadow-blue);
+  animation: cpFadeUp 0.6s var(--cp-ease) both;
 }
 
-/* Top gradient beam */
+/* Blue top accent line */
 .career-public-hero::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent 0%, #0894c7 35%, #38bdf8 60%, transparent 100%);
-  opacity: 0.9;
+  height: 3px;
+  background: linear-gradient(90deg, var(--cp-accent) 0%, #6366f1 50%, var(--cp-accent) 100%);
+  border-radius: 24px 24px 0 0;
 }
 
-/* Corner glow */
-.career-public-hero::after {
-  content: '';
-  position: absolute;
-  top: -80px;
-  left: -80px;
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(8, 148, 199, 0.12) 0%, transparent 70%);
-  pointer-events: none;
-}
+.career-public-hero::after { display: none; }
 
 /* ── Topbar ── */
 .career-public-topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 36px;
+  margin-bottom: 32px;
 }
 
 .career-public-kicker {
-  font-family: 'Syne', sans-serif;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #38bdf8;
-  background: rgba(56, 189, 248, 0.09);
-  border: 1px solid rgba(56, 189, 248, 0.22);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--cp-accent);
+  background: var(--cp-accent-soft);
+  border: 1px solid var(--cp-accent-mid);
   border-radius: 999px;
   padding: 6px 14px;
+}
+
+.career-public-kicker::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  flex-shrink: 0;
 }
 
 /* ── Hero grid ── */
 .career-public-hero-grid {
   display: grid;
-  grid-template-columns: 200px minmax(0, 1fr);
-  gap: 40px;
-  align-items: center;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 48px;
+  align-items: flex-start;
 }
 
 /* ── Avatar ── */
 .career-public-avatar-wrap {
   position: relative;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
 }
 
-.career-public-avatar-image,
-.career-public-avatar-fallback {
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-  position: relative;
-  z-index: 1;
-}
-
 .career-public-avatar-image {
+  width: 100%;
+  height: 320px;
+  border-radius: 18px;
   object-fit: cover;
-  border: 3px solid rgba(8, 148, 199, 0.4);
-  box-shadow:
-    0 0 0 6px rgba(8, 148, 199, 0.1),
-    0 0 40px rgba(8, 148, 199, 0.25),
-    0 24px 48px rgba(0, 0, 0, 0.5);
-  animation: avatarGlow 3s ease-in-out infinite;
+  object-position: top center;
+  border: 1px solid var(--cp-border-std);
+  box-shadow: var(--cp-shadow-md);
+  display: block;
 }
 
 .career-public-avatar-fallback {
+  width: 260px;
+  height: 320px;
+  border-radius: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: 'Syne', sans-serif;
-  font-size: 2.8rem;
+  font-size: 3.5rem;
   font-weight: 800;
-  color: #38bdf8;
-  background:
-    radial-gradient(circle at 30% 30%, rgba(56, 189, 248, 0.18) 0%, transparent 60%),
-    rgba(8, 20, 42, 0.95);
-  border: 3px solid rgba(8, 148, 199, 0.4);
-  box-shadow:
-    0 0 0 6px rgba(8, 148, 199, 0.1),
-    0 0 40px rgba(8, 148, 199, 0.25),
-    0 20px 44px rgba(0, 0, 0, 0.5);
-  animation: avatarGlow 3s ease-in-out infinite;
+  color: var(--cp-accent);
+  background: linear-gradient(135deg, #f0f4ff 0%, #e0eaff 100%);
+  border: 1px solid var(--cp-border);
+  box-shadow: var(--cp-shadow-sm);
   letter-spacing: -0.02em;
 }
 
-@keyframes avatarGlow {
-  0%, 100% {
-    box-shadow:
-      0 0 0 5px rgba(8, 148, 199, 0.1),
-      0 0 30px rgba(8, 148, 199, 0.2),
-      0 20px 44px rgba(0, 0, 0, 0.5);
-  }
-  50% {
-    box-shadow:
-      0 0 0 8px rgba(8, 148, 199, 0.16),
-      0 0 54px rgba(8, 148, 199, 0.36),
-      0 20px 44px rgba(0, 0, 0, 0.5);
-  }
-}
+@keyframes avatarGlow { 0%, 50%, 100% { box-shadow: var(--cp-shadow-md); } }
 
 /* ── Name ── */
 .career-public-hero-copy h1 {
   font-family: 'Syne', sans-serif;
   font-weight: 800;
-  font-size: clamp(2rem, 4vw, 3rem);
-  line-height: 1.05;
-  letter-spacing: -0.025em;
-  background: linear-gradient(135deg, #f0f8ff 0%, #bde0ff 55%, #7dd3fc 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin: 0 0 10px;
+  font-size: clamp(2.4rem, 4vw, 3.4rem);
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  color: var(--cp-text);
+  background: none;
+  -webkit-text-fill-color: var(--cp-text);
+  margin: 0 0 8px;
 }
 
 /* ── Meta ── */
@@ -372,10 +347,11 @@ html:has(.career-public-body),
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 12px;
-  margin: 0 0 20px;
-  font-size: 0.94rem;
-  color: rgba(165, 198, 235, 0.65);
+  gap: 4px 10px;
+  margin: 0 0 18px;
+  font-size: 0.92rem;
+  color: var(--cp-muted);
+  font-weight: 500;
 }
 
 /* ── Skills ── */
@@ -389,25 +365,23 @@ html:has(.career-public-body),
 .career-public-skill-list span {
   display: inline-flex;
   align-items: center;
-  padding: 7px 14px;
+  padding: 6px 14px;
   border-radius: 999px;
-  font-size: 0.83rem;
+  font-size: 0.82rem;
   font-weight: 500;
-  background: rgba(8, 148, 199, 0.1);
-  border: 1px solid rgba(8, 148, 199, 0.24);
-  color: #7dd3fc;
-  transition: all 0.18s;
+  background: var(--cp-accent-soft);
+  border: 1px solid var(--cp-accent-mid);
+  color: var(--cp-accent);
+  transition: background 0.18s, transform 0.18s;
   cursor: default;
 }
 
 .career-public-skill-list span:hover {
-  background: rgba(8, 148, 199, 0.2);
-  border-color: rgba(8, 148, 199, 0.45);
-  box-shadow: 0 0 14px rgba(8, 148, 199, 0.22);
+  background: rgba(59,110,246,0.14);
   transform: translateY(-1px);
 }
 
-/* ── Links row ── */
+/* ── Links ── */
 .career-public-contacts { margin-bottom: 16px; }
 
 .career-public-link-row {
@@ -420,23 +394,23 @@ html:has(.career-public-body),
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 16px;
+  padding: 9px 20px;
   border-radius: 999px;
-  font-size: 0.86rem;
-  font-weight: 500;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #b8d0ee;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: var(--cp-accent);
+  border: 1px solid var(--cp-accent);
+  color: #ffffff;
   text-decoration: none;
-  transition: all 0.2s;
+  transition: background 0.18s, transform 0.18s, box-shadow 0.18s;
+  box-shadow: 0 2px 8px rgba(59,110,246,0.22);
 }
 
 .career-public-link:hover {
-  background: rgba(8, 148, 199, 0.14);
-  border-color: rgba(8, 148, 199, 0.35);
-  color: #7dd3fc;
+  background: #2d5ce8;
+  border-color: #2d5ce8;
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(8, 148, 199, 0.15);
+  box-shadow: 0 6px 18px rgba(59,110,246,0.32);
 }
 
 /* ── Actions ── */
@@ -447,28 +421,38 @@ html:has(.career-public-body),
   margin-top: 4px;
 }
 
-/* Override default btn primary color on public page */
 .career-public-body .btn.primary {
-  background: linear-gradient(135deg, #0894c7 0%, #0ea5e9 100%);
+  background: var(--cp-accent);
   color: #ffffff;
-  box-shadow: 0 8px 22px rgba(8, 148, 199, 0.35);
+  box-shadow: 0 4px 14px rgba(59,110,246,0.28);
   border: none;
 }
 
 .career-public-body .btn.primary:hover {
-  box-shadow: 0 12px 28px rgba(8, 148, 199, 0.48);
+  background: #2d5ce8;
+  box-shadow: 0 8px 22px rgba(59,110,246,0.38);
   transform: translateY(-1px);
 }
 
 .career-public-body .btn.secondary {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #c0d8f0;
+  background: var(--cp-card);
+  border: 1px solid var(--cp-border-std);
+  color: var(--cp-muted);
 }
 
 .career-public-body .btn.secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: var(--cp-border);
+  color: var(--cp-accent);
+  background: var(--cp-accent-soft);
+}
+
+/* ── Bio ── */
+.career-public-about {
+  color: var(--cp-text);
+  line-height: 1.78;
+  white-space: pre-wrap;
+  font-size: 0.95rem;
+  margin: 0;
 }
 
 /* ================================================================
@@ -477,67 +461,52 @@ html:has(.career-public-body),
 
 .career-public-section {
   position: relative;
-  border: 1px solid rgba(56, 189, 248, 0.1);
-  background:
-    linear-gradient(180deg, rgba(14, 22, 40, 0.9) 0%, rgba(8, 14, 26, 0.95) 100%);
-  border-radius: 22px;
-  padding: 30px;
+  border: 1px solid var(--cp-border-std);
+  background: var(--cp-card);
+  border-radius: 20px;
+  padding: 28px 32px;
   margin-top: 16px;
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.025),
-    0 20px 50px rgba(0, 0, 0, 0.3);
-  transition: border-color 0.25s;
-  animation: cpFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  box-shadow: var(--cp-shadow-sm);
+  transition: border-color 0.22s, box-shadow 0.22s;
+  animation: cpFadeUp 0.6s var(--cp-ease) both;
 }
 
 .career-public-section:hover {
-  border-color: rgba(56, 189, 248, 0.18);
+  border-color: var(--cp-border);
+  box-shadow: var(--cp-shadow-md);
 }
 
-/* Stagger delays */
 .career-public-section:nth-of-type(1) { animation-delay: 0.07s; }
 .career-public-section:nth-of-type(2) { animation-delay: 0.13s; }
 .career-public-section:nth-of-type(3) { animation-delay: 0.19s; }
 .career-public-section:nth-of-type(4) { animation-delay: 0.25s; }
-
 .career-public-columns .career-public-section:nth-of-type(2) { animation-delay: 0.21s; }
 
-/* Section kicker */
 .career-public-section > .dashboard-kicker,
 .career-public-section .dashboard-kicker {
   display: inline-flex;
   align-items: center;
-  font-family: 'Syne', sans-serif;
-  font-size: 0.68rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.7rem;
   font-weight: 700;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.10em;
   text-transform: uppercase;
-  color: #38bdf8;
-  background: rgba(56, 189, 248, 0.08);
-  border: 1px solid rgba(56, 189, 248, 0.18);
+  color: var(--cp-accent);
+  background: var(--cp-accent-soft);
+  border: 1px solid var(--cp-accent-mid);
   border-radius: 999px;
-  padding: 4px 10px;
+  padding: 4px 11px;
   margin-bottom: 10px;
   width: fit-content;
 }
 
-/* Section heading */
 .career-public-section h2 {
   font-family: 'Syne', sans-serif;
   font-weight: 700;
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   letter-spacing: -0.01em;
-  color: #e4eeff;
-  margin: 0 0 22px;
-}
-
-/* About */
-.career-public-about {
-  color: rgba(190, 215, 245, 0.8);
-  line-height: 1.82;
-  white-space: pre-wrap;
-  font-size: 0.97rem;
-  margin: 0;
+  color: var(--cp-text);
+  margin: 0 0 20px;
 }
 
 /* ================================================================
@@ -547,72 +516,57 @@ html:has(.career-public-body),
 .career-public-card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 14px;
+  gap: 12px;
 }
 
 .career-public-card {
   display: grid;
-  gap: 10px;
-  border-radius: 16px;
-  padding: 22px;
-  background: rgba(8, 148, 199, 0.04);
-  border: 1px solid rgba(8, 148, 199, 0.14);
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  gap: 8px;
+  border-radius: 14px;
+  padding: 20px;
+  background: var(--cp-bg-soft);
+  border: 1px solid var(--cp-border-std);
+  transition: all 0.2s var(--cp-ease);
   position: relative;
   overflow: hidden;
 }
 
-/* Subtle shine on hover */
-.career-public-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.05) 0%, transparent 60%);
-  opacity: 0;
-  transition: opacity 0.22s;
-}
+.career-public-card::before { display: none; }
 
 .career-public-card:hover {
-  background: rgba(8, 148, 199, 0.09);
-  border-color: rgba(8, 148, 199, 0.32);
-  transform: translateY(-3px);
-  box-shadow: 0 14px 36px rgba(8, 148, 199, 0.12), 0 4px 12px rgba(0, 0, 0, 0.3);
+  background: var(--cp-card);
+  border-color: var(--cp-border);
+  transform: translateY(-2px);
+  box-shadow: var(--cp-shadow-md);
 }
-
-.career-public-card:hover::before { opacity: 1; }
 
 .career-public-card strong {
   font-family: 'Syne', sans-serif;
   font-weight: 700;
-  font-size: 0.96rem;
-  color: #d8edff;
-  position: relative;
+  font-size: 0.95rem;
+  color: var(--cp-text);
 }
 
 .career-public-card-stack {
-  font-size: 0.81rem;
-  color: #38bdf8;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  position: relative;
+  font-size: 0.8rem;
+  color: var(--cp-accent);
+  font-weight: 600;
 }
 
 .career-public-card p {
-  font-size: 0.88rem;
-  color: rgba(175, 208, 240, 0.68);
+  font-size: 0.87rem;
+  color: var(--cp-muted);
   margin: 0;
-  line-height: 1.64;
-  position: relative;
+  line-height: 1.65;
 }
 
 .career-public-card a {
   font-size: 0.84rem;
-  color: #38bdf8;
+  color: var(--cp-accent);
   text-decoration: none;
   font-weight: 600;
   width: fit-content;
   transition: opacity 0.15s;
-  position: relative;
 }
 
 .career-public-card a:hover { opacity: 0.75; }
@@ -629,72 +583,71 @@ html:has(.career-public-body),
 }
 
 /* ================================================================
-   LIST CARDS (Education / Experience / Certs)
+   LIST CARDS
 ================================================================ */
 
 .career-public-stack { display: grid; gap: 10px; }
 
 .career-public-list-card {
   position: relative;
-  padding: 16px 18px 16px 26px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 14px 16px 14px 24px;
+  border-radius: 12px;
+  background: var(--cp-bg-soft);
+  border: 1px solid var(--cp-border-std);
   display: grid;
-  gap: 4px;
-  transition: all 0.2s;
+  gap: 3px;
+  transition: all 0.18s;
 }
 
-/* Left teal accent line */
 .career-public-list-card::before {
   content: '';
   position: absolute;
   left: 0;
-  top: 12px;
-  bottom: 12px;
+  top: 10px;
+  bottom: 10px;
   width: 3px;
-  background: linear-gradient(180deg, #0894c7 0%, rgba(8, 148, 199, 0.12) 100%);
+  background: var(--cp-accent);
   border-radius: 0 3px 3px 0;
+  opacity: 0.4;
 }
 
 .career-public-list-card:hover {
-  background: rgba(8, 148, 199, 0.055);
-  border-color: rgba(8, 148, 199, 0.15);
+  background: var(--cp-card);
+  border-color: var(--cp-border);
+  box-shadow: var(--cp-shadow-sm);
 }
 
-.career-public-list-card:hover::before {
-  background: linear-gradient(180deg, #38bdf8 0%, rgba(56, 189, 248, 0.15) 100%);
-}
+.career-public-list-card:hover::before { opacity: 1; }
 
 .career-public-list-card strong {
   font-weight: 700;
   font-size: 0.93rem;
-  color: #d4eaff;
+  color: var(--cp-text);
   line-height: 1.35;
 }
 
 .career-public-list-card span {
-  font-size: 0.86rem;
-  color: #50b8d8;
+  font-size: 0.85rem;
+  color: var(--cp-accent);
   font-weight: 500;
 }
 
 .career-public-list-card small {
-  font-size: 0.79rem;
-  color: rgba(140, 175, 215, 0.55);
+  font-size: 0.78rem;
+  color: var(--cp-faint);
   font-variant-numeric: tabular-nums;
 }
 
 .career-public-list-card p {
-  font-size: 0.87rem;
-  color: rgba(175, 208, 240, 0.68);
+  font-size: 0.86rem;
+  color: var(--cp-muted);
   margin: 4px 0 0;
   line-height: 1.62;
 }
 
 .career-public-list-card a {
   font-size: 0.83rem;
-  color: #38bdf8;
+  color: var(--cp-accent);
   text-decoration: none;
   font-weight: 600;
 }
@@ -709,30 +662,31 @@ html:has(.career-public-body),
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 13px 16px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  transition: background 0.18s;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: var(--cp-bg-soft);
+  border: 1px solid var(--cp-border-std);
+  transition: all 0.18s;
 }
 
 .career-public-language-item:hover {
-  background: rgba(8, 148, 199, 0.055);
+  background: var(--cp-card);
+  border-color: var(--cp-border);
 }
 
 .career-public-language-item strong {
   font-size: 0.92rem;
-  color: #d4eaff;
+  color: var(--cp-text);
   font-weight: 600;
 }
 
 .career-public-language-item span {
-  font-size: 0.8rem;
-  color: #38bdf8;
-  background: rgba(56, 189, 248, 0.09);
-  border: 1px solid rgba(56, 189, 248, 0.2);
+  font-size: 0.79rem;
+  color: var(--cp-accent);
+  background: var(--cp-accent-soft);
+  border: 1px solid var(--cp-accent-mid);
   border-radius: 999px;
-  padding: 4px 11px;
+  padding: 3px 11px;
   font-weight: 600;
 }
 
@@ -742,78 +696,46 @@ html:has(.career-public-body),
 
 .career-public-certificate-image {
   width: 100%;
-  max-height: 190px;
+  max-height: 180px;
   object-fit: contain;
   border-radius: 10px;
-  border: 1px solid rgba(8, 148, 199, 0.14);
-  background: rgba(255, 255, 255, 0.03);
-  margin-bottom: 6px;
+  border: 1px solid var(--cp-border-std);
+  background: var(--cp-bg-soft);
+  margin-bottom: 8px;
 }
 
 /* ================================================================
-   EMPTY STATES
+   EMPTY & LOADING STATES
 ================================================================ */
 
 .career-public-empty {
-  color: rgba(130, 165, 210, 0.42);
+  color: var(--cp-faint);
   font-style: italic;
   font-size: 0.88rem;
   margin: 4px 0 0;
 }
 
-/* ================================================================
-   LOADING STATE
-================================================================ */
-
 .career-public-state {
   display: grid;
   gap: 14px;
   justify-items: start;
-  max-width: 480px;
-  padding: 80px 0;
+  max-width: 520px;
+  padding: 100px 0;
+  margin: 0 auto;
 }
 
 .career-public-state h1 {
   font-family: 'Syne', sans-serif;
   font-weight: 800;
   font-size: clamp(1.7rem, 4vw, 2.6rem);
-  color: #e0eeff;
+  color: var(--cp-text);
   margin: 0;
 }
 
-/* ================================================================
-   FOOTER
-================================================================ */
-
-.career-public-footer {
-  margin-top: 56px;
-  padding-top: 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  color: rgba(120, 155, 200, 0.35);
-  font-size: 0.8rem;
-}
-
-.career-public-footer img {
-  width: 20px;
-  height: 20px;
-  opacity: 0.4;
-  border-radius: 5px;
-}
-
-.career-public-footer a {
-  color: rgba(56, 189, 248, 0.4);
-  text-decoration: none;
-  transition: color 0.18s;
-}
-
-.career-public-footer a:hover { color: rgba(56, 189, 248, 0.8); }
+.career-public-state p { color: var(--cp-muted); }
 
 /* ================================================================
-   SECTION HEAD (used in projects section)
+   SECTION HEAD
 ================================================================ */
 
 .career-public-section-head {
@@ -824,27 +746,58 @@ html:has(.career-public-body),
 }
 
 /* ================================================================
+   FOOTER
+================================================================ */
+
+.career-public-footer {
+  margin-top: 56px;
+  padding-top: 24px;
+  border-top: 1px solid var(--cp-border-std);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--cp-faint);
+  font-size: 0.8rem;
+}
+
+.career-public-footer img {
+  width: 20px;
+  height: 20px;
+  opacity: 0.55;
+  border-radius: 5px;
+}
+
+.career-public-footer a {
+  color: var(--cp-accent);
+  opacity: 0.6;
+  text-decoration: none;
+  transition: opacity 0.18s;
+}
+
+.career-public-footer a:hover { opacity: 1; }
+
+/* ================================================================
    ANIMATIONS
 ================================================================ */
 
 @keyframes cpFadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-    filter: blur(3px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ================================================================
    RESPONSIVE
 ================================================================ */
 
-@media (max-width: 860px) {
+@media (max-width: 960px) {
+  .career-public-hero-grid {
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 32px;
+  }
+}
+
+@media (max-width: 768px) {
   .career-public-hero-grid {
     grid-template-columns: 1fr;
     text-align: center;
@@ -852,27 +805,46 @@ html:has(.career-public-body),
 
   .career-public-avatar-wrap { justify-content: center; }
 
-  .career-public-skill-list,
-  .career-public-actions,
-  .career-public-link-row {
-    justify-content: center;
+  .career-public-avatar-image {
+    width: 200px;
+    height: 240px;
+    margin: 0 auto;
   }
 
-  .career-public-hero { padding: 30px 24px; }
+  .career-public-avatar-fallback {
+    width: 200px;
+    height: 240px;
+    margin: 0 auto;
+  }
+
+  .career-public-skill-list,
+  .career-public-actions,
+  .career-public-link-row { justify-content: center; }
+
+  .career-public-hero { padding: 28px 24px; }
   .career-public-meta { justify-content: center; }
+  .career-public-shell { padding: 40px 20px 72px; }
+  .career-public-section { padding: 24px; }
 }
 
 @media (max-width: 680px) {
   .career-public-columns,
-  .career-public-card-grid {
-    grid-template-columns: 1fr;
-  }
+  .career-public-card-grid { grid-template-columns: 1fr; }
 
   .career-public-shell { padding: 28px 16px 64px; }
 
-  .career-public-hero-copy h1 {
-    font-size: clamp(1.8rem, 7vw, 2.5rem);
+  .career-public-hero-copy h1 { font-size: clamp(2rem, 7vw, 2.8rem); }
+}
+
+@media (max-width: 430px) {
+  .career-public-avatar-image,
+  .career-public-avatar-fallback {
+    width: 100%;
+    height: 260px;
+    border-radius: 14px;
   }
+
+  .career-public-hero { padding: 24px 16px; }
 }
 
 /* ================================================================
@@ -895,13 +867,11 @@ html:has(.career-public-body),
     animation: none !important;
   }
 
-  .career-public-hero::before,
-  .career-public-hero::after { display: none; }
+  .career-public-hero::before { display: none; }
 
   .career-public-hero-copy h1 {
-    background: none !important;
-    -webkit-text-fill-color: #071527 !important;
     color: #071527 !important;
+    -webkit-text-fill-color: #071527 !important;
   }
 
   .career-public-topbar button,
@@ -910,23 +880,28 @@ html:has(.career-public-body),
   .career-public-kicker,
   .career-public-section .dashboard-kicker {
     background: transparent;
-    border-color: #90c4d8;
-    color: #0872a0;
+    border-color: #b0c8e8;
+    color: #3b6ef6;
     -webkit-print-color-adjust: exact;
   }
 
   .career-public-avatar-image {
-    border-color: #90c4d8 !important;
+    border-color: #d0dff0 !important;
     box-shadow: none !important;
     animation: none !important;
   }
 
   .career-public-avatar-fallback {
     background: #e8f4ff !important;
-    color: #0872a0 !important;
-    border-color: #90c4d8 !important;
+    color: #3b6ef6 !important;
+    border-color: #b0c8e8 !important;
     box-shadow: none !important;
     animation: none !important;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .career-public-list-card::before {
+    background: #3b6ef6 !important;
     -webkit-print-color-adjust: exact;
   }
 }
