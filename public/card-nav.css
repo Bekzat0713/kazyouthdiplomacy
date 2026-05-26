@@ -1,3 +1,8 @@
+/* ================================================================
+   card-nav.css — Inline header + mobile nav
+================================================================ */
+
+/* ── Desktop: flex row layout ──────────────────────────────────── */
 .home-figma-header.card-nav-inline-header {
   display: flex;
   align-items: center;
@@ -6,57 +11,67 @@
   padding: 14px 24px;
 }
 
+/* ── Hamburger toggle — hidden on desktop ──────────────────────── */
 .home-figma-header.card-nav-inline-header .card-nav-toggle {
   display: none;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
   padding: 0;
-  border: 1px solid rgba(203, 213, 225, 0.9);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.96);
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
   color: #0f172a;
   cursor: pointer;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
-  transition:
-    background 0.22s ease,
-    border-color 0.22s ease,
-    box-shadow 0.22s ease,
-    transform 0.22s ease;
+  transition: background 0.18s, border-color 0.18s;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.home-figma-header.card-nav-inline-header .card-nav-toggle:hover,
+.home-figma-header.card-nav-inline-header .card-nav-toggle:hover {
+  background: #f8faff;
+  border-color: #cbd5e1;
+}
+
 .home-figma-header.card-nav-inline-header .card-nav-toggle:focus-visible {
-  background: #ffffff;
-  border-color: rgba(148, 163, 184, 0.95);
-  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.1);
-  transform: translateY(-1px);
-  outline: none;
+  outline: 2px solid #3b6ef6;
+  outline-offset: 2px;
 }
 
+/* Hamburger lines */
 .home-figma-header.card-nav-inline-header .card-nav-toggle span {
   display: block;
-  width: 18px;
-  height: 2px;
-  margin: 2px 0;
+  width: 16px;
+  height: 1.5px;
+  margin: 2.5px 0;
   border-radius: 999px;
   background: currentColor;
-  transition: transform 0.22s ease, opacity 0.22s ease;
+  transition: transform 0.22s cubic-bezier(0.22,1,0.36,1),
+              opacity  0.22s ease;
+}
+
+/* → X when open */
+.home-figma-header.card-nav-inline-header[data-mobile-nav-open="true"] .card-nav-toggle {
+  background: #f0f4ff;
+  border-color: #3b6ef6;
+  color: #3b6ef6;
 }
 
 .home-figma-header.card-nav-inline-header[data-mobile-nav-open="true"] .card-nav-toggle span:nth-child(1) {
-  transform: translateY(6px) rotate(45deg);
+  transform: translateY(5.5px) rotate(45deg);
 }
 
 .home-figma-header.card-nav-inline-header[data-mobile-nav-open="true"] .card-nav-toggle span:nth-child(2) {
   opacity: 0;
+  transform: scaleX(0);
 }
 
 .home-figma-header.card-nav-inline-header[data-mobile-nav-open="true"] .card-nav-toggle span:nth-child(3) {
-  transform: translateY(-6px) rotate(-45deg);
+  transform: translateY(-5.5px) rotate(-45deg);
 }
 
+/* ── Desktop nav ───────────────────────────────────────────────── */
 .home-figma-header.card-nav-inline-header nav.card-nav-inline {
   display: flex;
   align-items: center;
@@ -95,67 +110,68 @@
   margin: 0;
 }
 
+/* Desktop nav links */
 .home-figma-header.card-nav-inline-header nav.card-nav-inline a:not(.nav-btn),
 .home-figma-header.card-nav-inline-header nav.card-nav-inline .card-nav-links a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 40px;
-  padding: 10px 14px;
-  border-radius: 12px;
+  min-height: 36px;
+  padding: 6px 12px;
+  border-radius: 8px;
   color: #475569;
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: 0.93rem;
+  font-weight: 500;
   line-height: 1.2;
   text-decoration: none;
   white-space: nowrap;
-  transition:
-    background 0.22s ease,
-    color 0.22s ease,
-    border-color 0.22s ease;
+  transition: background 0.18s, color 0.18s;
 }
 
 .home-figma-header.card-nav-inline-header nav.card-nav-inline a:not(.nav-btn):hover,
 .home-figma-header.card-nav-inline-header nav.card-nav-inline a:not(.nav-btn):focus-visible {
   color: #0f172a;
-  background: rgba(241, 245, 249, 0.96);
+  background: #f1f5f9;
   outline: none;
 }
 
 .home-figma-header.card-nav-inline-header nav.card-nav-inline a[aria-current="page"]:not(.nav-btn) {
-  color: #0f172a;
-  background: rgba(241, 245, 249, 0.96);
+  color: #3b6ef6;
+  background: rgba(59,110,246,0.07);
 }
 
 .home-figma-header.card-nav-inline-header .card-nav-actions .nav-btn,
 .home-figma-header.card-nav-inline-header .card-nav-actions .home-figma-nav-logout .nav-btn {
-  min-height: 42px;
-  padding: 10px 16px;
-  border-radius: 14px;
-  font-size: 0.94rem;
-  font-weight: 700;
+  min-height: 38px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
   box-shadow: none;
 }
 
-.home-figma-header.card-nav-inline-header .card-nav-actions .nav-btn[aria-current="page"] {
-  background: #0f172a;
-  color: #ffffff;
-}
+/* ================================================================
+   MOBILE — full redesign at ≤1100px
+================================================================ */
 
 @media (max-width: 1100px) {
+
+  /* Header becomes a grid:
+     Row 1: [logo ← … → toggle]  (62px tall)
+     Row 2: [dropdown spans full width] */
   .home-figma-header.card-nav-inline-header {
     display: grid;
-    grid-template-columns: 44px minmax(0, 1fr);
+    grid-template-columns: 1fr auto;
+    grid-template-rows: 62px auto;
     align-items: center;
-    gap: 14px;
-    padding: 14px 18px;
+    gap: 0;
+    padding: 0 16px;
   }
 
-  .home-figma-header.card-nav-inline-header .card-nav-toggle {
-    display: inline-flex;
-  }
-
+  /* Logo: left side of row 1 */
   .home-figma-header.card-nav-inline-header .logo-wrap {
+    grid-column: 1;
+    grid-row: 1;
     min-width: 0;
   }
 
@@ -165,71 +181,134 @@
     white-space: nowrap;
   }
 
+  /* Toggle: right side of row 1 */
+  .home-figma-header.card-nav-inline-header .card-nav-toggle {
+    display: inline-flex;
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  /* Dropdown: full width row 2, hidden by default */
   .home-figma-header.card-nav-inline-header nav.card-nav-inline {
     display: none;
     grid-column: 1 / -1;
-    margin-left: 0;
+    grid-row: 2;
     flex-direction: column;
     align-items: stretch;
-    gap: 6px;
-    padding: 12px;
+    gap: 0;
+    padding: 8px 0 12px;
+    margin: 0 -16px; /* bleed to header edges */
     background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(15, 23, 42, 0.10), 0 2px 8px rgba(15, 23, 42, 0.06);
-    /* No backdrop-filter — causes transparent background bug on iOS Safari */
+    border-top: 1px solid #f1f5f9;
+    box-shadow: 0 12px 32px rgba(15,23,42,0.10);
+    margin-left: -16px;
+    margin-right: -16px;
+    /* No backdrop-filter — iOS Safari transparency bug */
   }
 
   .home-figma-header.card-nav-inline-header[data-mobile-nav-open="true"] nav.card-nav-inline {
     display: flex;
   }
 
-  .home-figma-header.card-nav-inline-header .card-nav-links,
+  /* Nav links — large tap targets */
+  .home-figma-header.card-nav-inline-header .card-nav-links {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    padding: 4px 12px;
+  }
+
+  .home-figma-header.card-nav-inline-header nav.card-nav-inline a:not(.nav-btn),
+  .home-figma-header.card-nav-inline-header .card-nav-links a {
+    justify-content: flex-start;
+    min-height: 48px;
+    padding: 0 14px;
+    border-radius: 10px;
+    font-size: 0.97rem;
+    font-weight: 500;
+    color: #374151;
+    white-space: nowrap;
+  }
+
+  .home-figma-header.card-nav-inline-header nav.card-nav-inline a:not(.nav-btn):hover {
+    background: #f8faff;
+    color: #3b6ef6;
+  }
+
+  .home-figma-header.card-nav-inline-header nav.card-nav-inline a[aria-current="page"]:not(.nav-btn) {
+    background: rgba(59,110,246,0.07);
+    color: #3b6ef6;
+    font-weight: 600;
+  }
+
+  /* Auth actions — separated with line, padded */
   .home-figma-header.card-nav-inline-header .card-nav-actions {
     width: 100%;
     flex-direction: column;
     align-items: stretch;
-    gap: 6px;
-  }
-
-  .home-figma-header.card-nav-inline-header .card-nav-links {
-    justify-content: flex-start;
-  }
-
-  .home-figma-header.card-nav-inline-header .card-nav-actions {
-    padding-top: 8px;
+    gap: 8px;
+    padding: 12px 12px 4px;
     border-top: 1px solid #f1f5f9;
+    margin-top: 4px;
   }
 
-  .home-figma-header.card-nav-inline-header nav.card-nav-inline a:not(.nav-btn),
   .home-figma-header.card-nav-inline-header .card-nav-actions .nav-btn,
-  .home-figma-header.card-nav-inline-header .card-nav-actions .home-figma-nav-logout,
-  .home-figma-header.card-nav-inline-header .card-nav-actions .home-figma-nav-logout .nav-btn {
+  .home-figma-header.card-nav-inline-header .card-nav-actions .home-figma-nav-logout .nav-btn,
+  .home-figma-header.card-nav-inline-header .card-nav-actions .home-figma-nav-logout {
     width: 100%;
   }
 
-  .home-figma-header.card-nav-inline-header nav.card-nav-inline a:not(.nav-btn),
   .home-figma-header.card-nav-inline-header .card-nav-actions .nav-btn {
-    justify-content: flex-start;
-    min-height: 44px;
-    padding: 11px 14px;
+    justify-content: center;
+    min-height: 48px;
     border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  /* Войти — subtle outlined */
+  .home-figma-header.card-nav-inline-header .card-nav-actions .premium-nav-login {
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    color: #374151;
+  }
+
+  .home-figma-header.card-nav-inline-header .card-nav-actions .premium-nav-login:hover {
+    border-color: #3b6ef6;
+    color: #3b6ef6;
+    background: rgba(59,110,246,0.04);
+  }
+
+  /* Начать — solid blue CTA */
+  .home-figma-header.card-nav-inline-header .card-nav-actions .premium-nav-cta {
+    background: #3b6ef6;
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 4px 14px rgba(59,110,246,0.30);
+  }
+
+  .home-figma-header.card-nav-inline-header .card-nav-actions .premium-nav-cta:hover {
+    background: #2d5ce8;
+    box-shadow: 0 6px 18px rgba(59,110,246,0.38);
+  }
+
+  /* Кабинет / Выйти */
+  .home-figma-header.card-nav-inline-header .card-nav-actions .premium-nav-secondary {
+    background: #f8faff;
+    border: 1.5px solid #e2e8f0;
+    color: #374151;
   }
 }
 
+/* ── 640px and smaller ─────────────────────────────────────────── */
 @media (max-width: 640px) {
   .home-figma-header.card-nav-inline-header {
-    padding: 12px 14px;
-    gap: 12px;
+    padding: 0 14px;
   }
 
   .home-figma-header.card-nav-inline-header nav.card-nav-inline {
-    padding: 14px;
-    border-radius: 16px;
-  }
-
-  .home-figma-header.card-nav-inline-header nav.card-nav-inline a:not(.nav-btn),
-  .home-figma-header.card-nav-inline-header .card-nav-actions .nav-btn {
-    font-size: 0.92rem;
+    margin-left: -14px;
+    margin-right: -14px;
   }
 }
