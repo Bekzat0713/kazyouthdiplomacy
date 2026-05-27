@@ -1,4 +1,4 @@
-var CACHE_NAME = 'kyd-v1';
+var CACHE_NAME = 'kyd-v2';
 var PRECACHE_URLS = ['/', '/dashboard'];
 var STATIC_EXTENSIONS = ['.css', '.js', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.woff', '.woff2', '.ttf'];
 
