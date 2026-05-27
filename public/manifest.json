@@ -1,0 +1,19 @@
+{
+  "name": "KazYouthDiplomacy",
+  "short_name": "KazYouth",
+  "description": "Карьерный GPS для казахстанских студентов",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#3b6ef6",
+  "background_color": "#ffffff",
+  "lang": "ru",
+  "icons": [
+    { "src": "/logo.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Стажировки", "url": "/internships", "description": "Открыть стажировки" },
+    { "name": "Возможности", "url": "/opportunities", "description": "Открыть возможности" }
+  ]
+}

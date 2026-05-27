@@ -152,6 +152,7 @@ const cspDirectives = {
   objectSrc: ["'none'"],
   scriptSrc: ["'self'"],
   styleSrc: ["'self'", "'unsafe-inline'"],
+  workerSrc: ["'self'"],
 };
 
 if (isProduction) {
