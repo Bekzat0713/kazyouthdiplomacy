@@ -9,8 +9,8 @@
   "background_color": "#1878bc",
   "lang": "ru",
   "icons": [
-    { "src": "/icon-pwa.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/icon-pwa.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "/icon-pwa.jpg", "sizes": "192x192", "type": "image/jpeg" },
+    { "src": "/icon-pwa.jpg", "sizes": "512x512", "type": "image/jpeg", "purpose": "any maskable" }
   ],
   "shortcuts": [
     { "name": "Стажировки", "url": "/internships", "description": "Открыть стажировки" },
