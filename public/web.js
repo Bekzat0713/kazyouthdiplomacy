@@ -209,7 +209,7 @@ function initPremiumHomeMotion(prefersReducedMotion) {
     }
   );
 
-  gsap.to(".hero-dashboard", {
+  gsap.to(".career-gps-card", {
     y: -7,
     duration: 4.6,
     repeat: -1,
@@ -549,7 +549,7 @@ function setHomeAiSending(state, sending) {
 
   if (state.submit) {
     state.submit.disabled = sending;
-    state.submit.textContent = sending ? "AI Youth думает..." : "Спросить AI Youth";
+    state.submit.textContent = sending ? "AI Youth is thinking..." : "Ask AI Youth";
   }
 }
 
@@ -786,7 +786,7 @@ function formatHomeOpportunityDeadline(item) {
   if (item && item.deadline_date) {
     const date = new Date(`${item.deadline_date}T00:00:00`);
     if (!Number.isNaN(date.getTime())) {
-      return date.toLocaleDateString("ru-RU", {
+      return date.toLocaleDateString("en-US", {
         day: "numeric",
         month: "short",
       });
@@ -807,18 +807,18 @@ function getHomeOpportunityCategory(item) {
   const title = String(item && item.title || "").toLowerCase();
 
   if (listingType === "vacancy") {
-    return "Вакансия";
+    return "Career";
   }
 
   if (title.includes("grant") || title.includes("грант")) {
-    return "Грант";
+    return "Grant";
   }
 
   if (title.includes("fellowship")) {
     return "Fellowship";
   }
 
-  return "Стажировка";
+  return "Internship";
 }
 
 function buildHomeOpportunityTags(item) {
@@ -867,13 +867,13 @@ function createHomeOpportunityPreviewCard(item, isAuthenticated = false) {
   link.className = "premium-card-link route-link";
   link.href = isAuthenticated ? "/internships" : "/register";
   link.dataset.transitionDirection = isAuthenticated ? "left" : "right";
-  link.textContent = "Открыть";
+  link.textContent = "Open";
   category.textContent = getHomeOpportunityCategory(item);
   deadline.textContent = formatHomeOpportunityDeadline(item);
-  title.textContent = String(item.title || "Возможность");
+  title.textContent = String(item.title || "Opportunity");
   description.textContent = [
     item.organization ? String(item.organization) : "",
-    item.description_preview ? String(item.description_preview) : "Описание появится после загрузки.",
+    item.description_preview ? String(item.description_preview) : "Details appear after loading.",
   ].filter(Boolean).join(" · ");
 
   buildHomeOpportunityTags(item).forEach((tagText) => {
@@ -1137,6 +1137,42 @@ async function initHomePageExperience() {
   });
 }
 
+async function initYouthPageExperience() {
+  if (!document.body.classList.contains("youth-page")) {
+    return;
+  }
+
+  const navLogin = document.getElementById("homeNavLogin");
+  const navDashboard = document.getElementById("homeNavDashboard");
+  const navLogoutForm = document.getElementById("homeNavLogoutForm");
+
+  try {
+    const response = await fetch("/api/home-state", {
+      credentials: "include",
+      headers: { Accept: "application/json" },
+    });
+
+    const homeState = await response.json().catch(() => ({}));
+    const isAuthenticated = Boolean(homeState && homeState.is_authenticated);
+    const currentUser = homeState && homeState.user ? homeState.user : null;
+
+    if (navLogin) navLogin.hidden = isAuthenticated;
+    if (navDashboard) navDashboard.hidden = !isAuthenticated;
+    if (navLogoutForm) navLogoutForm.hidden = !isAuthenticated;
+
+    initHomeAssistantExperience({ isAuthenticated, currentUser });
+  } catch (_error) {
+    if (navLogin) navLogin.hidden = false;
+    if (navDashboard) navDashboard.hidden = true;
+    if (navLogoutForm) navLogoutForm.hidden = true;
+    initHomeAssistantExperience({ isAuthenticated: false, currentUser: null });
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-  void initHomePageExperience();
+  if (document.body.classList.contains("youth-page")) {
+    void initYouthPageExperience();
+  } else {
+    void initHomePageExperience();
+  }
 });

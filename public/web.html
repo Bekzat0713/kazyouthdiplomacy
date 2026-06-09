@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="/web.css" />
   <link rel="stylesheet" href="/card-nav.css" />
   <link rel="stylesheet" href="/access-control.css" />
-  <link rel="stylesheet" href="/home-premium.css" />
+  <link rel="stylesheet" href="/home-premium.css?v=hero-i18n-1" />
   <link rel="apple-touch-icon" href="/icon-pwa.jpg" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -44,7 +44,7 @@
     </div>
     <div class="splash-text-block">
       <p class="site-splash-title">KazYouthDiplomacy</p>
-      <p class="splash-tagline">Твой путь в международную карьеру</p>
+      <p class="splash-tagline" data-i18n="splash.tagline">Твой путь в международную карьеру</p>
     </div>
   </div>
   <span class="splash-progress" aria-hidden="true"></span>
@@ -58,19 +58,24 @@
 
   <nav class="home-figma-nav premium-nav-menu" aria-label="Основная навигация">
     <div class="card-nav-links premium-nav-links">
-      <a href="#homeHero" aria-current="page">Главная</a>
-      <a href="#opportunities">Возможности</a>
-      <a href="#ai-youth">AI Youth</a>
-      <a href="#pricing">Тарифы</a>
-      <a href="#reviews">Отзывы</a>
+      <a href="#homeHero" aria-current="page" data-i18n="nav.home">Главная</a>
+      <a href="#opportunities" data-i18n="nav.opportunities">Возможности</a>
+      <a href="/youth">AI Youth</a>
+      <a href="#pricing" data-i18n="nav.pricing">Тарифы</a>
+      <a href="#reviews" data-i18n="nav.reviews">Отзывы</a>
     </div>
     <div class="card-nav-actions premium-nav-actions">
-      <a id="homeNavDashboard" href="/dashboard" class="nav-btn premium-nav-secondary" hidden>Кабинет</a>
+      <div class="lang-switcher" aria-label="Language / Язык / Тіл">
+        <button class="lang-btn" data-lang="ru" type="button">RU</button>
+        <button class="lang-btn" data-lang="en" type="button">EN</button>
+        <button class="lang-btn" data-lang="kk" type="button">KK</button>
+      </div>
+      <a id="homeNavDashboard" href="/dashboard" class="nav-btn premium-nav-secondary" hidden data-i18n="nav.dashboard">Кабинет</a>
       <form id="homeNavLogoutForm" method="POST" action="/logout" class="home-figma-nav-logout" hidden>
-        <button class="nav-btn premium-nav-secondary" type="submit">Выйти</button>
+        <button class="nav-btn premium-nav-secondary" type="submit" data-i18n="nav.logout">Выйти</button>
       </form>
-      <a id="homeNavLogin" href="/login" class="nav-btn premium-nav-login">Войти</a>
-      <a href="/register-survey" class="nav-btn premium-nav-cta route-link" data-transition-direction="right">Начать</a>
+      <a id="homeNavLogin" href="/login" class="nav-btn premium-nav-login" data-i18n="nav.login">Войти</a>
+      <a href="/register-survey" class="nav-btn premium-nav-cta route-link" data-transition-direction="right" data-i18n="nav.start">Начать</a>
     </div>
   </nav>
 </header>
@@ -79,87 +84,56 @@
   <section class="hero home-figma-hero premium-hero" id="homeHero">
     <div class="premium-hero-grid">
       <div class="premium-hero-copy">
-        <span class="home-figma-kicker premium-kicker home-motion">AI Career GPS for students</span>
-        <h1 class="home-motion">Глобальные возможности без хаоса</h1>
-        <p class="premium-hero-lead home-motion">
-          KazYouthDiplomacy собирает стажировки, гранты, дедлайны и персональный roadmap в одной аккуратной платформе для студентов и молодых специалистов.
+        <span class="home-figma-kicker premium-kicker home-motion" data-i18n="hero.kicker">AI Career GPS</span>
+        <h1 class="home-motion" data-i18n="hero.h1">Your AI Career GPS for global opportunities</h1>
+        <p class="premium-hero-lead home-motion" data-i18n="hero.lead">
+          KazYouthDiplomacy helps students find internships, grants, deadlines and build a clear application roadmap — without chaotic searching.
         </p>
 
         <div class="premium-hero-actions home-motion">
-          <a href="/register-survey" class="btn primary home-figma-primary-cta route-link" data-transition-direction="right">
-            Построить мой маршрут
+          <a href="/register-survey" class="btn primary home-figma-primary-cta route-link" data-transition-direction="right" data-i18n="hero.cta1">
+            Build my roadmap
           </a>
-          <a href="#opportunities" class="btn secondary home-figma-secondary-cta">Смотреть возможности</a>
+          <a href="#opportunities" class="btn secondary home-figma-secondary-cta" data-i18n="hero.cta2">Explore opportunities</a>
         </div>
 
         <div class="premium-hero-proof home-motion" aria-label="Показатели платформы">
-          <span><strong>100+</strong> возможностей</span>
-          <span><strong>11</strong> стран</span>
+          <span><strong>100+</strong> <span data-i18n="hero.proof.opp">возможностей</span></span>
+          <span><strong>11</strong> <span data-i18n="hero.proof.countries">стран</span></span>
           <span><strong>AI</strong> roadmap</span>
         </div>
       </div>
 
-      <div class="premium-hero-visual home-motion" aria-label="Превью продукта KazYouthDiplomacy">
-        <div class="hero-dashboard">
-          <div class="hero-dashboard-top">
+      <div class="premium-hero-visual home-motion" aria-label="Career GPS preview">
+        <article class="career-gps-card">
+          <div class="career-gps-card-head">
             <div>
-              <span class="dashboard-eyebrow">Opportunity OS</span>
-              <strong>Career command center</strong>
+              <span class="dashboard-eyebrow" data-i18n="dash.eyebrow">AI Career GPS</span>
+              <strong data-i18n="dash.title">Career GPS</strong>
             </div>
-            <span class="dashboard-status">Live</span>
+            <span class="career-gps-chip" data-i18n="dash.status">Live</span>
           </div>
 
-          <div class="dashboard-search-row">
-            <span class="search-dot" aria-hidden="true"></span>
-            <span>Find public policy internships in Europe</span>
+          <ol class="career-gps-list">
+            <li>
+              <span class="career-gps-icon" aria-hidden="true"></span>
+              <span data-i18n="dash.roadmap.s1">Find relevant opportunities</span>
+            </li>
+            <li>
+              <span class="career-gps-icon" aria-hidden="true"></span>
+              <span data-i18n="dash.roadmap.s2">Track deadlines</span>
+            </li>
+            <li>
+              <span class="career-gps-icon" aria-hidden="true"></span>
+              <span data-i18n="dash.roadmap.s3">Prepare CV & motivation letter</span>
+            </li>
+          </ol>
+
+          <div class="career-gps-status">
+            <span aria-hidden="true"></span>
+            <span data-i18n="dash.generated">AI roadmap generated</span>
           </div>
-
-          <div class="dashboard-layout">
-            <div class="dashboard-main-list">
-              <article class="dashboard-opportunity-card premium-float">
-                <span class="opportunity-type">Internship</span>
-                <strong>Policy Research Fellowship</strong>
-                <p>Berlin · Hybrid · Deadline in 12 days</p>
-                <div class="dashboard-tags">
-                  <span>Policy</span>
-                  <span>Research</span>
-                  <span>Plus match</span>
-                </div>
-              </article>
-
-              <article class="dashboard-opportunity-card premium-float premium-float-delay">
-                <span class="opportunity-type">Grant</span>
-                <strong>Youth Leadership Program</strong>
-                <p>Online · Fully funded · Deadline in 21 days</p>
-                <div class="dashboard-tags">
-                  <span>Leadership</span>
-                  <span>Global</span>
-                </div>
-              </article>
-            </div>
-
-            <aside class="dashboard-roadmap-panel premium-float premium-float-slow">
-              <span class="roadmap-label">AI roadmap</span>
-              <ol>
-                <li><span></span>Define target field</li>
-                <li><span></span>Shortlist 6 programs</li>
-                <li><span></span>Prepare CV and motivation letter</li>
-              </ol>
-            </aside>
-          </div>
-        </div>
-
-        <div class="hero-floating-card hero-floating-deadline premium-float" aria-hidden="true">
-          <span>Next deadline</span>
-          <strong>14 May</strong>
-          <p>Application checklist ready</p>
-        </div>
-
-        <div class="hero-floating-card hero-floating-ai premium-float premium-float-delay" aria-hidden="true">
-          <span>AI Youth</span>
-          <strong>4 matches found</strong>
-          <p>Based on your goals and profile</p>
-        </div>
+        </article>
       </div>
     </div>
   </section>
@@ -168,300 +142,280 @@
     <div class="premium-strip-grid">
       <article>
         <span>01</span>
-        <strong>Подбор без шума</strong>
-        <p>Возможности разложены по типу, срокам и уровню готовности.</p>
+        <strong data-i18n="ft.01.title">Подбор без шума</strong>
+        <p data-i18n="ft.01.desc">Возможности разложены по типу, срокам и уровню готовности.</p>
       </article>
       <article>
         <span>02</span>
-        <strong>Roadmap вместо вкладок</strong>
-        <p>AI Youth превращает интерес в понятную последовательность действий.</p>
+        <strong data-i18n="ft.02.title">Roadmap вместо вкладок</strong>
+        <p data-i18n="ft.02.desc">AI Youth превращает интерес в понятную последовательность действий.</p>
       </article>
       <article>
         <span>03</span>
-        <strong>Фокус на подаче</strong>
-        <p>Сохраняйте варианты, отслеживайте дедлайны и двигайтесь к откликам.</p>
+        <strong data-i18n="ft.03.title">Фокус на подаче</strong>
+        <p data-i18n="ft.03.desc">Сохраняйте варианты, отслеживайте дедлайны и двигайтесь к откликам.</p>
       </article>
     </div>
   </section>
 
   <section class="home-figma-section home-figma-opportunities premium-section" id="opportunities" data-scroll-reveal>
     <div class="home-figma-section-head premium-section-head">
-      <span class="home-figma-kicker premium-kicker">Featured opportunities</span>
-      <h2>Возможности, которые легко сравнивать.</h2>
+      <span class="home-figma-kicker premium-kicker" data-i18n="opp.kicker">Избранные возможности</span>
+      <h2 data-i18n="opp.h2">Возможности, которые легко сравнивать.</h2>
     </div>
 
     <div id="homeOpportunityPreviewGrid" class="home-figma-card-grid home-figma-card-grid-preview premium-opportunity-grid" aria-live="polite">
       <article class="home-figma-info-card premium-opportunity-card">
         <div class="premium-opportunity-top">
-          <span class="premium-opportunity-category">Internship</span>
-          <span class="premium-opportunity-deadline">12 days</span>
+          <span class="premium-opportunity-category" data-i18n="opp.c1.type">Стажировка</span>
+          <span class="premium-opportunity-deadline" data-i18n="opp.c1.dl">12 дней</span>
         </div>
-        <strong>Policy Research Fellowship</strong>
-        <p>Berlin · Hybrid</p>
+        <strong data-i18n="opp.c1.name">Исследовательская стипендия в области политики</strong>
+        <p data-i18n="opp.c1.desc">Берлин · Гибрид</p>
         <div class="premium-opportunity-tags">
-          <span>Policy</span>
-          <span>Research</span>
-          <span>Plus match</span>
+          <span data-i18n="opp.c1.t1">Политика</span>
+          <span data-i18n="opp.c1.t2">Исследования</span>
+          <span data-i18n="opp.c1.t3">Plus подбор</span>
         </div>
-        <a href="/register" class="premium-card-link route-link" data-transition-direction="right">Открыть</a>
+        <a href="/register" class="premium-card-link route-link" data-transition-direction="right" data-i18n="opp.open">Открыть</a>
       </article>
 
       <article class="home-figma-info-card premium-opportunity-card">
         <div class="premium-opportunity-top">
-          <span class="premium-opportunity-category">Grant</span>
-          <span class="premium-opportunity-deadline">21 days</span>
+          <span class="premium-opportunity-category" data-i18n="opp.c2.type">Грант</span>
+          <span class="premium-opportunity-deadline" data-i18n="opp.c2.dl">21 день</span>
         </div>
-        <strong>Youth Leadership Program</strong>
-        <p>Online · Fully funded</p>
+        <strong data-i18n="opp.c2.name">Программа молодёжного лидерства</strong>
+        <p data-i18n="opp.c2.desc">Онлайн · Полное финансирование</p>
         <div class="premium-opportunity-tags">
-          <span>Leadership</span>
-          <span>Global</span>
-          <span>Remote</span>
+          <span data-i18n="opp.c2.t1">Лидерство</span>
+          <span data-i18n="opp.c2.t2">Глобально</span>
+          <span data-i18n="opp.c2.t3">Удалённо</span>
         </div>
-        <a href="/register" class="premium-card-link route-link" data-transition-direction="right">Открыть</a>
+        <a href="/register" class="premium-card-link route-link" data-transition-direction="right" data-i18n="opp.open">Открыть</a>
       </article>
 
       <article class="home-figma-info-card premium-opportunity-card">
         <div class="premium-opportunity-top">
-          <span class="premium-opportunity-category">Program</span>
-          <span class="premium-opportunity-deadline">8 weeks</span>
+          <span class="premium-opportunity-category" data-i18n="opp.c3.type">Программа</span>
+          <span class="premium-opportunity-deadline" data-i18n="opp.c3.dl">8 недель</span>
         </div>
-        <strong>Digital Diplomacy Track</strong>
-        <p>Astana · Hybrid</p>
+        <strong data-i18n="opp.c3.name">Цифровая дипломатия</strong>
+        <p data-i18n="opp.c3.desc">Астана · Гибрид</p>
         <div class="premium-opportunity-tags">
-          <span>Communications</span>
-          <span>Events</span>
+          <span data-i18n="opp.c3.t1">Коммуникации</span>
+          <span data-i18n="opp.c3.t2">Мероприятия</span>
         </div>
-        <a href="/register" class="premium-card-link route-link" data-transition-direction="right">Открыть</a>
+        <a href="/register" class="premium-card-link route-link" data-transition-direction="right" data-i18n="opp.open">Открыть</a>
       </article>
     </div>
-    <p data-home-opportunities-empty class="internships-empty premium-empty" hidden>Список возможностей появится чуть позже.</p>
+    <p data-home-opportunities-empty class="internships-empty premium-empty" hidden data-i18n="opp.empty">Список возможностей появится чуть позже.</p>
     <div class="home-figma-opportunity-actions premium-section-actions">
-      <a data-home-opportunities-cta href="/register" class="btn primary route-link" data-transition-direction="right">Смотреть все возможности</a>
+      <a data-home-opportunities-cta href="/register" class="btn primary route-link" data-transition-direction="right" data-i18n="opp.cta">Смотреть все возможности</a>
     </div>
   </section>
 
-  <section class="home-figma-section home-figma-ai premium-ai-section" id="ai-youth" data-scroll-reveal>
+  <section class="home-figma-section home-figma-ai premium-ai-assistant" id="ai-youth" data-scroll-reveal>
     <div class="home-figma-ai-shell premium-ai-shell">
       <div class="home-figma-ai-copy premium-ai-copy">
-        <span class="home-figma-kicker premium-kicker">AI Youth</span>
-        <h2>Следующий шаг всегда понятен.</h2>
-        <p>Разберитесь с направлением и не пропустите важные дедлайны.</p>
-
-        <div class="premium-prompt-stack" aria-label="Примеры запросов">
-          <button class="premium-prompt-chip" type="button" data-home-ai-question="Какие первые шаги помогут быстрее найти стажировки, гранты или карьерные возможности?">Find internships for me</button>
-          <button class="premium-prompt-chip" type="button" data-home-ai-question="С чего мне лучше начать прямо сейчас на платформе?">Build my career roadmap</button>
-          <button class="premium-prompt-chip" type="button" data-home-ai-question="Чем этот сайт поможет именно мне как студенту или молодому специалисту?">Suggest exchange programs</button>
-        </div>
-
-        <div class="premium-roadmap-preview">
-          <div class="premium-roadmap-head">
-            <span>Generated roadmap</span>
-            <strong>Next 30 days</strong>
-          </div>
-          <div class="premium-roadmap-step">
-            <span>Week 1</span>
-            <p>Shortlist программ по фокусу.</p>
-          </div>
-          <div class="premium-roadmap-step">
-            <span>Week 2</span>
-            <p>CV и мотивационное письмо.</p>
-          </div>
-          <div class="premium-roadmap-step">
-            <span>Week 3</span>
-            <p>Первые заявки и дедлайны.</p>
-          </div>
-        </div>
-
+        <span class="home-figma-kicker premium-kicker" data-i18n="ai.kicker">AI Youth</span>
+        <h2 data-i18n="ai.h2">Your next step is always clear.</h2>
+        <p data-i18n="ai.lead">Ask about internships, grants, deadlines or your roadmap. AI Youth turns the next move into a short, practical answer.</p>
         <div class="home-figma-ai-actions">
-          <a href="/register-survey" class="btn primary route-link" data-transition-direction="right">Пройти Career GPS</a>
-          <a href="/login" id="homeAiLoginCta" class="btn secondary">Войти и задать вопрос</a>
-          <a href="/dashboard" id="homeAiDashboardCta" class="btn secondary" hidden>Открыть мой кабинет</a>
+          <a id="homeAiLoginCta" href="/login" class="btn secondary" data-i18n="ai.cta2">Log in and ask a question</a>
+          <a id="homeAiDashboardCta" href="/dashboard" class="btn secondary" hidden data-i18n="ai.cta3">Open my dashboard</a>
         </div>
       </div>
 
-      <div class="home-figma-ai-panel premium-ai-panel">
+      <article class="home-figma-ai-panel premium-ai-panel" aria-label="AI Youth assistant">
         <div class="home-figma-ai-panel-head">
           <div>
-            <span class="home-figma-ai-panel-kicker">Assistant interface</span>
-            <h3>AI Youth</h3>
-            <p>Задайте вопрос AI Youth.</p>
+            <span class="home-figma-ai-panel-kicker" data-i18n="ai.panel.kicker">Assistant</span>
+            <h3 data-i18n="ai.panel.h3">AI Youth</h3>
+            <p data-i18n="ai.panel.lead">Ask one focused question and get a clear next step.</p>
           </div>
-          <span id="homeAiModeBadge" class="home-figma-ai-mode-badge">Быстрые ответы</span>
+          <span id="homeAiModeBadge" class="home-figma-ai-mode-badge" data-i18n="ai.panel.badge">Quick answers</span>
         </div>
 
-        <div id="homeAiSuggestionGrid" class="home-figma-ai-suggestions">
-          <button class="home-figma-ai-suggestion" type="button" data-home-ai-question="Что это за сайт и кому он подходит?">Что это за сайт?</button>
-          <button class="home-figma-ai-suggestion" type="button" data-home-ai-question="Чем этот сайт поможет именно мне как студенту или молодому специалисту?">Чем сайт поможет?</button>
-          <button class="home-figma-ai-suggestion" type="button" data-home-ai-question="С чего мне лучше начать прямо сейчас на платформе?">С чего начать?</button>
-          <button class="home-figma-ai-suggestion" type="button" data-home-ai-question="Какие первые шаги помогут быстрее найти стажировки, гранты или карьерные возможности?">Какие шаги важны?</button>
+        <div class="home-figma-ai-suggestions" aria-label="Quick questions">
+          <button class="home-figma-ai-suggestion" type="button"
+            data-home-ai-question="What first steps will help me find internships, grants or career opportunities faster?"
+            data-i18n="ai.s4"
+            data-i18n-ai-q="ai.s4.q">What steps matter?</button>
+          <button class="home-figma-ai-suggestion" type="button"
+            data-home-ai-question="What is the best first step for me on this platform right now?"
+            data-i18n="ai.s3"
+            data-i18n-ai-q="ai.s3.q">Where to start?</button>
+          <button class="home-figma-ai-suggestion" type="button"
+            data-home-ai-question="How will this site help me as a student or young professional?"
+            data-i18n="ai.s2"
+            data-i18n-ai-q="ai.s2.q">How can it help me?</button>
         </div>
 
-        <div id="homeAiMessages" class="home-figma-ai-messages" aria-live="polite">
-          <article class="home-figma-ai-message home-figma-ai-message-assistant">
-            <span class="home-figma-ai-message-badge">AI</span>
-            <p class="home-figma-ai-message-text">Задайте вопрос — помогу с roadmap и возможностями.</p>
-          </article>
-        </div>
-        <p id="homeAiStatus" class="home-figma-ai-status">AI Youth готов к вопросам.</p>
+        <div id="homeAiMessages" class="home-figma-ai-messages" aria-live="polite"></div>
+        <p id="homeAiStatus" class="home-figma-ai-status" data-i18n="ai.status">AI Youth is ready.</p>
+
         <form id="homeAiForm" class="home-figma-ai-form">
-          <textarea
-            id="homeAiInput"
-            class="home-figma-ai-input"
-            rows="3"
-            maxlength="2000"
-            placeholder="Напишите вопрос для AI Youth..."
-          ></textarea>
+          <label class="sr-only" for="homeAiInput">Question for AI Youth</label>
+          <textarea id="homeAiInput" class="home-figma-ai-input" rows="3" data-i18n-ph="ai.ph" placeholder="Type a question for AI Youth..."></textarea>
           <div class="home-figma-ai-form-actions">
-            <span id="homeAiHint" class="home-figma-ai-hint">Или выберите готовый запрос.</span>
-            <button id="homeAiSubmit" class="btn primary" type="submit">Спросить AI</button>
+            <span id="homeAiHint" class="home-figma-ai-hint" data-i18n="ai.hint">Or choose a ready-made prompt.</span>
+            <button id="homeAiSubmit" class="btn primary" type="submit">Ask AI Youth</button>
           </div>
         </form>
-      </div>
+      </article>
     </div>
   </section>
 
   <section class="home-figma-section home-figma-cta premium-pricing-section" id="pricing" data-scroll-reveal>
     <div class="home-figma-section-head premium-section-head premium-pricing-head">
-      <span class="home-figma-kicker premium-kicker">Pricing</span>
-      <h2>Выберите тариф.</h2>
+      <span class="home-figma-kicker premium-kicker" data-i18n="pr.kicker">Тарифы</span>
+      <h2 data-i18n="pr.h2">Выберите тариф.</h2>
     </div>
 
     <div class="home-figma-pricing-grid premium-pricing-grid">
       <article class="home-figma-price-card premium-price-card">
-        <span class="home-figma-price-label">Free</span>
-        <h3>Start</h3>
-        <p class="home-figma-price-value">0 ₸</p>
-        <p class="premium-price-note">Для знакомства с продуктом</p>
+        <span class="home-figma-price-label" data-i18n="pr.free.label">Бесплатно</span>
+        <h3 data-i18n="pr.free.h3">Start</h3>
+        <p class="home-figma-price-value" data-i18n="pr.free.price">0 ₸</p>
+        <p class="premium-price-note" data-i18n="pr.free.note">Для знакомства с продуктом</p>
         <ul>
-          <li>Ограниченный preview каталога</li>
-          <li>Базовый доступ к материалам</li>
-          <li>Понимание, подходит ли платформа под вашу цель</li>
+          <li data-i18n="pr.free.l1">Ограниченный preview каталога</li>
+          <li data-i18n="pr.free.l2">Базовый доступ к материалам</li>
+          <li data-i18n="pr.free.l3">Понимание, подходит ли платформа под вашу цель</li>
         </ul>
-        <a href="/register-survey" class="btn secondary route-link" data-transition-direction="right">Начать бесплатно</a>
+        <a href="/register-survey" class="btn secondary route-link" data-transition-direction="right" data-i18n="pr.free.cta">Начать бесплатно</a>
       </article>
 
       <article class="home-figma-price-card premium-price-card featured">
-        <span class="premium-recommended-badge">Recommended</span>
-        <span class="home-figma-price-label">Plus · 3 месяца</span>
-        <h3>Growth</h3>
-        <p class="home-figma-price-value">2790 ₸</p>
-        <p class="premium-price-note">Лучший баланс для карьерного цикла</p>
+        <span class="premium-recommended-badge" data-i18n="pr.gr.badge">Рекомендуется</span>
+        <span class="home-figma-price-label" data-i18n="pr.gr.label">Plus · 3 месяца</span>
+        <h3 data-i18n="pr.gr.h3">Growth</h3>
+        <p class="home-figma-price-value" data-i18n="pr.gr.price">2790 ₸</p>
+        <p class="premium-price-note" data-i18n="pr.gr.note">Лучший баланс для карьерного цикла</p>
         <ul>
-          <li>Полный каталог возможностей и стажировок</li>
-          <li>AI roadmap и персональные подборки</li>
-          <li>Сохранения, дедлайны и фокус на подаче</li>
+          <li data-i18n="pr.gr.l1">Полный каталог возможностей и стажировок</li>
+          <li data-i18n="pr.gr.l2">AI roadmap и персональные подборки</li>
+          <li data-i18n="pr.gr.l3">Сохранения, дедлайны и фокус на подаче</li>
         </ul>
-        <a href="/subscribe" class="btn primary route-link" data-transition-direction="right">Выбрать Growth</a>
+        <a href="/subscribe" class="btn primary route-link" data-transition-direction="right" data-i18n="pr.gr.cta">Выбрать Growth</a>
       </article>
 
       <article class="home-figma-price-card premium-price-card">
-        <span class="home-figma-price-label">Plus · 6 месяцев</span>
-        <h3>Long Run</h3>
-        <p class="home-figma-price-value">5990 ₸</p>
-        <p class="premium-price-note">Для долгого международного трека</p>
+        <span class="home-figma-price-label" data-i18n="pr.lr.label">Plus · 6 месяцев</span>
+        <h3 data-i18n="pr.lr.h3">Long Run</h3>
+        <p class="home-figma-price-value" data-i18n="pr.lr.price">5990 ₸</p>
+        <p class="premium-price-note" data-i18n="pr.lr.note">Для долгого международного трека</p>
         <ul>
-          <li>Доступ на несколько волн дедлайнов</li>
-          <li>Меньше отвлечений на продление</li>
-          <li>Удобно для подготовки профиля и заявок</li>
+          <li data-i18n="pr.lr.l1">Доступ на несколько волн дедлайнов</li>
+          <li data-i18n="pr.lr.l2">Меньше отвлечений на продление</li>
+          <li data-i18n="pr.lr.l3">Удобно для подготовки профиля и заявок</li>
         </ul>
-        <a href="/subscribe" class="btn secondary route-link" data-transition-direction="right">Открыть тариф</a>
+        <a href="/subscribe" class="btn secondary route-link" data-transition-direction="right" data-i18n="pr.lr.cta">Открыть тариф</a>
       </article>
     </div>
 
     <div class="premium-trust-row" aria-label="Доверие и условия">
-      <span>Secure account</span>
-      <span>Manual Plus activation</span>
-      <span>Cancel anytime</span>
+      <span data-i18n="pr.t1">Защищённый аккаунт</span>
+      <span data-i18n="pr.t2">Ручная активация Plus</span>
+      <span data-i18n="pr.t3">Отмена в любой момент</span>
     </div>
   </section>
 
   <section class="home-figma-section home-figma-reviews premium-reviews-section" id="reviews" data-scroll-reveal>
     <div class="home-figma-section-head premium-section-head">
-      <span class="home-figma-kicker premium-kicker">Reviews</span>
-      <h2>Что говорят пользователи.</h2>
+      <span class="home-figma-kicker premium-kicker" data-i18n="rv.kicker">Отзывы</span>
+      <h2 data-i18n="rv.h2">Что говорят пользователи.</h2>
     </div>
 
     <div class="home-figma-review-grid premium-review-grid" id="homeReviewsGrid">
       <article class="home-figma-review-card premium-review-card">
         <div class="home-figma-review-top">
-          <span class="home-figma-review-tag">Отзыв</span>
+          <span class="home-figma-review-tag" data-i18n="rv.tag">Отзыв</span>
           <strong>Аружан, 19 лет</strong>
           <span class="home-figma-review-meta">Алматы · 2 курс · цель: международная стажировка</span>
           <span class="home-figma-review-headline">Поиск стал быстрее и спокойнее</span>
         </div>
-        <p>”Здесь я быстро собрала релевантные варианты под свой профиль.”</p>
+        <p>"Здесь я быстро собрала релевантные варианты под свой профиль."</p>
       </article>
 
       <article class="home-figma-review-card premium-review-card">
         <div class="home-figma-review-top">
-          <span class="home-figma-review-tag">Отзыв</span>
+          <span class="home-figma-review-tag" data-i18n="rv.tag">Отзыв</span>
           <strong>Нуржан, 22 года</strong>
           <span class="home-figma-review-meta">Астана · выпускник · цель: первая работа</span>
           <span class="home-figma-review-headline">Появился понятный маршрут действий</span>
         </div>
-        <p>”Roadmap помог понять последовательность: что подтянуть, куда откликаться.”</p>
+        <p>"Roadmap помог понять последовательность: что подтянуть, куда откликаться."</p>
       </article>
 
       <article class="home-figma-review-card premium-review-card">
         <div class="home-figma-review-top">
-          <span class="home-figma-review-tag">Отзыв</span>
+          <span class="home-figma-review-tag" data-i18n="rv.tag">Отзыв</span>
           <strong>Диана, 20 лет</strong>
           <span class="home-figma-review-meta">Шымкент · студентка · цель: гранты</span>
           <span class="home-figma-review-headline">Нашлись именно мои возможности</span>
         </div>
-        <p>”Намного быстрее поняла, на какие программы стоит обратить внимание.”</p>
+        <p>"Намного быстрее поняла, на какие программы стоит обратить внимание."</p>
       </article>
     </div>
 
     <div class="home-figma-review-cta premium-section-actions">
-      <a href="#review-form" class="btn primary">Оставить отзыв</a>
+      <a href="#review-form" class="btn primary" data-i18n="rv.cta">Оставить отзыв</a>
     </div>
 
     <article class="home-figma-review-form-card premium-review-form-card" id="review-form">
       <div class="home-figma-review-form-copy">
-        <span class="home-figma-review-tag">Your review</span>
-        <h3>Поделитесь результатом</h3>
-        <p id="homeReviewFormLead">Расскажите, что изменилось после платформы.</p>
+        <span class="home-figma-review-tag" data-i18n="rv.form.tag">Ваш отзыв</span>
+        <h3 data-i18n="rv.form.h3">Поделитесь результатом</h3>
+        <p id="homeReviewFormLead" data-i18n="rv.form.lead">Расскажите, что изменилось после платформы.</p>
       </div>
 
       <div id="homeReviewGuestState" class="home-figma-review-guest" hidden>
-        <p>Войдите, чтобы оставить отзыв.</p>
-        <a href="/login" class="btn secondary">Войти и оставить отзыв</a>
+        <p data-i18n="rv.form.guest">Войдите, чтобы оставить отзыв.</p>
+        <a href="/login" class="btn secondary" data-i18n="rv.form.gcta">Войти и оставить отзыв</a>
       </div>
 
       <form id="homeReviewForm" class="home-figma-review-form" hidden>
         <label class="home-figma-review-field">
-          <span>Город</span>
-          <input id="homeReviewCity" name="city" type="text" maxlength="80" placeholder="Например, Алматы" required />
+          <span data-i18n="rv.form.city">Город</span>
+          <input id="homeReviewCity" name="city" type="text" maxlength="80"
+            data-i18n-ph="rv.form.city.ph"
+            placeholder="Например, Алматы" required />
         </label>
 
         <label class="home-figma-review-field">
-          <span>Короткий заголовок</span>
-          <input id="homeReviewHeadline" name="headline" type="text" maxlength="120" placeholder="Например, поиск стал быстрее" required />
+          <span data-i18n="rv.form.hl">Короткий заголовок</span>
+          <input id="homeReviewHeadline" name="headline" type="text" maxlength="120"
+            data-i18n-ph="rv.form.hl.ph"
+            placeholder="Например, поиск стал быстрее" required />
         </label>
 
         <label class="home-figma-review-field">
-          <span>Что изменилось после платформы</span>
-          <input id="homeReviewResult" name="result_summary" type="text" maxlength="180" placeholder="Например, собрал 6 программ и начал подаваться" required />
+          <span data-i18n="rv.form.res">Что изменилось после платформы</span>
+          <input id="homeReviewResult" name="result_summary" type="text" maxlength="180"
+            data-i18n-ph="rv.form.res.ph"
+            placeholder="Например, собрал 6 программ и начал подаваться" required />
         </label>
 
         <label class="home-figma-review-field">
-          <span>Ваш отзыв</span>
-          <textarea id="homeReviewBody" name="body" rows="5" maxlength="1200" placeholder="Расскажите, что было до платформы, что стало проще и какой результат вы увидели." required></textarea>
+          <span data-i18n="rv.form.body">Ваш отзыв</span>
+          <textarea id="homeReviewBody" name="body" rows="5" maxlength="1200"
+            data-i18n-ph="rv.form.body.ph"
+            placeholder="Расскажите, что было до платформы, что стало проще и какой результат вы увидели." required></textarea>
         </label>
 
         <div id="homeReviewStatus" class="home-figma-review-status" hidden></div>
-        <button id="homeReviewSubmit" class="btn primary" type="submit">Опубликовать отзыв</button>
+        <button id="homeReviewSubmit" class="btn primary" type="submit" data-i18n="rv.form.submit">Опубликовать отзыв</button>
       </form>
     </article>
   </section>
 
   <section class="home-figma-section premium-final-cta" data-scroll-reveal>
     <div class="home-figma-cta-box premium-final-box">
-      <span class="home-figma-kicker premium-kicker">Start now</span>
-      <h2>Начните с Career GPS.</h2>
-      <a href="/register-survey" class="btn primary route-link" data-transition-direction="right">Начать сейчас</a>
+      <span class="home-figma-kicker premium-kicker" data-i18n="cta.kicker">Начать</span>
+      <h2 data-i18n="cta.h2">Начните с Career GPS.</h2>
+      <a href="/register-survey" class="btn primary route-link" data-transition-direction="right" data-i18n="cta.btn">Начать сейчас</a>
     </div>
   </section>
 </main>
@@ -470,14 +424,14 @@
   <div class="home-figma-footer-shell">
     <div>
       <strong>KazYouthDiplomacy</strong>
-      <p>AI Career GPS для молодых специалистов.</p>
+      <p data-i18n="ft.tagline">AI Career GPS для молодых специалистов.</p>
     </div>
 
     <div class="home-figma-footer-links">
-      <a href="#opportunities">Возможности</a>
-      <a href="#ai-youth">AI Youth</a>
-      <a href="/subscribe" class="route-link" data-transition-direction="right">Тарифы</a>
-      <a href="https://t.me/perlll1" target="_blank" rel="noreferrer">Написать нам</a>
+      <a href="#opportunities" data-i18n="nav.opportunities">Возможности</a>
+      <a href="/youth">AI Youth</a>
+      <a href="/subscribe" class="route-link" data-transition-direction="right" data-i18n="nav.pricing">Тарифы</a>
+      <a href="https://t.me/perlll1" target="_blank" rel="noreferrer" data-i18n="ft.contact">Написать нам</a>
     </div>
   </div>
 </footer>
@@ -485,7 +439,8 @@
 <script src="/card-nav.js" defer></script>
 <script src="/access-control.js" defer></script>
 <script src="/vendor/gsap.min.js" defer></script>
-<script src="/web.js" defer></script>
+<script src="/i18n.js?v=hero-i18n-1" defer></script>
+<script src="/web.js?v=clean-saas-5" defer></script>
 <script src="/page-transitions.js" defer></script>
 </body>
 </html>
