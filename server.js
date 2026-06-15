@@ -58,9 +58,7 @@ const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
 const SMTP_SECURE = String(process.env.SMTP_SECURE || "").toLowerCase() === "true";
 const SMTP_USER = String(process.env.SMTP_USER || "").trim();
 const SMTP_PASS = String(process.env.SMTP_PASS || "");
-const EMAIL_VERIFICATION_ENABLED = String(
-  process.env.EMAIL_VERIFICATION_ENABLED || "false"
-).toLowerCase() === "true";
+const EMAIL_VERIFICATION_ENABLED = false;
 const EMAIL_VERIFY_TOKEN_TTL_MINUTES = Number(
   process.env.EMAIL_VERIFY_TOKEN_TTL_MINUTES || 60 * 24
 );
