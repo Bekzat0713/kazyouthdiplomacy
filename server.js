@@ -46,6 +46,8 @@ const APP_BASE_HOSTNAME = (() => {
   }
 })();
 const SESSION_SECRET = String(process.env.SESSION_SECRET || "").trim();
+const GOOGLE_CLIENT_ID = String(process.env.GOOGLE_CLIENT_ID || "").trim();
+const GOOGLE_CLIENT_SECRET = String(process.env.GOOGLE_CLIENT_SECRET || "").trim();
 const SESSION_COOKIE_NAME = String(process.env.SESSION_COOKIE_NAME || "kyd.sid").trim() || "kyd.sid";
 const MAIL_FROM = String(
   process.env.MAIL_FROM || process.env.SMTP_USER || `no-reply@${APP_BASE_HOSTNAME}`
@@ -5514,6 +5516,136 @@ app.post("/login", loginRateLimiter, async (req, res) => {
   } catch (err) {
     console.error("Login server error:", err);
     return res.redirect("/login?error=server");
+  }
+});
+
+/* ======================
+   OAUTH (GOOGLE)
+====================== */
+
+app.get("/api/auth/providers", (req, res) => {
+  const providers = [];
+  if (GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET) {
+    providers.push({
+      id: "google",
+      name: "Google",
+      auth_url: "/auth/google",
+    });
+  }
+  return res.json({ providers });
+});
+
+app.get("/auth/google", (req, res) => {
+  if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
+    return res.redirect("/login?error=oauth-config");
+  }
+  
+  const rootUrl = "https://accounts.google.com/o/oauth2/v2/auth";
+  const options = {
+    redirect_uri: `${APP_BASE_URL}/auth/google/callback`,
+    client_id: GOOGLE_CLIENT_ID,
+    access_type: "offline",
+    response_type: "code",
+    prompt: "consent",
+    scope: [
+      "https://www.googleapis.com/auth/userinfo.profile",
+      "https://www.googleapis.com/auth/userinfo.email"
+    ].join(" ")
+  };
+
+  const qs = new URLSearchParams(options);
+  return res.redirect(`${rootUrl}?${qs.toString()}`);
+});
+
+app.get("/auth/google/callback", async (req, res) => {
+  const code = req.query.code;
+  if (!code) {
+    console.warn("Google OAuth callback error: code is missing");
+    return res.redirect("/login?error=oauth-denied");
+  }
+
+  try {
+    const tokenUrl = "https://oauth2.googleapis.com/token";
+    const tokenParams = {
+      code,
+      client_id: GOOGLE_CLIENT_ID,
+      client_secret: GOOGLE_CLIENT_SECRET,
+      redirect_uri: `${APP_BASE_URL}/auth/google/callback`,
+      grant_type: "authorization_code"
+    };
+
+    const tokenRes = await fetch(tokenUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams(tokenParams).toString()
+    });
+
+    if (!tokenRes.ok) {
+      const errBody = await tokenRes.text();
+      console.error("Failed to exchange code for token:", errBody);
+      return res.redirect("/login?error=oauth-callback");
+    }
+
+    const { access_token } = await tokenRes.json();
+    if (!access_token) {
+      console.error("Google OAuth token exchange did not return access_token");
+      return res.redirect("/login?error=oauth-callback");
+    }
+
+    const userinfoRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+      headers: { Authorization: `Bearer ${access_token}` }
+    });
+
+    if (!userinfoRes.ok) {
+      const errBody = await userinfoRes.text();
+      console.error("Failed to get Google user info:", errBody);
+      return res.redirect("/login?error=oauth-callback");
+    }
+
+    const profile = await userinfoRes.json();
+    const email = normalizeEmail(profile.email);
+    if (!email) {
+      console.warn("Google userinfo did not contain verified email");
+      return res.redirect("/login?error=oauth-email");
+    }
+
+    const lookupRes = await pool.query(
+      "SELECT * FROM users WHERE email = $1",
+      [email]
+    );
+
+    let user;
+    if (lookupRes.rows.length > 0) {
+      user = lookupRes.rows[0];
+      if (user.is_verified === false) {
+        await pool.query(
+          "UPDATE users SET is_verified = true, email_verified_at = CURRENT_TIMESTAMP WHERE id = $1",
+          [user.id]
+        );
+        user.is_verified = true;
+      }
+      return saveSessionAndRedirect(req, res, user, "/dashboard");
+    } else {
+      const firstName = profile.given_name || "Пользователь";
+      const lastName = profile.family_name || "";
+      const randomPassword = crypto.randomBytes(16).toString("hex");
+      const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
+      const insertRes = await pool.query(
+        `
+        INSERT INTO users (email, password, first_name, last_name, is_verified, email_verified_at, role)
+        VALUES ($1, $2, $3, $4, true, CURRENT_TIMESTAMP, 'user')
+        RETURNING *
+        `,
+        [email, hashedPassword, firstName, lastName]
+      );
+      user = insertRes.rows[0];
+      
+      return saveSessionAndRedirect(req, res, user, "/register-survey");
+    }
+  } catch (err) {
+    console.error("Google OAuth callback handler error:", err);
+    return res.redirect("/login?error=oauth-callback");
   }
 });
 
