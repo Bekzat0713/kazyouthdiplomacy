@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="/logo.png" />
-  <title>Личный кабинет — KazYouthDiplomacy</title>
+  <title>Профиль пользователя — KazYouthDiplomacy</title>
   <link rel="stylesheet" href="/web.css">
   <link rel="stylesheet" href="/card-nav.css">
   <link rel="stylesheet" href="/access-control.css">
@@ -26,7 +26,7 @@
   </a>
   <nav class="home-figma-nav premium-nav-menu" aria-label="Основная навигация">
     <div class="card-nav-links premium-nav-links">
-      <a href="/dashboard" aria-current="page">Кабинет</a>
+      <a href="/dashboard">Кабинет</a>
       <a href="/internships">Стажировки</a>
       <a href="/opportunities">Возможности</a>
       <a href="/resources">Материалы</a>
@@ -67,70 +67,13 @@
 
     <div class="dashboard-container">
       <div class="dashboard-page-head">
-        <h1 id="dashboardPageTitle">Личный кабинет</h1>
+        <h1 id="dashboardPageTitle">Мой профиль</h1>
         <p id="dashboardWelcomeLine" class="dashboard-welcome-line" aria-live="polite" hidden></p>
       </div>
 
-    <!-- ── Onboarding welcome banner (hidden until onboarding.js shows it) ── -->
-    <div id="onboardingBanner" class="onboarding-banner" hidden aria-live="polite">
-      <div class="onboarding-inner">
-
-        <div class="onboarding-head">
-          <div class="onboarding-title-row">
-            <h2 id="onboardingWelcomeTitle">Добро пожаловать! 👋</h2>
-            <p class="onboarding-subtitle">Начните с 3 шагов — обычно занимает 10 минут</p>
-          </div>
-          <button id="onboardingDismiss" class="onboarding-dismiss" type="button" aria-label="Закрыть приветствие">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-          </button>
-        </div>
-
-        <div class="onboarding-steps">
-          <div class="onboarding-step">
-            <div class="onboarding-step-num">01</div>
-            <div class="onboarding-step-body">
-              <strong>Career Profile</strong>
-              <span>Создайте публичную визитку с QR-кодом для HR</span>
-            </div>
-            <a href="/career-profile" class="onboarding-step-link">Начать <span aria-hidden="true">→</span></a>
-          </div>
-
-          <div class="onboarding-step">
-            <div class="onboarding-step-num">02</div>
-            <div class="onboarding-step-body">
-              <strong>Стажировки</strong>
-              <span>Персональные рекомендации по вашей цели</span>
-            </div>
-            <a href="/internships" class="onboarding-step-link">Открыть <span aria-hidden="true">→</span></a>
-          </div>
-
-          <div class="onboarding-step">
-            <div class="onboarding-step-num">03</div>
-            <div class="onboarding-step-body">
-              <strong>Материалы</strong>
-              <span>CV-шаблоны, гайды по грантам и интервью</span>
-            </div>
-            <a href="/resources" class="onboarding-step-link">Изучить <span aria-hidden="true">→</span></a>
-          </div>
-        </div>
-
-        <div class="onboarding-progress-row">
-          <span class="onboarding-progress-label">
-            Прогресс профиля: <strong id="onboardingProgressVal">0%</strong>
-          </span>
-          <div class="onboarding-progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-            <div class="onboarding-progress-fill" id="onboardingProgressFill"></div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
     <div class="dashboard-tabs">
-      <a href="/dashboard" class="dashboard-tab active">Кабинет</a>
-      <a href="/profile" class="dashboard-tab">Профиль</a>
+      <a href="/dashboard" class="dashboard-tab">Кабинет</a>
+      <a href="/profile" class="dashboard-tab active">Профиль</a>
       <a href="/internships" class="dashboard-tab">Стажировки</a>
       <a href="/opportunities" class="dashboard-tab">Возможности</a>
       <a href="/resources" class="dashboard-tab">Материалы</a>
@@ -145,48 +88,74 @@
       <!-- MAIN COLUMN (Left) -->
       <main class="dashboard-main">
         
-        <!-- Мой карьерный маршрут -->
-        <div id="dashboardRoadmapCard" class="dashboard-card" hidden>
+        <!-- Моя карьерная визитка -->
+        <div id="dashboardCareerCard" class="dashboard-card">
           <div class="dashboard-profile-head">
             <div>
-              <p class="dashboard-kicker">Career GPS</p>
-              <h3>Мой карьерный маршрут</h3>
+              <p class="dashboard-kicker">Career Profile</p>
+              <h3>Моя карьерная визитка</h3>
             </div>
-            <span class="dashboard-badge">Персонально</span>
+            <span id="dashboardCareerBadge" class="dashboard-badge">0%</span>
           </div>
 
-          <p id="dashboardRoadmapSummary">Собираем персональный маршрут на основе вашей анкеты.</p>
+          <p id="dashboardCareerText">Соберите публичный профиль с QR-кодом, чтобы HR сразу видел ваши проекты, навыки, ссылки и PDF без кабинетного интерфейса.</p>
 
           <div class="dashboard-roadmap-grid">
             <div class="dashboard-roadmap-item">
-              <span>Главная цель</span>
-              <strong id="dashboardRoadmapGoal">-</strong>
+              <span>Проекты</span>
+              <strong id="dashboardCareerProjects">0</strong>
             </div>
             <div class="dashboard-roadmap-item">
-              <span>Главный барьер</span>
-              <strong id="dashboardRoadmapBlocker">-</strong>
+              <span>Навыки</span>
+              <strong id="dashboardCareerSkills">0</strong>
             </div>
             <div class="dashboard-roadmap-item">
-              <span>Английский</span>
-              <strong id="dashboardRoadmapEnglish">-</strong>
+              <span>Ссылки</span>
+              <strong id="dashboardCareerLinks">0</strong>
             </div>
             <div class="dashboard-roadmap-item">
-              <span>Опыт</span>
-              <strong id="dashboardRoadmapExperience">-</strong>
+              <span>Сертификаты</span>
+              <strong id="dashboardCareerCertificates">0</strong>
             </div>
           </div>
 
-          <div class="dashboard-roadmap-next">
-            <p class="dashboard-kicker">Следующий шаг</p>
-            <h4 id="dashboardRoadmapNextTitle">-</h4>
-            <p id="dashboardRoadmapNextDescription">-</p>
-            <a id="dashboardRoadmapNextLink" href="/opportunities" class="btn primary">Открыть рекомендации</a>
+          <div class="career-summary-actions">
+            <a href="/career-profile" class="btn primary">Открыть редактор</a>
+            <a id="dashboardCareerPublicLink" href="#" class="btn secondary" hidden>Public page</a>
+          </div>
+        </div>
+
+        <!-- Мои сохранения и дедлайны -->
+        <div id="dashboardSavedCard" class="dashboard-card">
+          <div class="dashboard-profile-head">
+            <div>
+              <p class="dashboard-kicker">Retention</p>
+              <h3>Мои сохранения и дедлайны</h3>
+            </div>
+            <span id="dashboardSavedBadge" class="dashboard-badge">0 сохранений</span>
           </div>
 
-          <div class="dashboard-roadmap-steps-wrap">
-            <p class="dashboard-kicker">Маршрут на ближайшее время</p>
-            <div id="dashboardRoadmapSteps" class="dashboard-roadmap-steps"></div>
+          <div class="dashboard-roadmap-grid">
+            <div class="dashboard-roadmap-item">
+              <span>Сохранено</span>
+              <strong id="dashboardSavedCountSaved">0</strong>
+            </div>
+            <div class="dashboard-roadmap-item">
+              <span>Хочу податься</span>
+              <strong id="dashboardSavedCountWant">0</strong>
+            </div>
+            <div class="dashboard-roadmap-item">
+              <span>Подался</span>
+              <strong id="dashboardSavedCountApplied">0</strong>
+            </div>
+            <div class="dashboard-roadmap-item">
+              <span>Дедлайны 14 дней</span>
+              <strong id="dashboardSavedCountDeadlines">0</strong>
+            </div>
           </div>
+
+          <p id="dashboardSavedText">Здесь появятся ваши сохранённые стажировки и возможности.</p>
+          <div id="dashboardSavedDeadlines" class="dashboard-saved-list"></div>
         </div>
 
         <!-- Блок премиальных предложений (Promo Banners) -->
@@ -235,7 +204,37 @@
             <p>Заполните профиль, чтобы повысить точность карьерного трека.</p>
           </div>
         </div>
-        
+
+        <!-- Профиль пользователя -->
+        <div class="dashboard-card user-profile-card">
+          <div class="dashboard-profile-head">
+            <div>
+              <p class="dashboard-kicker">Профиль</p>
+              <h3 id="dashboardProfileName">Профиль загружается...</h3>
+            </div>
+            <span id="dashboardVerifyBadge" class="dashboard-badge">Проверяем почту</span>
+          </div>
+
+          <div class="dashboard-profile-grid">
+            <div class="dashboard-profile-item">
+              <span>Email</span>
+              <strong id="dashboardProfileEmail">-</strong>
+            </div>
+            <div class="dashboard-profile-item">
+              <span>Дата рождения</span>
+              <strong id="dashboardProfileBirthDate">-</strong>
+            </div>
+            <div class="dashboard-profile-item dashboard-profile-item-wide">
+              <span>Учебное заведение</span>
+              <strong id="dashboardProfileUniversity">-</strong>
+            </div>
+            <div class="dashboard-profile-item dashboard-profile-item-wide">
+              <span>Место работы</span>
+              <strong id="dashboardProfileWorkplace">-</strong>
+            </div>
+          </div>
+        </div>
+
         <!-- Уровень доступа -->
         <div class="dashboard-card access-status-card">
           <div class="dashboard-profile-head">
@@ -246,37 +245,6 @@
           </div>
           <p id="dashboardSubscriptionText">Проверяем ваш текущий уровень доступа...</p>
           <a href="/subscribe" class="btn primary">Сравнить Free и Plus</a>
-        </div>
-
-        <!-- Оставить отзыв -->
-        <div class="dashboard-card feedback-widget-card">
-          <div class="dashboard-profile-head">
-            <div>
-              <p class="dashboard-kicker">Обратная связь</p>
-              <h3>Оставить отзыв</h3>
-            </div>
-          </div>
-          <p>Поделитесь вашим результатом работы на платформе.</p>
-          <a href="/#review-form" class="btn secondary">Оставить отзыв</a>
-        </div>
-
-        <!-- Admin cards -->
-        <div id="dashboardPublicationsCard" class="dashboard-card" hidden>
-          <h3>Публикации администратора</h3>
-          <p>Здесь можно публиковать гранты, статьи и новости с фото для всех пользователей.</p>
-          <a href="/opportunities" class="btn primary">Открыть публикации</a>
-        </div>
-
-        <div id="dashboardSubscriptionReviewCard" class="dashboard-card" hidden>
-          <h3>Проверка оплат</h3>
-          <p>Подтверждайте заявки пользователей, которые оплатили подписку через Kaspi QR.</p>
-          <a href="/subscriptions-review" class="btn primary">Открыть очередь проверок</a>
-        </div>
-
-        <div id="dashboardAnalyticsCard" class="dashboard-card" hidden>
-          <h3>Аналитика клиентов</h3>
-          <p>Смотрите, сколько людей зарегистрировалось, подтвердило почту, дошло до Plus, ждёт проверки оплаты и какие цели чаще выбирают новые пользователи.</p>
-          <a href="/admin-analytics" class="btn primary">Открыть аналитику</a>
         </div>
 
       </aside>

@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="/web.css" />
   <link rel="stylesheet" href="/card-nav.css" />
   <link rel="stylesheet" href="/access-control.css" />
-  <link rel="stylesheet" href="/home-premium.css?v=hero-i18n-1" />
+  <link rel="stylesheet" href="/home-premium.css?v=smart-rec-widget-v5" />
   <link rel="apple-touch-icon" href="/icon-pwa.jpg" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -114,24 +114,8 @@
             <span class="career-gps-chip" data-i18n="dash.status">Live</span>
           </div>
 
-          <ol class="career-gps-list">
-            <li>
-              <span class="career-gps-icon" aria-hidden="true"></span>
-              <span data-i18n="dash.roadmap.s1">Find relevant opportunities</span>
-            </li>
-            <li>
-              <span class="career-gps-icon" aria-hidden="true"></span>
-              <span data-i18n="dash.roadmap.s2">Track deadlines</span>
-            </li>
-            <li>
-              <span class="career-gps-icon" aria-hidden="true"></span>
-              <span data-i18n="dash.roadmap.s3">Prepare CV & motivation letter</span>
-            </li>
-          </ol>
-
-          <div class="career-gps-status">
-            <span aria-hidden="true"></span>
-            <span data-i18n="dash.generated">AI roadmap generated</span>
+          <div id="interactiveRoadmapContainer" class="interactive-roadmap-container">
+            <!-- Will be dynamically populated via Javascript -->
           </div>
         </article>
       </div>
@@ -440,7 +424,7 @@
 <script src="/access-control.js" defer></script>
 <script src="/vendor/gsap.min.js" defer></script>
 <script src="/i18n.js?v=hero-i18n-1" defer></script>
-<script src="/web.js?v=clean-saas-5" defer></script>
+<script src="/web.js?v=smart-rec-widget-v5" defer></script>
 <script src="/page-transitions.js" defer></script>
 </body>
 </html>

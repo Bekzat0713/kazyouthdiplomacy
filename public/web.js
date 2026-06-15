@@ -782,11 +782,51 @@ function initHomeAssistantExperience(options = {}) {
   });
 }
 
+function translateCardText(textKey) {
+  const currentLang = (window.KYDi18n && window.KYDi18n.getLang()) || "ru";
+  const map = {
+    ru: {
+      "Internship": "Стажировка",
+      "Career": "Вакансия",
+      "Grant": "Грант",
+      "Fellowship": "Стипендия",
+      "Research": "Исследования",
+      "Digital": "Диджитал",
+      "Rolling": "Постоянная",
+      "Open": "Открыть"
+    },
+    en: {
+      "Internship": "Internship",
+      "Career": "Career",
+      "Grant": "Grant",
+      "Fellowship": "Fellowship",
+      "Research": "Research",
+      "Digital": "Digital",
+      "Rolling": "Rolling",
+      "Open": "Open"
+    },
+    kk: {
+      "Internship": "Тағылымдама",
+      "Career": "Бос орын",
+      "Grant": "Грант",
+      "Fellowship": "Шәкіртақы",
+      "Research": "Зерттеулер",
+      "Digital": "Диджитал",
+      "Rolling": "Тұрақты",
+      "Open": "Ашу"
+    }
+  };
+  const langMap = map[currentLang] || map["ru"];
+  return langMap[textKey] || textKey;
+}
+
 function formatHomeOpportunityDeadline(item) {
   if (item && item.deadline_date) {
     const date = new Date(`${item.deadline_date}T00:00:00`);
     if (!Number.isNaN(date.getTime())) {
-      return date.toLocaleDateString("en-US", {
+      const currentLang = (window.KYDi18n && window.KYDi18n.getLang()) || "ru";
+      const locale = currentLang === "kk" ? "kk-KZ" : (currentLang === "en" ? "en-US" : "ru-RU");
+      return date.toLocaleDateString(locale, {
         day: "numeric",
         month: "short",
       });
@@ -796,10 +836,10 @@ function formatHomeOpportunityDeadline(item) {
   }
 
   if (item && item.duration) {
-    return String(item.duration);
+    return translateCardText(String(item.duration));
   }
 
-  return "Rolling";
+  return translateCardText("Rolling");
 }
 
 function getHomeOpportunityCategory(item) {
@@ -855,42 +895,93 @@ function createHomeOpportunityPreviewCard(item, isAuthenticated = false) {
   const category = document.createElement("span");
   const deadline = document.createElement("span");
   const title = document.createElement("strong");
+  const org = document.createElement("div");
   const description = document.createElement("p");
   const tags = document.createElement("div");
   const link = document.createElement("a");
 
+  // Create sub-element for background cursor tracking glow
+  const glow = document.createElement("div");
+  glow.className = "premium-card-glow";
+  card.appendChild(glow);
+
+  const catName = getHomeOpportunityCategory(item);
   card.className = "home-figma-info-card home-figma-info-card-preview premium-opportunity-card";
   top.className = "premium-opportunity-top";
-  category.className = "premium-opportunity-category";
+  category.className = `premium-opportunity-category premium-cat-${catName.toLowerCase()}`;
   deadline.className = "premium-opportunity-deadline";
+  org.className = "premium-opportunity-org";
   tags.className = "premium-opportunity-tags";
-  link.className = "premium-card-link route-link";
+  link.className = "premium-card-link route-link premium-opportunity-btn";
+  
   link.href = isAuthenticated ? "/internships" : "/register";
   link.dataset.transitionDirection = isAuthenticated ? "left" : "right";
-  link.textContent = "Open";
-  category.textContent = getHomeOpportunityCategory(item);
-  deadline.textContent = formatHomeOpportunityDeadline(item);
+  
+  const btnText = translateCardText("Open");
+  link.innerHTML = `
+    <span>${btnText}</span>
+    <svg class="arrow-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 4px; display: inline-block; vertical-align: middle; transition: transform 0.2s ease;">
+      <line x1="5" y1="12" x2="19" y2="12"></line>
+      <polyline points="12 5 19 12 12 19"></polyline>
+    </svg>
+  `;
+
+  category.textContent = translateCardText(catName);
+  
+  deadline.innerHTML = `
+    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; display: inline-block; vertical-align: middle; opacity: 0.85;">
+      <circle cx="12" cy="12" r="10"></circle>
+      <polyline points="12 6 12 12 16 14"></polyline>
+    </svg>
+    <span>${formatHomeOpportunityDeadline(item)}</span>
+  `;
+
+  org.textContent = item.organization ? String(item.organization) : "";
   title.textContent = String(item.title || "Opportunity");
-  description.textContent = [
-    item.organization ? String(item.organization) : "",
-    item.description_preview ? String(item.description_preview) : "Details appear after loading.",
-  ].filter(Boolean).join(" · ");
+  description.textContent = item.description_preview ? String(item.description_preview) : "Details appear after loading.";
 
   buildHomeOpportunityTags(item).forEach((tagText) => {
     const tag = document.createElement("span");
-    tag.textContent = tagText;
+    const localizedTag = translateCardText(tagText);
+    
+    if (item.location && tagText === item.location) {
+      tag.innerHTML = `
+        <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 3px; display: inline-block; vertical-align: middle; opacity: 0.85;">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+          <circle cx="12" cy="10" r="3"></circle>
+        </svg>
+        <span>${localizedTag}</span>
+      `;
+      tag.className = "premium-tag-location";
+    } else {
+      tag.textContent = localizedTag;
+    }
+    
     tags.appendChild(tag);
   });
 
   top.appendChild(category);
   top.appendChild(deadline);
   card.appendChild(top);
+  if (org.textContent) {
+    card.appendChild(org);
+  }
   card.appendChild(title);
   card.appendChild(description);
   if (tags.childNodes.length) {
     card.appendChild(tags);
   }
   card.appendChild(link);
+
+  // Mousemove listener for magnetic glow tracking (no 3D tilt to avoid animation override conflicts)
+  card.addEventListener("mousemove", (e) => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    card.style.setProperty("--x", `${x}px`);
+    card.style.setProperty("--y", `${y}px`);
+  });
 
   return card;
 }
@@ -909,6 +1000,10 @@ function hideLegacyHomeOpportunitiesUi() {
   }
 }
 
+let currentOpportunityIndex = 0;
+let opportunityTimer = null;
+let opportunityItems = [];
+
 function renderHomeOpportunityPreview(items, isAuthenticated = false) {
   const grid = document.getElementById("homeOpportunityPreviewGrid");
   const emptyState = document.querySelector("[data-home-opportunities-empty]");
@@ -919,19 +1014,123 @@ function renderHomeOpportunityPreview(items, isAuthenticated = false) {
   }
 
   grid.innerHTML = "";
-  const previewItems = Array.isArray(items) ? items.slice(0, 5) : [];
+  opportunityItems = Array.isArray(items) ? items.slice(0, 5) : [];
 
-  if (!previewItems.length) {
+  if (!opportunityItems.length) {
     emptyState.hidden = false;
     return;
   }
 
   emptyState.hidden = true;
-  const fragment = document.createDocumentFragment();
-  previewItems.forEach((item) => {
-    fragment.appendChild(createHomeOpportunityPreviewCard(item, isAuthenticated));
+  currentOpportunityIndex = 0;
+
+  // Single card showcase container
+  const showcaseContainer = document.createElement("div");
+  showcaseContainer.className = "premium-single-card-showcase";
+
+  // Card slot wrapper
+  const cardWrapper = document.createElement("div");
+  cardWrapper.className = "premium-single-card-wrapper";
+  
+  const card = createHomeOpportunityPreviewCard(opportunityItems[currentOpportunityIndex], isAuthenticated);
+  cardWrapper.appendChild(card);
+  showcaseContainer.appendChild(cardWrapper);
+
+  // Pagination navigation dots
+  const dotsContainer = document.createElement("div");
+  dotsContainer.className = "premium-single-card-dots";
+  opportunityItems.forEach((_, idx) => {
+    const dot = document.createElement("button");
+    dot.className = `premium-card-dot ${idx === 0 ? "active" : ""}`;
+    dot.setAttribute("aria-label", `Карточка ${idx + 1}`);
+    dot.addEventListener("click", () => {
+      if (idx !== currentOpportunityIndex) {
+        switchOpportunityCard(idx, isAuthenticated);
+      }
+    });
+    dotsContainer.appendChild(dot);
   });
-  grid.appendChild(fragment);
+  showcaseContainer.appendChild(dotsContainer);
+
+  grid.appendChild(showcaseContainer);
+
+  // Start the 30-second interval timer
+  startOpportunityTimer(isAuthenticated);
+
+  // Pause timer on hover, resume on leave
+  showcaseContainer.addEventListener("mouseenter", stopOpportunityTimer);
+  showcaseContainer.addEventListener("mouseleave", () => startOpportunityTimer(isAuthenticated));
+}
+
+function switchOpportunityCard(newIndex, isAuthenticated) {
+  const cardWrapper = document.querySelector(".premium-single-card-wrapper");
+  const dots = document.querySelectorAll(".premium-card-dot");
+  if (!cardWrapper || !opportunityItems.length) return;
+
+  const currentCard = cardWrapper.querySelector(".premium-opportunity-card");
+  if (!currentCard) return;
+
+  currentOpportunityIndex = newIndex;
+
+  // Sync pagination dots
+  dots.forEach((dot, idx) => {
+    dot.classList.toggle("active", idx === newIndex);
+  });
+
+  const gsap = window.gsap;
+  if (gsap) {
+    // 3D Flip Out
+    gsap.to(currentCard, {
+      rotateY: 90,
+      opacity: 0,
+      scale: 0.9,
+      duration: 0.45,
+      ease: "power2.in",
+      onComplete: () => {
+        cardWrapper.innerHTML = "";
+        const newCard = createHomeOpportunityPreviewCard(opportunityItems[newIndex], isAuthenticated);
+        
+        // Initial state for 3D Flip In
+        gsap.set(newCard, {
+          rotateY: -90,
+          opacity: 0,
+          scale: 0.9
+        });
+        
+        cardWrapper.appendChild(newCard);
+        
+        // 3D Flip In
+        gsap.to(newCard, {
+          rotateY: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.55,
+          ease: "back.out(1.15)",
+          clearProps: "transform"
+        });
+      }
+    });
+  } else {
+    // Fallback if GSAP is unavailable
+    cardWrapper.innerHTML = "";
+    const newCard = createHomeOpportunityPreviewCard(opportunityItems[newIndex], isAuthenticated);
+    cardWrapper.appendChild(newCard);
+  }
+}
+
+function startOpportunityTimer(isAuthenticated) {
+  stopOpportunityTimer();
+  opportunityTimer = setInterval(() => {
+    const nextIndex = (currentOpportunityIndex + 1) % opportunityItems.length;
+    switchOpportunityCard(nextIndex, isAuthenticated);
+  }, 10000); // 10 seconds
+}
+
+function stopOpportunityTimer() {
+  if (opportunityTimer) {
+    clearInterval(opportunityTimer);
+    opportunityTimer = null;
+  }
 }
 
 function syncHomeOpportunitiesCta(isAuthenticated) {
@@ -953,6 +1152,7 @@ async function initHomePageExperience() {
   }
 
   hideLegacyHomeOpportunitiesUi();
+  initHeroRoadmapGenerator();
 
   const navLogin = document.getElementById("homeNavLogin");
   const navDashboard = document.getElementById("homeNavDashboard");
@@ -1033,6 +1233,12 @@ async function initHomePageExperience() {
       isAuthenticated,
       currentUser,
     });
+
+    showSmartRecommendationWidget({
+      isAuthenticated,
+      currentUser,
+      homeState,
+    });
   } catch (error) {
     console.error("Home page state error:", error);
 
@@ -1062,6 +1268,12 @@ async function initHomePageExperience() {
     initHomeAssistantExperience({
       isAuthenticated: false,
       currentUser: null,
+    });
+
+    showSmartRecommendationWidget({
+      isAuthenticated: false,
+      currentUser: null,
+      homeState: null,
     });
   }
 
@@ -1135,6 +1347,403 @@ async function initHomePageExperience() {
       submitButton.disabled = false;
     }
   });
+}
+
+function showSmartRecommendationWidget({ isAuthenticated, currentUser, homeState }) {
+  if (sessionStorage.getItem("kyd_smart_rec_dismissed") === "true") {
+    return;
+  }
+
+  const suggestions = [];
+
+  if (!isAuthenticated) {
+    suggestions.push(
+      {
+        icon: "🚀",
+        title: "Добро пожаловать в KazYouth!",
+        text: "Создайте аккаунт, чтобы составить свой AI-маршрут к лучшим стажировкам и международным программам!",
+        ctaText: "Зарегистрироваться сейчас →",
+        ctaLink: "/register"
+      },
+      {
+        icon: "🎙️",
+        title: "AI Mock Interview",
+        text: "Хей! Хотите проверить свои силы перед настоящим интервью? Пройдите пробное интервью с нашим ИИ.",
+        ctaText: "Пройти AI Mock Interview →",
+        ctaLink: "/login"
+      },
+      {
+        icon: "📝",
+        title: "Сделайте веб-резюме!",
+        text: "Создайте стильное онлайн-резюме через наш Career Profile и делитесь им с работодателями.",
+        ctaText: "Создать резюме →",
+        ctaLink: "/register"
+      },
+      {
+        icon: "💼",
+        title: "Скрытый рынок вакансий",
+        text: "Сотни проверенных зарубежных и локальных стажировок уже ждут вас на платформе.",
+        ctaText: "Смотреть стажировки →",
+        ctaLink: "/register"
+      },
+      {
+        icon: "📚",
+        title: "Полезные гайды и шаблоны",
+        text: "Получите доступ к закрытой базе материалов по составлению CV и сопроводительных писем.",
+        ctaText: "Изучить материалы →",
+        ctaLink: "/register"
+      }
+    );
+  } else {
+    const hasProfileFilled = Boolean(currentUser && currentUser.first_name && currentUser.last_name);
+    const hasPlusAccess = Boolean(homeState && homeState.has_plus_access);
+    const firstName = currentUser && currentUser.first_name ? currentUser.first_name : "";
+    const emailPrefix = currentUser && currentUser.email ? currentUser.email.split("@")[0] : "Пользователь";
+
+    if (!hasProfileFilled) {
+      suggestions.push({
+        icon: "📝",
+        title: "Заполните ваш профиль!",
+        text: `Хей, ${emailPrefix}! Заполните профиль в Career Profile, чтобы работодатели могли найти вас, и приступайте к работе!`,
+        ctaText: "Заполнить профиль →",
+        ctaLink: "/career-profile"
+      });
+    }
+
+    suggestions.push({
+      icon: "🎙️",
+      title: "Пройдите Mock Interview!",
+      text: "Попробуйте наше AI-интервью! ИИ задаст вопросы по вашей специальности и даст подробный фидбек.",
+      ctaText: "Начать AI-интервью →",
+      ctaLink: "/interview"
+    });
+
+    if (!hasPlusAccess) {
+      suggestions.push({
+        icon: "💎",
+        title: "Подключите Plus!",
+        text: `Хей, ${firstName || emailPrefix}! Откройте безлимитный доступ ко всем стажировкам и уникальным грантам.`,
+        ctaText: "Подключить Plus →",
+        ctaLink: "/subscribe"
+      });
+    }
+
+    suggestions.push({
+      icon: "🔗",
+      title: "Поделитесь профилем!",
+      text: "Вы можете сделать ваш Career Profile публичным и отправлять ссылку рекрутерам.",
+      ctaText: "Настроить видимость →",
+      ctaLink: "/career-profile"
+    });
+
+    suggestions.push({
+      icon: "⏰",
+      title: "Следите за дедлайнами!",
+      text: "Добавляйте интересные стажировки в избранное в Кабинете, чтобы не упустить сроки подачи.",
+      ctaText: "В личный кабинет →",
+      ctaLink: "/dashboard"
+    });
+
+    suggestions.push({
+      icon: "📖",
+      title: "Прокачайте сопроводительное!",
+      text: "Загляните в раздел 'Материалы', там лежат успешные шаблоны писем в топовые компании.",
+      ctaText: "Читать материалы →",
+      ctaLink: "/resources"
+    });
+  }
+
+  if (suggestions.length === 0) {
+    return;
+  }
+
+  let currentIndex = 0;
+  let rotationIntervalId = null;
+
+  window.setTimeout(() => {
+    if (sessionStorage.getItem("kyd_smart_rec_dismissed") === "true") {
+      return;
+    }
+
+    const oldWidget = document.getElementById("smartRecWidget");
+    if (oldWidget) {
+      oldWidget.remove();
+    }
+
+    const widget = document.createElement("div");
+    widget.className = "smart-rec-widget";
+    widget.id = "smartRecWidget";
+    
+    const firstItem = suggestions[currentIndex];
+    widget.innerHTML = `
+      <button class="smart-rec-close" id="smartRecClose" aria-label="Закрыть">×</button>
+      <div class="smart-rec-icon">${firstItem.icon}</div>
+      <div class="smart-rec-content">
+        <h4 class="smart-rec-title">${firstItem.title}</h4>
+        <p class="smart-rec-text">${firstItem.text}</p>
+        <a href="${firstItem.ctaLink}" class="smart-rec-cta">${firstItem.ctaText}</a>
+      </div>
+    `;
+
+    document.body.appendChild(widget);
+
+    function stopRotation() {
+      if (rotationIntervalId) {
+        clearInterval(rotationIntervalId);
+        rotationIntervalId = null;
+      }
+    }
+
+    const closeBtn = widget.querySelector("#smartRecClose");
+    if (closeBtn) {
+      closeBtn.addEventListener("click", () => {
+        stopRotation();
+        widget.classList.add("dismissing");
+        sessionStorage.setItem("kyd_smart_rec_dismissed", "true");
+        window.setTimeout(() => {
+          widget.remove();
+        }, 400);
+      });
+    }
+
+    const ctaLinkEl = widget.querySelector(".smart-rec-cta");
+    if (ctaLinkEl) {
+      ctaLinkEl.addEventListener("click", () => {
+        stopRotation();
+        widget.classList.add("dismissing");
+        window.setTimeout(() => {
+          widget.remove();
+        }, 400);
+      });
+    }
+
+    function rotateToNext() {
+      if (sessionStorage.getItem("kyd_smart_rec_dismissed") === "true") {
+        stopRotation();
+        widget.remove();
+        return;
+      }
+
+      currentIndex = (currentIndex + 1) % suggestions.length;
+      const nextItem = suggestions[currentIndex];
+
+      widget.classList.add("changing");
+
+      window.setTimeout(() => {
+        if (!document.getElementById("smartRecWidget")) {
+          stopRotation();
+          return;
+        }
+
+        const iconNode = widget.querySelector(".smart-rec-icon");
+        const titleNode = widget.querySelector(".smart-rec-title");
+        const textNode = widget.querySelector(".smart-rec-text");
+        const ctaNode = widget.querySelector(".smart-rec-cta");
+
+        if (iconNode) iconNode.textContent = nextItem.icon;
+        if (titleNode) titleNode.textContent = nextItem.title;
+        if (textNode) textNode.textContent = nextItem.text;
+        if (ctaNode) {
+          ctaNode.textContent = nextItem.ctaText;
+          ctaNode.setAttribute("href", nextItem.ctaLink);
+        }
+
+        widget.classList.remove("changing");
+      }, 400);
+    }
+
+    rotationIntervalId = setInterval(rotateToNext, 7000);
+  }, 3500);
+}
+
+function initHeroRoadmapGenerator() {
+  const container = document.getElementById("interactiveRoadmapContainer");
+  if (!container) return;
+
+  const lang = localStorage.getItem("kyd_lang") || "ru";
+
+  const tDict = {
+    ru: {
+      selTitle: "Выберите направление для генерации AI-маршрута:",
+      optIT: "💻 IT & Разработка",
+      optBiz: "💼 Бизнес & Маркетинг",
+      optSci: "🧪 Наука & Аналитика",
+      resetBtn: "Сгенерировать другой маршрут ↺",
+      generatedLabel: "AI-маршрут успешно построен",
+      loadingText: [
+        "ИИ анализирует требования...",
+        "Подбираем этапы отбора...",
+        "Формируем персональный Roadmap..."
+      ],
+      itSteps: [
+        "Оформить резюме и собрать 2-3 учебных проекта на GitHub",
+        "Найти оплачиваемые стажировки в локальных IT-компаниях и банках",
+        "Пройти тренировку технического и поведенческого интервью с ИИ"
+      ],
+      bizSteps: [
+        "Описать кейсы участия в кейс-чемпионатах или студенческих проектах",
+        "Отобрать вакансии начального уровня (Junior/Intern) в маркетинге или продажах",
+        "Пройти симуляцию собеседования по компетенциям и кейс-интервью с ИИ"
+      ],
+      sciSteps: [
+        "Оформить резюме исследователя, выделив курсовые работы и публикации",
+        "Найти подходящие научно-исследовательские лаборатории или стажировки",
+        "Составить сильное мотивационное письмо и отрепетировать защиту проекта с ИИ"
+      ]
+    },
+    en: {
+      selTitle: "Select direction to generate AI Roadmap:",
+      optIT: "💻 IT & Development",
+      optBiz: "💼 Business & Marketing",
+      optSci: "🧪 Science & Analytics",
+      resetBtn: "Generate another roadmap ↺",
+      generatedLabel: "AI Roadmap successfully generated",
+      loadingText: [
+        "AI is analyzing requirements...",
+        "Matching selection stages...",
+        "Building your personalized Roadmap..."
+      ],
+      itSteps: [
+        "Build a clean resume and host 2-3 active projects on GitHub",
+        "Find paid internships in local tech companies, startups, or banks",
+        "Practice coding, system design, or tech Q&A with our AI mentor"
+      ],
+      bizSteps: [
+        "Highlight case-championship experience and format your CV",
+        "Select entry-level positions (Intern/Junior) in marketing, analytics, or sales",
+        "Practice competency-based questions and case solving with AI"
+      ],
+      sciSteps: [
+        "Format academic CV and structure your research papers",
+        "Find research laboratories, assistantships, or grants",
+        "Draft motivation letters and prep for interviews using AI"
+      ]
+    },
+    kk: {
+      selTitle: "AI-маршрутты жасау үшін бағытты таңдаңыз:",
+      optIT: "💻 IT & Әзірлеу",
+      optBiz: "💼 Бизнес & Маркетинг",
+      optSci: "🧪 Ғылым & Аналитика",
+      resetBtn: "Басқасын жасау ↺",
+      generatedLabel: "AI-маршрут сәтті жасалды",
+      loadingText: [
+        "ИИ талаптарды талдауда...",
+        "Іріктеу кезеңдерін сәйкестендіру...",
+        "Жеке Roadmap құрастыру..."
+      ],
+      itSteps: [
+        "Сапалы түйіндеме жасау және GitHub-та 2-3 оқу жобасын жинақтау",
+        "Жергілікті IT-компаниялар мен технологиялық банктерден ақылы тағылымдамаларды табу",
+        "ИИ-ментормен техникалық және мінез-құлық сұхбатынан өтуді жаттықтыру"
+      ],
+      bizSteps: [
+        "Кейс-чемпионаттарға немесе студенттік жобаларға қатысу тәжірибесін сипаттау",
+        "Маркетинг, талдау немесе сату салаларындағы бастапқы деңгейдегі (Intern/Junior) бос орындарды іріктеу",
+        "ИИ көмегімен құзыреттілік сұхбатына және кейс шешуге дайындалу"
+      ],
+      sciSteps: [
+        "Курстық жұмыстар мен ғылыми жарияланымдарды атап өтіп, зерттеуші резюмесін рәсімдеу",
+        "Сәйкес келетін ғылыми-зерттеу зертханаларын немесе тағылымдамаларды табу",
+        "Сапалы уәждемелік хат дайындау және ИИ-мен бірге жобаны қорғауды жаттықтыру"
+      ]
+    }
+  };
+
+  const texts = tDict[lang] || tDict.ru;
+
+  function renderSelectionScreen() {
+    container.innerHTML = `
+      <div class="roadmap-selection-screen">
+        <span class="roadmap-selection-title">${texts.selTitle}</span>
+        <button class="roadmap-option-btn" data-roadmap-choice="it">
+          <span>${texts.optIT}</span>
+          <span class="arrow-icon">→</span>
+        </button>
+        <button class="roadmap-option-btn" data-roadmap-choice="biz">
+          <span>${texts.optBiz}</span>
+          <span class="arrow-icon">→</span>
+        </button>
+        <button class="roadmap-option-btn" data-roadmap-choice="sci">
+          <span>${texts.optSci}</span>
+          <span class="arrow-icon">→</span>
+        </button>
+      </div>
+    `;
+
+    container.querySelectorAll("[data-roadmap-choice]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const choice = btn.getAttribute("data-roadmap-choice");
+        renderLoadingScreen(choice);
+      });
+    });
+  }
+
+  function renderLoadingScreen(choice) {
+    container.innerHTML = `
+      <div class="roadmap-loading-screen">
+        <div class="roadmap-spinner">
+          <span class="roadmap-spinner-circle"></span>
+        </div>
+        <div class="roadmap-loading-text" id="roadmapLoadingText">${texts.loadingText[0]}</div>
+      </div>
+    `;
+
+    const loadingTextNode = container.querySelector("#roadmapLoadingText");
+
+    let step = 1;
+    const interval = setInterval(() => {
+      if (loadingTextNode && texts.loadingText[step]) {
+        loadingTextNode.textContent = texts.loadingText[step];
+        step++;
+      }
+    }, 600);
+
+    setTimeout(() => {
+      clearInterval(interval);
+      renderResultsScreen(choice);
+    }, 1800);
+  }
+
+  function renderResultsScreen(choice) {
+    let steps = [];
+    if (choice === "it") steps = texts.itSteps;
+    else if (choice === "biz") steps = texts.bizSteps;
+    else steps = texts.sciSteps;
+
+    container.innerHTML = `
+      <div class="roadmap-results-screen">
+        <ol class="career-gps-list">
+          <li>
+            <span class="career-gps-icon" aria-hidden="true"></span>
+            <span>${steps[0]}</span>
+          </li>
+          <li>
+            <span class="career-gps-icon" aria-hidden="true"></span>
+            <span>${steps[1]}</span>
+          </li>
+          <li>
+            <span class="career-gps-icon" aria-hidden="true"></span>
+            <span>${steps[2]}</span>
+          </li>
+        </ol>
+
+        <div class="career-gps-status">
+          <span aria-hidden="true" class="pulse-dot"></span>
+          <span>${texts.generatedLabel}</span>
+        </div>
+
+        <button class="roadmap-reset-btn" id="roadmapResetBtn">
+          <span>${texts.resetBtn}</span>
+        </button>
+      </div>
+    `;
+
+    container.querySelector("#roadmapResetBtn").addEventListener("click", () => {
+      renderSelectionScreen();
+    });
+  }
+
+  renderSelectionScreen();
 }
 
 async function initYouthPageExperience() {

@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="/web.css">
   <link rel="stylesheet" href="/card-nav.css">
   <link rel="stylesheet" href="/access-control.css">
-  <link rel="stylesheet" href="/inner-premium.css">
+  <link rel="stylesheet" href="/inner-premium.css?v=v1.1">
   <link rel="stylesheet" href="/career.css">
   <link rel="apple-touch-icon" href="/icon-pwa.jpg" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -19,6 +19,7 @@
   <meta name="apple-mobile-web-app-title" content="KazYouth" />
   <link rel="manifest" href="/manifest.json" />
   <script src="/pwa.js" defer></script>
+  <script src="/sidebar.js?v=v1.1" defer></script>
 </head>
 <body class="inner-premium-page career-editor-body route-page" data-assistant-page="dashboard">
 
@@ -44,7 +45,9 @@
 </header>
 
 <section class="dashboard-page career-editor-page">
-  <div class="dashboard-container career-editor-container">
+  <aside class="dashboard-left-sidebar"></aside>
+  <div class="dashboard-main-wrapper">
+    <div class="dashboard-container career-editor-container">
 
     <div class="career-editor-page-head">
       <div>
@@ -270,6 +273,7 @@
         </section>
       </aside>
     </div>
+    </div>
   </div>
 </section>
 
@@ -277,6 +281,6 @@
 <script src="/access-control.js" defer></script>
 <script src="/page-transitions.js" defer></script>
 <script src="/career-profile.js" defer></script>
-<script src="/assistant-widget.js" defer></script>
+<script src="/assistant-widget.js?v=2" defer></script>
 </body>
 </html>

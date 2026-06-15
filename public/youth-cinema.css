@@ -1,0 +1,1228 @@
+/* ================================================================
+   AI Youth — Pallet Ross Editorial Style
+   White bg · Massive typography · Card stack · Floating chips
+================================================================= */
+
+/* ── Reset dark overrides, go light ────────────────────────── */
+body.youth-page {
+  background: #f5f5f3;
+  color: #111;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  min-height: 100vh;
+
+  --yc-bg: #f5f5f3;
+  --yc-surface: #fff;
+  --yc-border: rgba(0,0,0,0.07);
+  --yc-accent: #3b6ef6;
+  --yc-text: #111;
+  --yc-muted: #6b7280;
+  --yc-faint: #9ca3af;
+
+  /* override home-figma vars so chat panel renders light */
+  --bg: #fff;
+  --bg-subtle: #f9fafb;
+  --bg-muted: #f3f4f6;
+  --text: #111;
+  --muted: #6b7280;
+  --faint: #9ca3af;
+  --accent: #3b6ef6;
+  --accent-soft: #eff4ff;
+  --accent-soft2: #dbeafe;
+  --border: #e5e7eb;
+  --border-strong: #d1d5db;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+/* ── Header — light ─────────────────────────────────────────── */
+body.youth-page .header,
+body.youth-page .home-figma-header {
+  background: rgba(245,245,243,0.88);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+body.youth-page .logo-wrap span,
+body.youth-page .card-nav-links a,
+body.youth-page .premium-nav-links a {
+  color: #444;
+}
+
+body.youth-page .card-nav-links a:hover,
+body.youth-page .premium-nav-links a:hover,
+body.youth-page .card-nav-links a[aria-current="page"],
+body.youth-page .premium-nav-links a[aria-current="page"] {
+  color: #111;
+}
+
+body.youth-page .nav-btn.premium-nav-login {
+  background: #111;
+  color: #fff;
+  border: none;
+}
+
+body.youth-page .nav-btn.premium-nav-cta {
+  background: #fff;
+  color: #111;
+  border: 1px solid rgba(0,0,0,0.12);
+}
+
+body.youth-page .nav-btn.premium-nav-secondary {
+  background: transparent;
+  color: #6b7280;
+  border-color: rgba(0,0,0,0.10);
+}
+
+body.youth-page .lang-btn {
+  background: transparent;
+  color: #9ca3af;
+  border-color: rgba(0,0,0,0.09);
+}
+
+body.youth-page .lang-btn:hover,
+body.youth-page .lang-btn--active {
+  background: rgba(0,0,0,0.05);
+  color: #111;
+  border-color: rgba(0,0,0,0.16);
+}
+
+/* ================================================================
+   HERO — PALLET ROSS EDITORIAL
+================================================================= */
+.ych-hero {
+  position: relative;
+  min-height: 100vh;
+  background: #f5f5f3;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+/* Subtle texture dots */
+.ych-grain,
+.ych-glow,
+.ych-glow-1,
+.ych-glow-2,
+.ych-glow-3 {
+  display: none;
+}
+
+/* ── Hero layout ────────────────────────────────────────────── */
+.ych-hero-inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 120px 56px 80px;
+  display: block;
+}
+
+.ych-hero-text {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Hero entrance animation ────────────────────────────────── */
+@keyframes ych-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-48px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.ych-eyebrow,
+.ych-hero-h1,
+.ych-hero-lead,
+.ych-hero-actions,
+.ych-proof {
+  opacity: 0;
+  animation: ych-slide-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.ych-eyebrow       { animation-delay: 0.1s; }
+.ych-hero-h1       { animation-delay: 0.25s; }
+.ych-hero-lead     { animation-delay: 0.42s; }
+.ych-hero-actions  { animation-delay: 0.56s; }
+.ych-proof         { animation-delay: 0.68s; }
+
+/* ── Eyebrow ────────────────────────────────────────────────── */
+.ych-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #111;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.10);
+  border-radius: 99px;
+  padding: 5px 14px;
+  margin-bottom: 36px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.ych-eyebrow-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 2px rgba(34,197,94,0.25);
+  flex-shrink: 0;
+}
+
+/* ── HEADLINE — takes up most of viewport width ─────────────── */
+.ych-hero-h1 {
+  font-family: 'Syne', system-ui, sans-serif;
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  /* relative so card-stage can overlap it */
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.ych-h1-line1 {
+  font-size: clamp(3.2rem, 6vw, 6.2rem);
+  color: #111;
+  display: block;
+}
+
+.ych-h1-line2 {
+  font-size: clamp(2.2rem, 4vw, 4.2rem);
+  color: rgba(0,0,0,0.28);
+  font-weight: 700;
+  display: block;
+}
+
+.ych-h1-accent {
+  font-size: clamp(3.2rem, 6vw, 6.2rem);
+  font-style: italic;
+  display: block;
+  /* gradient text */
+  background: linear-gradient(135deg, #3b6ef6 0%, #8b5cf6 60%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Card stage — overlaps the headline ─────────────────────── */
+.ych-stage {
+  position: absolute;
+  top: 50%;
+  left: 44%;
+  transform: translateY(-52%);
+  width: 520px;
+  height: 460px;
+  z-index: 3;
+}
+
+.ych-cards-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Card base ──────────────────────────────────────────────── */
+.ych-card {
+  position: absolute;
+  width: 200px;
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.4s cubic-bezier(0.22,1,0.36,1),
+              box-shadow 0.4s ease;
+  will-change: transform;
+}
+
+.ych-card-poster {
+  width: 100%;
+  aspect-ratio: 3/4;
+  background:
+    linear-gradient(160deg, var(--poster-from, #111) 0%, var(--poster-to, #333) 100%),
+    var(--poster-img, none);
+  background-blend-mode: multiply;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.06),
+    0 8px 24px rgba(0,0,0,0.12),
+    0 24px 60px rgba(0,0,0,0.18);
+}
+
+/* Glossy overlay */
+.ych-card-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    130deg,
+    rgba(255,255,255,0.18) 0%,
+    rgba(255,255,255,0.04) 40%,
+    rgba(0,0,0,0.1) 100%
+  );
+  pointer-events: none;
+}
+
+/* Abstract visual texture inside each card */
+.ych-card-poster::before {
+  content: '';
+  position: absolute;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+  top: -30px; right: -40px;
+  pointer-events: none;
+}
+
+.ych-card-poster::after {
+  content: '';
+  position: absolute;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  bottom: 20px; left: -20px;
+  pointer-events: none;
+}
+
+.ych-card-top-row {
+  position: absolute;
+  top: 14px; left: 14px; right: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ych-card-brand {
+  background: rgba(255,255,255,0.20);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.22);
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.ych-card-stars {
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(6px);
+  color: #fbbf24;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.ych-card-bot {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 48px 14px 16px;
+  background: linear-gradient(to top, rgba(0,0,0,0.80) 0%, transparent 100%);
+}
+
+.ych-card-type {
+  font-size: 0.62rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.55);
+  margin: 0 0 4px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ych-card-name {
+  font-family: 'Syne', system-ui, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Active badge */
+.ych-card-active-badge {
+  position: absolute;
+  bottom: -38px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #111;
+  color: #fff;
+  border-radius: 99px;
+  padding: 7px 16px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+}
+
+.ych-pulse-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 6px #22c55e;
+  animation: ychBlink 1.8s infinite;
+}
+
+@keyframes ychBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+/* ── CARD STACK positions (Pallet Ross fanned stack) ─────────── */
+
+/* Far-left: angled back, darkened */
+.ych-pos-far-left {
+  left: -30px;
+  top: 50%;
+  transform: translateY(-50%) rotate(-18deg) translateX(-10px);
+  filter: brightness(0.55);
+  z-index: 1;
+}
+
+/* Left: slightly angled */
+.ych-pos-left {
+  left: 60px;
+  top: 50%;
+  transform: translateY(-52%) rotate(-9deg);
+  filter: brightness(0.78);
+  z-index: 2;
+}
+
+/* Center: straight, front, no rotation */
+.ych-pos-center {
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-55%) rotate(0deg);
+  filter: brightness(1);
+  z-index: 4;
+}
+
+/* Right: slightly tilted other way */
+.ych-pos-right {
+  right: -20px;
+  top: 50%;
+  transform: translateY(-50%) rotate(10deg) translateX(10px);
+  filter: brightness(0.65);
+  z-index: 3;
+}
+
+/* Hover reveals */
+.ych-card:hover {
+  filter: brightness(1) !important;
+  z-index: 10 !important;
+}
+
+.ych-pos-far-left:hover { transform: translateY(-56%) rotate(-18deg) translateX(-10px) scale(1.03); }
+.ych-pos-left:hover     { transform: translateY(-58%) rotate(-9deg) scale(1.04); }
+.ych-pos-center:hover   { transform: translateX(-50%) translateY(-60%) scale(1.05); }
+.ych-pos-right:hover    { transform: translateY(-56%) rotate(10deg) translateX(10px) scale(1.03); }
+
+/* ── Floating user chips ────────────────────────────────────── */
+.ych-chip {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #111;
+  color: #fff;
+  border-radius: 99px;
+  padding: 8px 18px 8px 8px;
+  z-index: 20;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  pointer-events: none;
+}
+
+.ych-chip-top-left {
+  top: -8%;
+  left: -6%;
+  animation: ychFloat 5s ease-in-out infinite;
+}
+
+.ych-chip-bottom-right {
+  bottom: 0%;
+  right: -10%;
+  animation: ychFloat 6s ease-in-out infinite reverse 0.8s;
+}
+
+@keyframes ychFloat {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
+}
+
+.ych-chip-av {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.ych-chip-name {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.3;
+}
+
+.ych-chip-status {
+  display: block;
+  font-size: 0.65rem;
+  line-height: 1.3;
+}
+
+.ych-status-green { color: #4ade80; }
+.ych-status-amber { color: #fbbf24; }
+
+/* (merged into .ych-hero-text above) */
+
+.ych-hero-lead {
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: #6b7280;
+  margin: 36px 0 0;
+  max-width: 480px;
+}
+
+.ych-hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 28px;
+}
+
+.ych-proof {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.ych-proof-avatars {
+  display: flex;
+}
+
+.ych-av {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #fff;
+  border: 2px solid #f5f5f3;
+  margin-left: -6px;
+}
+
+.ych-av:first-child { margin-left: 0; }
+
+.ych-proof-text {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+/* Scroll hint */
+.ych-scroll-hint { display: none; }
+
+/* ── CTA Buttons (light theme) ──────────────────────────────── */
+.ych-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 26px;
+  background: #111;
+  color: #fff;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.18s, transform 0.18s, box-shadow 0.18s;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+  white-space: nowrap;
+}
+
+.ych-btn-primary:hover {
+  background: #222;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.22);
+}
+
+.ych-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 24px;
+  background: #fff;
+  color: #111;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 12px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.18s, transform 0.18s, box-shadow 0.18s;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.ych-btn-secondary:hover {
+  border-color: rgba(0,0,0,0.22);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+}
+
+.ych-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  background: none;
+  color: #9ca3af;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 10px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.18s, border-color 0.18s;
+  white-space: nowrap;
+}
+
+.ych-btn-ghost:hover {
+  color: #111;
+  border-color: rgba(0,0,0,0.16);
+}
+
+/* ================================================================
+   AI CHAT SECTION
+================================================================= */
+.ych-chat-section {
+  background: #fff;
+  padding: 100px 24px;
+  border-top: 1px solid rgba(0,0,0,0.05);
+  position: relative;
+}
+
+.ych-chat-section::before { display: none; }
+
+.ych-chat-shell {
+  max-width: 1160px;
+  margin: 0 auto;
+}
+
+.ych-section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #3b6ef6;
+  margin-bottom: 56px;
+}
+
+.ych-section-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #3b6ef6;
+}
+
+.ych-chat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: start;
+}
+
+.ych-chat-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.ych-chat-h2 {
+  font-family: 'Syne', system-ui, sans-serif;
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  font-weight: 800;
+  color: #111;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+.ych-chat-lead {
+  font-size: 1rem;
+  color: #6b7280;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* Chips */
+.ych-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ych-ask-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 14px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 99px;
+  color: #374151;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, color 0.18s, box-shadow 0.18s;
+  white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.ych-ask-chip:hover {
+  background: #eff4ff;
+  border-color: #93c5fd;
+  color: #3b6ef6;
+  box-shadow: 0 2px 8px rgba(59,110,246,0.10);
+}
+
+/* Roadmap */
+.ych-roadmap {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 22px 20px;
+}
+
+.ych-roadmap-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.ych-roadmap-head span {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.ych-roadmap-head strong {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #3b6ef6;
+}
+
+.ych-roadmap-steps {
+  display: flex;
+  flex-direction: column;
+}
+
+.ych-step {
+  display: grid;
+  grid-template-columns: 20px 2px 1fr;
+  gap: 0 12px;
+  align-items: stretch;
+  min-height: 52px;
+}
+
+.ych-step:last-child { min-height: 40px; }
+
+.ych-step-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+  align-self: start;
+  justify-self: center;
+}
+
+.ych-step-dot-1 { background: #3b6ef6; }
+.ych-step-dot-2 { background: #8b5cf6; }
+.ych-step-dot-3 { background: #10b981; }
+
+.ych-step-line {
+  width: 2px;
+  background: #e5e7eb;
+  margin: 14px 0 0;
+  align-self: stretch;
+  justify-self: center;
+}
+
+.ych-step-body { padding-bottom: 16px; }
+.ych-step:last-child .ych-step-body { padding-bottom: 0; }
+
+.ych-step-week {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #3b6ef6;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.ych-step-body > p {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.ych-chat-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+/* AI Panel */
+.ych-ai-panel {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+}
+
+.ych-ai-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ych-ai-panel-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ych-ai-avatar {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #3b6ef6, #6366f1);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ych-ai-panel-kicker {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #3b6ef6;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.ych-ai-panel h3 {
+  font-family: 'Syne', system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+}
+
+.ych-mode-badge {
+  height: 22px;
+  padding: 0 10px;
+  border-radius: 99px;
+  background: #eff4ff;
+  color: #3b6ef6;
+  font-size: 0.65rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  border: 1px solid #dbeafe;
+}
+
+.ych-suggestions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+}
+
+.ych-suggestion {
+  padding: 10px 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  color: #374151;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, color 0.18s;
+  line-height: 1.35;
+}
+
+.ych-suggestion:hover {
+  background: #eff4ff;
+  border-color: #93c5fd;
+  color: #3b6ef6;
+}
+
+.ych-messages { display: flex; flex-direction: column; gap: 10px; min-height: 80px; }
+.ych-ai-status { font-size: 0.72rem; color: #9ca3af; margin: 0; }
+
+.ych-ai-form { display: flex; flex-direction: column; gap: 10px; }
+
+.ych-ai-input {
+  width: 100%;
+  padding: 12px 14px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  color: #111;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  resize: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  box-sizing: border-box;
+}
+
+.ych-ai-input:focus {
+  outline: none;
+  border-color: #3b6ef6;
+  box-shadow: 0 0 0 3px rgba(59,110,246,0.10);
+  background: #fff;
+}
+
+.ych-ai-input::placeholder { color: #9ca3af; }
+
+.ych-ai-form-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ych-ai-hint { font-size: 0.75rem; color: #9ca3af; flex: 1; }
+
+/* message bubbles light */
+body.youth-page .home-figma-ai-message-text {
+  background: #f3f4f6;
+  color: #111;
+  border: none;
+}
+
+body.youth-page .home-figma-ai-message-badge {
+  background: linear-gradient(135deg, #3b6ef6, #6366f1);
+}
+
+/* ================================================================
+   MOCK PROMO — dark on white contrast section
+================================================================= */
+.ych-mock-promo {
+  background: #111;
+  padding: 100px 24px 120px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ych-mock-glow-1 {
+  position: absolute;
+  width: 500px; height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(99,102,241,0.2) 0%, transparent 70%);
+  filter: blur(80px);
+  top: -60px; right: 5%;
+  pointer-events: none;
+}
+
+.ych-mock-glow-2 {
+  position: absolute;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(59,130,246,0.15) 0%, transparent 70%);
+  filter: blur(80px);
+  bottom: 0; left: 10%;
+  pointer-events: none;
+}
+
+.ych-mock-inner {
+  max-width: 1160px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 72px;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.ych-mock-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.ych-mock-copy .ych-eyebrow {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.8);
+}
+
+.ych-mock-copy .ych-eyebrow-dot {
+  background: #22c55e;
+}
+
+.ych-mock-h2 {
+  font-family: 'Syne', system-ui, sans-serif;
+  font-size: clamp(2.2rem, 3.5vw, 3.2rem);
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+.ych-mock-lead {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.7;
+  margin: 0;
+  max-width: 380px;
+}
+
+.ych-mock-copy .ych-btn-primary {
+  background: #fff;
+  color: #111;
+  box-shadow: 0 2px 16px rgba(255,255,255,0.12);
+  align-self: flex-start;
+}
+
+.ych-mock-copy .ych-btn-primary:hover {
+  background: #f0f0f0;
+}
+
+.ych-mock-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ── Photo program cards ────────────────────────────────────── */
+.ych-prog-card {
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+  aspect-ratio: 3 / 3.8;
+  background-image: var(--pc-img);
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  transition: transform 0.35s cubic-bezier(0.22,1,0.36,1),
+              box-shadow 0.35s ease;
+}
+
+.ych-prog-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 20px 48px rgba(0,0,0,0.55);
+}
+
+.ych-prog-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.08) 0%,
+    rgba(0,0,0,0.18) 35%,
+    rgba(0,0,0,0.72) 75%,
+    rgba(0,0,0,0.90) 100%
+  );
+  pointer-events: none;
+}
+
+.ych-prog-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 11px;
+  border-radius: 99px;
+  color: #fff;
+  backdrop-filter: blur(8px);
+}
+
+.ych-prog-badge--masters  { background: rgba(99, 57, 230, 0.85); }
+.ych-prog-badge--volunteer{ background: rgba(6, 95, 70,  0.85); }
+.ych-prog-badge--grant    { background: rgba(194, 65, 12, 0.85); }
+
+.ych-prog-body {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ych-prog-title {
+  font-family: 'Syne', system-ui, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.ych-prog-loc {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.7);
+  margin: 0;
+}
+
+.ych-prog-desc {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.55);
+  margin: 0;
+  line-height: 1.45;
+}
+
+.ych-prog-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.ych-prog-tags span {
+  font-size: 0.62rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.65);
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 99px;
+  padding: 3px 10px;
+  backdrop-filter: blur(4px);
+}
+
+/* ── Footer for youth page ──────────────────────────────────── */
+body.youth-page .home-figma-footer,
+body.youth-page .premium-footer {
+  background: #0a0a0a;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.45);
+}
+
+body.youth-page .home-figma-footer strong {
+  color: rgba(255,255,255,0.85);
+}
+
+body.youth-page .home-figma-footer-links a {
+  color: rgba(255,255,255,0.35);
+}
+
+body.youth-page .home-figma-footer-links a:hover {
+  color: rgba(255,255,255,0.75);
+}
+
+/* ================================================================
+   RESPONSIVE
+================================================================= */
+@media (max-width: 1024px) {
+  .ych-hero-inner { padding: 100px 36px 80px; }
+  .ych-stage { left: 40%; width: 480px; }
+}
+
+@media (max-width: 860px) {
+  .ych-hero-inner {
+    padding: 90px 24px 72px;
+  }
+
+  .ych-stage {
+    position: relative;
+    top: auto; left: auto; right: auto;
+    transform: none;
+    width: 100%;
+    height: 360px;
+    margin-top: 48px;
+  }
+
+  .ych-chat-grid,
+  .ych-mock-inner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .ych-mock-cards { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .ych-h1-line1  { font-size: 3.5rem; }
+  .ych-h1-line2  { font-size: 2.2rem; }
+  .ych-h1-accent { font-size: 3.75rem; }
+
+  .ych-pos-far-left { display: none; }
+  .ych-pos-right    { display: none; }
+
+  .ych-pos-left {
+    left: 5%;
+    transform: translateY(-52%) rotate(-9deg);
+  }
+
+  .ych-pos-center {
+    left: 50%;
+    transform: translateX(-50%) translateY(-55%);
+  }
+
+  .ych-stage { height: 300px; }
+}

@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Youth — KazYouthDiplomacy</title>
+  <meta name="description" content="AI Youth помогает студентам строить карьерный roadmap, находить стажировки и готовиться к интервью." />
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" />
+  <link rel="stylesheet" href="/web.css" />
+  <link rel="stylesheet" href="/card-nav.css" />
+  <link rel="stylesheet" href="/access-control.css" />
+  <link rel="stylesheet" href="/home-premium.css?v=2" />
+  <link rel="stylesheet" href="/youth-cinema.css?v=6" />
+  <link rel="apple-touch-icon" href="/icon-pwa.jpg" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="KazYouth" />
+  <link rel="manifest" href="/manifest.json" />
+  <script src="/pwa.js" defer></script>
+</head>
+<body class="youth-page route-page">
+
+<header class="header home-figma-header premium-nav" id="siteHeader">
+  <a href="/" class="logo-wrap logo-intro premium-brand" aria-label="KazYouthDiplomacy">
+    <img src="/logo.png" alt="KazYouthDiplomacy logo" />
+    <span>KazYouthDiplomacy</span>
+  </a>
+
+  <nav class="home-figma-nav premium-nav-menu" aria-label="Основная навигация">
+    <div class="card-nav-links premium-nav-links">
+      <a href="/" data-i18n="nav.home">Главная</a>
+      <a href="/youth" aria-current="page">AI Youth</a>
+      <a href="/#pricing" data-i18n="nav.pricing">Тарифы</a>
+      <a href="/#reviews" data-i18n="nav.reviews">Отзывы</a>
+    </div>
+    <div class="card-nav-actions premium-nav-actions">
+      <div class="lang-switcher" aria-label="Language / Язык / Тіл">
+        <button class="lang-btn" data-lang="ru" type="button">RU</button>
+        <button class="lang-btn" data-lang="en" type="button">EN</button>
+        <button class="lang-btn" data-lang="kk" type="button">KK</button>
+      </div>
+      <a id="homeNavDashboard" href="/dashboard" class="nav-btn premium-nav-secondary" hidden data-i18n="nav.dashboard">Кабинет</a>
+      <form id="homeNavLogoutForm" method="POST" action="/logout" class="home-figma-nav-logout" hidden>
+        <button class="nav-btn premium-nav-secondary" type="submit" data-i18n="nav.logout">Выйти</button>
+      </form>
+      <a id="homeNavLogin" href="/login" class="nav-btn premium-nav-login" data-i18n="nav.login">Войти</a>
+      <a href="/register-survey" class="nav-btn premium-nav-cta route-link" data-transition-direction="right" data-i18n="nav.start">Начать</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ══════════════════════════════════════════════════════════
+       CINEMATIC HERO
+  ══════════════════════════════════════════════════════════ -->
+  <section class="ych-hero">
+
+    <!-- Ambient background glows -->
+    <div class="ych-glow ych-glow-1" aria-hidden="true"></div>
+    <div class="ych-glow ych-glow-2" aria-hidden="true"></div>
+    <div class="ych-glow ych-glow-3" aria-hidden="true"></div>
+    <!-- Noise grain overlay -->
+    <div class="ych-grain" aria-hidden="true"></div>
+
+    <div class="ych-hero-inner">
+
+      <!-- ── Left: editorial copy ────────────────────────────── -->
+      <div class="ych-hero-text">
+        <div class="ych-eyebrow">
+          <span class="ych-eyebrow-dot" aria-hidden="true"></span>
+          <span>AI Youth</span>
+        </div>
+
+        <h1 class="ych-hero-h1">
+          <span class="ych-h1-line1" data-i18n="ych.h1.l1">Твой путь</span>
+          <span class="ych-h1-line2" data-i18n="ych.h1.l2">в международную</span>
+          <em class="ych-h1-accent" data-i18n="ych.h1.l3">карьеру.</em>
+        </h1>
+
+        <p class="ych-hero-lead" data-i18n="ych.lead">
+          Задай вопрос — получи персональный roadmap.<br>
+          Пройди Mock Interview на реальную программу.
+        </p>
+
+        <div class="ych-hero-actions">
+          <a href="#youth-chat" class="ych-btn-primary" data-i18n="youth.cta1">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" fill="currentColor"/></svg>
+            <span data-i18n="youth.cta1">Задать вопрос AI</span>
+          </a>
+          <a href="/interview" class="ych-btn-secondary route-link" data-transition-direction="right" data-i18n="youth.cta2">
+            <span data-i18n="youth.cta2">Mock Interview</span>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+
+        <!-- Social proof row -->
+        <div class="ych-proof">
+          <div class="ych-proof-avatars" aria-hidden="true">
+            <span class="ych-av" style="background:linear-gradient(135deg,#3b82f6,#6366f1)">B</span>
+            <span class="ych-av" style="background:linear-gradient(135deg,#10b981,#06b6d4)">A</span>
+            <span class="ych-av" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">D</span>
+            <span class="ych-av" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">M</span>
+          </div>
+          <span class="ych-proof-text" data-i18n="ych.proof">+2 400 студентов уже используют</span>
+        </div>
+      </div>
+
+      <!-- ── Right: 3D card stage ─────────────────────────────── -->
+      <div class="ych-stage" id="ychStage" aria-hidden="true">
+
+        <!-- Floating user chips -->
+        <div class="ych-chip ych-chip-top-left">
+          <span class="ych-chip-av" style="background:linear-gradient(135deg,#3b82f6,#6366f1)">B</span>
+          <div class="ych-chip-info">
+            <span class="ych-chip-name">@bekzat_t</span>
+            <span class="ych-chip-status ych-status-green">Chevening ✓</span>
+          </div>
+        </div>
+
+        <div class="ych-chip ych-chip-bottom-right">
+          <span class="ych-chip-av" style="background:linear-gradient(135deg,#10b981,#06b6d4)">A</span>
+          <div class="ych-chip-info">
+            <span class="ych-chip-name">@asel_k</span>
+            <span class="ych-chip-status ych-status-amber">DAAD Grant ✓</span>
+          </div>
+        </div>
+
+        <!-- Program cards in perspective -->
+        <div class="ych-cards-wrap">
+
+          <article class="ych-card ych-pos-far-left">
+            <div class="ych-card-poster" style="--poster-from:#0c1445;--poster-to:#1e40af;--poster-img:url('/img/college.jpg')">
+              <div class="ych-card-shine" aria-hidden="true"></div>
+              <div class="ych-card-top-row">
+                <span class="ych-card-brand">KYD</span>
+                <span class="ych-card-stars">9.4 ★</span>
+              </div>
+              <div class="ych-card-bot">
+                <p class="ych-card-type">Master's · EU</p>
+                <h4 class="ych-card-name">College of Europe</h4>
+              </div>
+            </div>
+          </article>
+
+          <article class="ych-card ych-pos-left">
+            <div class="ych-card-poster" style="--poster-from:#0a2e1a;--poster-to:#065f46;--poster-img:url('/img/un.jpg')">
+              <div class="ych-card-shine" aria-hidden="true"></div>
+              <div class="ych-card-top-row">
+                <span class="ych-card-brand">KYD</span>
+                <span class="ych-card-stars">8.7 ★</span>
+              </div>
+              <div class="ych-card-bot">
+                <p class="ych-card-type">Volunteer · Global</p>
+                <h4 class="ych-card-name">UN Volunteers</h4>
+              </div>
+            </div>
+          </article>
+
+          <article class="ych-card ych-pos-center">
+            <div class="ych-card-poster" style="--poster-from:#1a0a3d;--poster-to:#5b21b6;--poster-img:url('/img/osce.jpg')">
+              <div class="ych-card-shine" aria-hidden="true"></div>
+              <div class="ych-card-top-row">
+                <span class="ych-card-brand">KYD</span>
+                <span class="ych-card-stars">9.1 ★</span>
+              </div>
+              <div class="ych-card-bot">
+                <p class="ych-card-type">Master's · Bishkek</p>
+                <h4 class="ych-card-name">OSCE Academy</h4>
+              </div>
+            </div>
+            <!-- Active badge -->
+            <div class="ych-card-active-badge">
+              <span class="ych-pulse-dot" aria-hidden="true"></span>
+              <span data-i18n="ych.card.active">Доступно сейчас</span>
+            </div>
+          </article>
+
+          <article class="ych-card ych-pos-right">
+            <div class="ych-card-poster" style="--poster-from:#1c0f04;--poster-to:#c2410c;--poster-img:url('/img/erasmus.jpg')">
+              <div class="ych-card-shine" aria-hidden="true"></div>
+              <div class="ych-card-top-row">
+                <span class="ych-card-brand">KYD</span>
+                <span class="ych-card-stars">9.3 ★</span>
+              </div>
+              <div class="ych-card-bot">
+                <p class="ych-card-type">Scholarship · EU</p>
+                <h4 class="ych-card-name">Erasmus Mundus</h4>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Scroll hint -->
+    <div class="ych-scroll-hint" aria-hidden="true">
+      <span class="ych-scroll-line"></span>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       AI CHAT SECTION
+  ══════════════════════════════════════════════════════════ -->
+  <section class="ych-chat-section" id="youth-chat">
+    <div class="ych-chat-shell">
+
+      <!-- Section label -->
+      <div class="ych-section-label">
+        <span class="ych-section-dot" aria-hidden="true"></span>
+        <span data-i18n="ai.kicker">AI Youth</span>
+      </div>
+
+      <div class="ych-chat-grid">
+
+        <!-- Left: copy + roadmap -->
+        <div class="ych-chat-copy">
+          <h2 class="ych-chat-h2" data-i18n="ai.h2">Следующий шаг<br>всегда понятен.</h2>
+          <p class="ych-chat-lead" data-i18n="ai.lead">Разберитесь с направлением и не пропустите важные дедлайны.</p>
+
+          <!-- Quick-ask chips -->
+          <div class="ych-chip-row" aria-label="Примеры запросов">
+            <button class="ych-ask-chip" type="button"
+              data-i18n="ai.chip1" data-i18n-ai-q="ai.chip1.q"
+              data-home-ai-question="Какие первые шаги помогут быстрее найти стажировки, гранты или карьерные возможности?">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v3.5l2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Найти стажировки
+            </button>
+            <button class="ych-ask-chip" type="button"
+              data-i18n="ai.chip2" data-i18n-ai-q="ai.chip2.q"
+              data-home-ai-question="С чего мне лучше начать прямо сейчас на платформе?">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h12M8 2l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Карьерный маршрут
+            </button>
+            <button class="ych-ask-chip" type="button"
+              data-i18n="ai.chip3" data-i18n-ai-q="ai.chip3.q"
+              data-home-ai-question="Чем этот сайт поможет именно мне как студенту или молодому специалисту?">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1l2.2 4.4L15 6.3l-3.5 3.4.8 4.8L8 12.2l-4.3 2.3.8-4.8L1 6.3l4.8-.9L8 1z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+              Обменные программы
+            </button>
+          </div>
+
+          <!-- Roadmap preview card -->
+          <div class="ych-roadmap">
+            <div class="ych-roadmap-head">
+              <span data-i18n="ai.rm.title">Сгенерированный маршрут</span>
+              <strong data-i18n="ai.rm.sub">Следующие 30 дней</strong>
+            </div>
+            <div class="ych-roadmap-steps">
+              <div class="ych-step">
+                <div class="ych-step-dot ych-step-dot-1" aria-hidden="true"></div>
+                <div class="ych-step-line" aria-hidden="true"></div>
+                <div class="ych-step-body">
+                  <span class="ych-step-week">Week 1</span>
+                  <p data-i18n="ai.rm.w1">Список программ по фокусу.</p>
+                </div>
+              </div>
+              <div class="ych-step">
+                <div class="ych-step-dot ych-step-dot-2" aria-hidden="true"></div>
+                <div class="ych-step-line" aria-hidden="true"></div>
+                <div class="ych-step-body">
+                  <span class="ych-step-week">Week 2</span>
+                  <p data-i18n="ai.rm.w2">CV и мотивационное письмо.</p>
+                </div>
+              </div>
+              <div class="ych-step">
+                <div class="ych-step-dot ych-step-dot-3" aria-hidden="true"></div>
+                <div class="ych-step-body">
+                  <span class="ych-step-week">Week 3</span>
+                  <p data-i18n="ai.rm.w3">Первые заявки и дедлайны.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ych-chat-actions">
+            <a href="/register-survey" class="ych-btn-primary route-link" data-transition-direction="right" data-i18n="ai.cta1">Пройти Career GPS</a>
+            <a href="/login" id="homeAiLoginCta" class="ych-btn-ghost" data-i18n="ai.cta2">Войти</a>
+            <a href="/dashboard" id="homeAiDashboardCta" class="ych-btn-ghost" hidden data-i18n="ai.cta3">Мой кабинет</a>
+          </div>
+        </div>
+
+        <!-- Right: AI panel -->
+        <div class="ych-ai-panel">
+          <div class="ych-ai-panel-head">
+            <div class="ych-ai-panel-title-row">
+              <div class="ych-ai-avatar" aria-hidden="true">AI</div>
+              <div>
+                <span class="ych-ai-panel-kicker" data-i18n="ai.panel.kicker">Интерфейс ассистента</span>
+                <h3 data-i18n="ai.panel.h3">AI Youth</h3>
+              </div>
+            </div>
+            <span id="homeAiModeBadge" class="ych-mode-badge" data-i18n="ai.panel.badge">Быстрые ответы</span>
+          </div>
+
+          <div id="homeAiSuggestionGrid" class="ych-suggestions">
+            <button class="ych-suggestion" type="button"
+              data-i18n="ai.s1" data-i18n-ai-q="ai.s1.q"
+              data-home-ai-question="Что это за сайт и кому он подходит?">Что это за сайт?</button>
+            <button class="ych-suggestion" type="button"
+              data-i18n="ai.s2" data-i18n-ai-q="ai.s2.q"
+              data-home-ai-question="Чем этот сайт поможет именно мне как студенту или молодому специалисту?">Чем поможет?</button>
+            <button class="ych-suggestion" type="button"
+              data-i18n="ai.s3" data-i18n-ai-q="ai.s3.q"
+              data-home-ai-question="С чего мне лучше начать прямо сейчас на платформе?">С чего начать?</button>
+            <button class="ych-suggestion" type="button"
+              data-i18n="ai.s4" data-i18n-ai-q="ai.s4.q"
+              data-home-ai-question="Какие первые шаги помогут быстрее найти стажировки, гранты или карьерные возможности?">Ключевые шаги?</button>
+          </div>
+
+          <div id="homeAiMessages" class="home-figma-ai-messages ych-messages" aria-live="polite">
+            <article class="home-figma-ai-message home-figma-ai-message-assistant">
+              <span class="home-figma-ai-message-badge">AI</span>
+              <p class="home-figma-ai-message-text" data-i18n="ai.init">Задайте вопрос — помогу с roadmap и возможностями.</p>
+            </article>
+          </div>
+
+          <p id="homeAiStatus" class="home-figma-ai-status ych-ai-status" data-i18n="ai.status">AI Youth готов к вопросам.</p>
+
+          <form id="homeAiForm" class="ych-ai-form">
+            <textarea
+              id="homeAiInput"
+              class="ych-ai-input home-figma-ai-input"
+              rows="3"
+              maxlength="2000"
+              data-i18n-ph="ai.ph"
+              placeholder="Напишите вопрос для AI Youth..."
+            ></textarea>
+            <div class="ych-ai-form-foot">
+              <span id="homeAiHint" class="ych-ai-hint home-figma-ai-hint" data-i18n="ai.hint">Или выберите готовый запрос.</span>
+              <button id="homeAiSubmit" class="ych-btn-primary" type="submit" data-i18n="ai.submit">Спросить AI</button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       MOCK INTERVIEW CINEMATIC PROMO
+  ══════════════════════════════════════════════════════════ -->
+  <section class="ych-mock-promo">
+    <div class="ych-mock-glow-1" aria-hidden="true"></div>
+    <div class="ych-mock-glow-2" aria-hidden="true"></div>
+
+    <div class="ych-mock-inner">
+      <div class="ych-mock-copy">
+        <span class="ych-eyebrow">
+          <span class="ych-eyebrow-dot" aria-hidden="true"></span>
+          <span data-i18n="youth.mock.kicker">Mock Interview</span>
+        </span>
+        <h2 class="ych-mock-h2" data-i18n="youth.mock.h2">Готов к реальному<br>интервью?</h2>
+        <p class="ych-mock-lead" data-i18n="youth.mock.lead">AI симулирует HR-собеседование для топовых программ и даёт детальный разбор твоих ответов.</p>
+        <a href="/interview" class="ych-btn-primary route-link" data-transition-direction="right" data-i18n="youth.mock.cta">
+          <span>Начать симуляцию</span>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+
+      <!-- Photo program cards grid -->
+      <div class="ych-mock-cards" aria-label="Доступные программы">
+
+        <div class="ych-prog-card" style="--pc-img:url('/img/college.jpg')">
+          <div class="ych-prog-overlay"></div>
+          <span class="ych-prog-badge ych-prog-badge--masters" data-i18n="prog.type.masters">Магистратура</span>
+          <div class="ych-prog-body">
+            <h5 class="ych-prog-title">College of Europe</h5>
+            <p class="ych-prog-loc">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" fill="currentColor"/></svg>
+              Брюгге, Бельгия
+            </p>
+            <p class="ych-prog-desc">Бизнес, право, дипломатия, европейские исследования</p>
+            <div class="ych-prog-tags">
+              <span>EU Affairs</span><span>Law</span><span>Economics</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ych-prog-card" style="--pc-img:url('/img/un.jpg')">
+          <div class="ych-prog-overlay"></div>
+          <span class="ych-prog-badge ych-prog-badge--volunteer" data-i18n="prog.type.volunteer">Волонтёрство</span>
+          <div class="ych-prog-body">
+            <h5 class="ych-prog-title">UN Volunteers</h5>
+            <p class="ych-prog-loc">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" fill="currentColor"/></svg>
+              Глобально
+            </p>
+            <p class="ych-prog-desc">Глобальные программы волонтёрства ООН</p>
+            <div class="ych-prog-tags">
+              <span>SDGs</span><span>Стажировки</span><span>Field Work</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ych-prog-card" style="--pc-img:url('/img/osce.jpg')">
+          <div class="ych-prog-overlay"></div>
+          <span class="ych-prog-badge ych-prog-badge--masters" data-i18n="prog.type.masters">Магистратура</span>
+          <div class="ych-prog-body">
+            <h5 class="ych-prog-title">OSCE Academy</h5>
+            <p class="ych-prog-loc">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" fill="currentColor"/></svg>
+              Бишкек, Кыргызстан
+            </p>
+            <p class="ych-prog-desc">Языки, журналистика, политика и безопасность</p>
+            <div class="ych-prog-tags">
+              <span>Security</span><span>Governance</span><span>Conflict Area</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ych-prog-card" style="--pc-img:url('/img/erasmus.jpg')">
+          <div class="ych-prog-overlay"></div>
+          <span class="ych-prog-badge ych-prog-badge--masters" data-i18n="prog.type.masters">Магистратура</span>
+          <div class="ych-prog-body">
+            <h5 class="ych-prog-title">Erasmus Mundus</h5>
+            <p class="ych-prog-loc">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" fill="currentColor"/></svg>
+              Европа
+            </p>
+            <p class="ych-prog-desc">Программы совместной европейской степени с грантом</p>
+            <div class="ych-prog-tags">
+              <span>Scholarships</span><span>Joint Degrees</span><span>Europe</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ych-prog-card" style="--pc-img:url('/img/daad.jpg')">
+          <div class="ych-prog-overlay"></div>
+          <span class="ych-prog-badge ych-prog-badge--grant" data-i18n="prog.type.grant">Грант</span>
+          <div class="ych-prog-body">
+            <h5 class="ych-prog-title">DAAD Scholarship</h5>
+            <p class="ych-prog-loc">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" fill="currentColor"/></svg>
+              Германия
+            </p>
+            <p class="ych-prog-desc">Стипендии и гранты для учёбы в Германии и по всему миру</p>
+            <div class="ych-prog-tags">
+              <span>Funding</span><span>Germany</span><span>STEM</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ych-prog-card" style="--pc-img:url('/img/chevening.jpg')">
+          <div class="ych-prog-overlay"></div>
+          <span class="ych-prog-badge ych-prog-badge--grant" data-i18n="prog.type.grant">Грант</span>
+          <div class="ych-prog-body">
+            <h5 class="ych-prog-title">Chevening</h5>
+            <p class="ych-prog-loc">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" fill="currentColor"/></svg>
+              Великобритания
+            </p>
+            <p class="ych-prog-desc">Стипендия Chevening — правительственная стипендия для лидеров</p>
+            <div class="ych-prog-tags">
+              <span>Leadership</span><span>UK</span><span>Public Policy</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="home-figma-footer premium-footer">
+  <div class="home-figma-footer-shell">
+    <div>
+      <strong>KazYouthDiplomacy</strong>
+      <p data-i18n="ft.tagline">AI Career GPS для молодых специалистов.</p>
+    </div>
+    <div class="home-figma-footer-links">
+      <a href="/#opportunities" data-i18n="nav.opportunities">Возможности</a>
+      <a href="/youth">AI Youth</a>
+      <a href="/subscribe" class="route-link" data-transition-direction="right" data-i18n="nav.pricing">Тарифы</a>
+      <a href="https://t.me/perlll1" target="_blank" rel="noreferrer" data-i18n="ft.contact">Написать нам</a>
+    </div>
+  </div>
+</footer>
+
+<script src="/card-nav.js" defer></script>
+<script src="/access-control.js" defer></script>
+<script src="/vendor/gsap.min.js" defer></script>
+<script src="/i18n.js?v=4" defer></script>
+<script src="/web.js" defer></script>
+<script src="/page-transitions.js" defer></script>
+</body>
+</html>

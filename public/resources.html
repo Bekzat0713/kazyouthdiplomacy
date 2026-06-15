@@ -8,13 +8,14 @@
   <link rel="stylesheet" href="/web.css">
   <link rel="stylesheet" href="/card-nav.css">
   <link rel="stylesheet" href="/access-control.css">
-  <link rel="stylesheet" href="/inner-premium.css">
+  <link rel="stylesheet" href="/inner-premium.css?v=v1.1">
   <link rel="apple-touch-icon" href="/icon-pwa.jpg" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="KazYouth" />
   <link rel="manifest" href="/manifest.json" />
   <script src="/pwa.js" defer></script>
+  <script src="/sidebar.js?v=v1.1" defer></script>
 </head>
 <body class="inner-premium-page" data-assistant-page="resources">
 
@@ -38,7 +39,10 @@
   </nav>
 </header>
 
-<section class="resources-page">
+<section class="dashboard-page">
+  <aside class="dashboard-left-sidebar"></aside>
+  <div class="dashboard-main-wrapper">
+    <section class="resources-page">
   <div class="resources-header">
     <h1>Материалы и шаблоны</h1>
     <p>Чеклисты, гайды и шаблоны для сильных заявок.</p>
@@ -138,11 +142,13 @@
     </button>
   </div>
 </section>
+</div>
+</section>
 
 <script src="/card-nav.js" defer></script>
 <script src="/access-control.js" defer></script>
 <script src="/page-transitions.js" defer></script>
 <script src="/resources.js" defer></script>
-<script src="/assistant-widget.js" defer></script>
+<script src="/assistant-widget.js?v=2" defer></script>
 </body>
 </html>

@@ -1,0 +1,820 @@
+/* ================================================================
+   KazYouthDiplomacy — Mock Interview page
+================================================================= */
+
+body.interview-page {
+  --iv-bg: #070c1a;
+  --iv-surface: #141b2d;
+  --iv-surface2: #1c2640;
+  --iv-border: rgba(255,255,255,0.10);
+  --iv-border-hover: rgba(59,130,246,0.6);
+  --iv-accent: #3b82f6;
+  --iv-accent2: #6366f1;
+  --iv-text: #f1f5f9;
+  --iv-muted: rgba(241,245,249,0.60);
+  --iv-radius: 16px;
+
+  background:
+    radial-gradient(ellipse 70% 50% at 15% 20%, rgba(59,130,246,0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 85% 70%, rgba(99,102,241,0.08) 0%, transparent 60%),
+    var(--iv-bg);
+  color: var(--iv-text);
+  min-height: 100vh;
+}
+
+/* ── Stage wrapper ──────────────────────────────────────────── */
+.iv-stage {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 24px 60px;
+}
+
+/* ── Kicker ──────────────────────────────────────────────────── */
+.iv-kicker {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--iv-accent);
+  background: rgba(59,130,246,0.1);
+  border: 1px solid rgba(59,130,246,0.25);
+  border-radius: 20px;
+  padding: 4px 14px;
+}
+
+/* ── Stage 1: Program Selection ────────────────────────────── */
+.iv-select-shell {
+  width: 100%;
+  max-width: 1000px;
+}
+
+.iv-select-head {
+  text-align: center;
+  margin-bottom: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.iv-select-head h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2rem, 4.5vw, 2.75rem);
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffffff 0%, #93c5fd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+  line-height: 1.18;
+}
+
+.iv-select-head p {
+  color: var(--iv-muted);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  max-width: 560px;
+  margin: 0;
+}
+
+.iv-program-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 18px;
+}
+
+/* ── Program card base ──────────────────────────────────────── */
+.iv-program-card {
+  background: var(--iv-surface);
+  border: 1px solid var(--iv-border);
+  border-radius: var(--iv-radius);
+  padding: 28px 24px 22px;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Photo background when --iv-bg is set */
+.iv-program-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--iv-bg, none);
+  background-size: cover;
+  background-position: center;
+  opacity: 0.18;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 0;
+  border-radius: var(--iv-radius);
+}
+
+.iv-program-card:hover::after {
+  opacity: 0.32;
+}
+
+/* keep content above the photo layer */
+.iv-program-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Top accent line per color */
+.iv-program-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: var(--iv-radius) var(--iv-radius) 0 0;
+  opacity: 0.85;
+  z-index: 2;
+}
+
+.iv-card--blue::before   { background: linear-gradient(90deg, #3b82f6, #6366f1); }
+.iv-card--teal::before   { background: linear-gradient(90deg, #14b8a6, #06b6d4); }
+.iv-card--violet::before { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+.iv-card--indigo::before { background: linear-gradient(90deg, #4f46e5, #818cf8); }
+.iv-card--amber::before  { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.iv-card--rose::before   { background: linear-gradient(90deg, #f43f5e, #fb923c); }
+
+.iv-program-card:hover,
+.iv-program-card:focus-visible {
+  transform: translateY(-4px);
+  outline: none;
+}
+
+.iv-card--blue:hover   { border-color: rgba(59,130,246,0.5);  box-shadow: 0 12px 40px rgba(59,130,246,0.2);  background: #172035; }
+.iv-card--teal:hover   { border-color: rgba(20,184,166,0.5);  box-shadow: 0 12px 40px rgba(20,184,166,0.2);  background: #0f2430; }
+.iv-card--violet:hover { border-color: rgba(139,92,246,0.5);  box-shadow: 0 12px 40px rgba(139,92,246,0.2);  background: #1a1535; }
+.iv-card--indigo:hover { border-color: rgba(79,70,229,0.5);   box-shadow: 0 12px 40px rgba(79,70,229,0.2);   background: #14193a; }
+.iv-card--amber:hover  { border-color: rgba(245,158,11,0.45); box-shadow: 0 12px 40px rgba(245,158,11,0.18); background: #1e1a0e; }
+.iv-card--rose:hover   { border-color: rgba(244,63,94,0.45);  box-shadow: 0 12px 40px rgba(244,63,94,0.18);  background: #20101a; }
+
+/* ── Card top row ───────────────────────────────────────────── */
+.iv-program-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Icon square */
+.iv-program-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.iv-icon--blue   { background: rgba(59,130,246,0.15);  color: #60a5fa; }
+.iv-icon--teal   { background: rgba(20,184,166,0.15);  color: #2dd4bf; }
+.iv-icon--violet { background: rgba(139,92,246,0.15);  color: #a78bfa; }
+.iv-icon--indigo { background: rgba(79,70,229,0.15);   color: #818cf8; }
+.iv-icon--amber  { background: rgba(245,158,11,0.15);  color: #fbbf24; }
+.iv-icon--rose   { background: rgba(244,63,94,0.15);   color: #fb7185; }
+
+/* Badge */
+.iv-program-badge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(99,102,241,0.15);
+  color: #a5b4fc;
+  border: 1px solid rgba(99,102,241,0.25);
+  white-space: nowrap;
+}
+
+.iv-program-badge--teal   { background: rgba(20,184,166,0.15);  color: #2dd4bf; border-color: rgba(20,184,166,0.25); }
+.iv-program-badge--violet { background: rgba(139,92,246,0.15);  color: #c4b5fd; border-color: rgba(139,92,246,0.25); }
+.iv-program-badge--amber  { background: rgba(245,158,11,0.12);  color: #fcd34d; border-color: rgba(245,158,11,0.25); }
+
+/* ── Card body ──────────────────────────────────────────────── */
+.iv-program-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.iv-program-card h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.iv-program-location {
+  font-size: 0.78rem;
+  color: rgba(241,245,249,0.45);
+  margin: 0;
+  font-style: normal;
+}
+
+.iv-program-card-body > p:last-child {
+  color: rgba(241,245,249,0.68);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── Tags ───────────────────────────────────────────────────── */
+.iv-program-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.iv-program-tags span {
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.38);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 6px;
+  padding: 3px 9px;
+  letter-spacing: 0.02em;
+}
+
+/* ── Card CTA ───────────────────────────────────────────────── */
+.iv-program-card-cta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.35);
+  transition: color 0.2s, gap 0.2s;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.iv-program-card:hover .iv-program-card-cta {
+  color: rgba(255,255,255,0.75);
+  gap: 10px;
+}
+
+/* ── Stage 2: Chat ──────────────────────────────────────────── */
+.iv-chat-shell {
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 130px);
+}
+
+.iv-chat-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0 20px;
+  border-bottom: 1px solid var(--iv-border);
+  flex-shrink: 0;
+}
+
+.iv-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid var(--iv-border);
+  color: var(--iv-muted);
+  font-size: 0.875rem;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.iv-back-btn:hover {
+  border-color: rgba(255,255,255,0.2);
+  color: var(--iv-text);
+}
+
+.iv-chat-program-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.iv-chat-flag {
+  font-size: 1.5rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.iv-chat-program-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--iv-text);
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.iv-chat-subtitle {
+  font-size: 0.75rem;
+  color: var(--iv-muted);
+  display: block;
+}
+
+.iv-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.iv-progress-bar {
+  width: 120px;
+  height: 4px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.iv-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--iv-accent), var(--iv-accent2));
+  border-radius: 2px;
+  transition: width 0.4s ease;
+  width: 0%;
+}
+
+.iv-progress-label {
+  font-size: 0.75rem;
+  color: var(--iv-muted);
+  white-space: nowrap;
+}
+
+.iv-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.1) transparent;
+}
+
+.iv-chat-messages::-webkit-scrollbar {
+  width: 4px;
+}
+
+.iv-chat-messages::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+}
+
+/* Message bubbles */
+.iv-msg {
+  display: flex;
+  gap: 12px;
+  animation: ivFadeUp 0.3s ease both;
+}
+
+@keyframes ivFadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.iv-msg-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+
+.iv-msg--ai .iv-msg-badge {
+  background: linear-gradient(135deg, var(--iv-accent), var(--iv-accent2));
+  color: #fff;
+}
+
+.iv-msg--user {
+  flex-direction: row-reverse;
+}
+
+.iv-msg--user .iv-msg-badge {
+  background: rgba(255,255,255,0.08);
+  color: var(--iv-text);
+}
+
+.iv-msg-body {
+  max-width: 76%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.iv-msg--user .iv-msg-body {
+  align-items: flex-end;
+}
+
+.iv-msg-text {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  padding: 12px 16px;
+  border-radius: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.iv-msg--ai .iv-msg-text {
+  background: var(--iv-surface);
+  color: var(--iv-text);
+  border: 1px solid var(--iv-border);
+  border-radius: 4px 12px 12px 12px;
+}
+
+.iv-msg--user .iv-msg-text {
+  background: var(--iv-accent);
+  color: #fff;
+  border-radius: 12px 4px 12px 12px;
+}
+
+.iv-msg-question-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--iv-accent);
+  margin-bottom: 2px;
+}
+
+/* Typing indicator */
+.iv-typing {
+  display: flex;
+  gap: 5px;
+  padding: 14px 16px;
+  background: var(--iv-surface);
+  border: 1px solid var(--iv-border);
+  border-radius: 4px 12px 12px 12px;
+  width: fit-content;
+}
+
+.iv-typing span {
+  width: 6px;
+  height: 6px;
+  background: var(--iv-muted);
+  border-radius: 50%;
+  animation: ivDot 1.2s infinite ease-in-out;
+}
+
+.iv-typing span:nth-child(2) { animation-delay: 0.2s; }
+.iv-typing span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes ivDot {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+  40%            { transform: scale(1);   opacity: 1; }
+}
+
+/* Form */
+.iv-chat-form-wrap {
+  padding: 16px 0 0;
+  border-top: 1px solid var(--iv-border);
+  flex-shrink: 0;
+}
+
+.iv-chat-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.iv-chat-input {
+  width: 100%;
+  background: var(--iv-surface);
+  border: 1px solid var(--iv-border);
+  border-radius: 12px;
+  color: var(--iv-text);
+  font-family: inherit;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  padding: 14px 16px;
+  resize: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.iv-chat-input:focus {
+  outline: none;
+  border-color: var(--iv-accent);
+}
+
+.iv-chat-input::placeholder {
+  color: var(--iv-muted);
+}
+
+.iv-chat-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.iv-chat-hint {
+  font-size: 0.8rem;
+  color: var(--iv-muted);
+  flex: 1;
+}
+
+/* ── Stage 3: Result ─────────────────────────────────────────── */
+.iv-result-shell {
+  width: 100%;
+  max-width: 1020px;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+/* Two-column layout once analysis is available */
+.iv-result-body {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 28px;
+  align-items: start;
+}
+
+.iv-result-left {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.iv-result-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.iv-result-icon {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.iv-result-head h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffffff 0%, #93c5fd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+
+.iv-result-head p {
+  color: var(--iv-muted);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.iv-result-score-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.iv-score-card {
+  border-radius: var(--iv-radius);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Card 1: overall score — blue */
+.iv-score-card:nth-child(1) {
+  background: linear-gradient(135deg, rgba(59,130,246,0.18) 0%, rgba(99,102,241,0.12) 100%);
+  border: 1px solid rgba(59,130,246,0.3);
+}
+
+/* Card 2: strong answers — green */
+.iv-score-card:nth-child(2) {
+  background: linear-gradient(135deg, rgba(34,197,94,0.15) 0%, rgba(16,185,129,0.10) 100%);
+  border: 1px solid rgba(34,197,94,0.3);
+}
+
+/* Card 3: needs improvement — amber */
+.iv-score-card:nth-child(3) {
+  background: linear-gradient(135deg, rgba(245,158,11,0.15) 0%, rgba(239,68,68,0.08) 100%);
+  border: 1px solid rgba(245,158,11,0.3);
+}
+
+.iv-score-number {
+  font-family: 'Syne', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.iv-score-card:nth-child(1) .iv-score-number { color: #60a5fa; }
+.iv-score-card:nth-child(2) .iv-score-number { color: #4ade80; }
+.iv-score-card:nth-child(3) .iv-score-number { color: #fbbf24; }
+
+.iv-score-label {
+  font-size: 0.8rem;
+  color: var(--iv-muted);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+/* Analysis */
+.iv-analysis-block {
+  background: var(--iv-surface);
+  border: 1px solid var(--iv-border);
+  border-radius: var(--iv-radius);
+  padding: 32px;
+}
+
+.iv-analysis-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 0;
+  color: var(--iv-muted);
+  font-size: 0.9rem;
+}
+
+.iv-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(255,255,255,0.08);
+  border-top-color: var(--iv-accent);
+  border-radius: 50%;
+  animation: ivSpin 0.8s linear infinite;
+  display: block;
+}
+
+@keyframes ivSpin {
+  to { transform: rotate(360deg); }
+}
+
+#ivAnalysisContent {
+  color: var(--iv-text);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.iv-q-analysis {
+  border-left: 3px solid var(--iv-border);
+  padding-left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color 0.2s;
+}
+
+.iv-q-analysis.strong { border-left-color: #22c55e; }
+.iv-q-analysis.improve { border-left-color: #f59e0b; }
+
+.iv-q-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--iv-muted);
+}
+
+.iv-q-question {
+  font-weight: 600;
+  color: var(--iv-text);
+  font-size: 0.9rem;
+}
+
+.iv-q-feedback {
+  color: var(--iv-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.iv-q-rating {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.iv-q-rating.strong { color: #22c55e; }
+.iv-q-rating.improve { color: #f59e0b; }
+
+.iv-result-right {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 100px;
+}
+
+/* Certificate */
+.iv-cert-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.iv-cert-canvas {
+  width: 100%;
+  max-width: 700px;
+  border-radius: 12px;
+  border: 1px solid var(--iv-border);
+}
+
+.iv-cert-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.iv-result-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .iv-result-body {
+    grid-template-columns: 1fr;
+  }
+
+  .iv-result-right {
+    order: -1; /* cert above analysis on mobile */
+  }
+}
+
+@media (max-width: 640px) {
+  .iv-stage {
+    padding: 24px 16px 48px;
+    align-items: flex-start;
+  }
+
+  .iv-program-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .iv-chat-shell {
+    height: calc(100svh - 110px);
+  }
+
+  .iv-chat-header {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .iv-progress-wrap {
+    width: 100%;
+  }
+
+  .iv-progress-bar {
+    flex: 1;
+  }
+
+  .iv-result-score-row {
+    grid-template-columns: 1fr;
+  }
+
+  .iv-cert-actions,
+  .iv-result-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

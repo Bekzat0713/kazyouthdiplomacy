@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mock Interview — KazYouthDiplomacy</title>
+  <meta name="description" content="AI симулирует реальное HR-собеседование. Выбери программу и пройди 5 вопросов с детальным разбором." />
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" />
+  <link rel="stylesheet" href="/web.css" />
+  <link rel="stylesheet" href="/card-nav.css" />
+  <link rel="stylesheet" href="/access-control.css" />
+  <link rel="stylesheet" href="/home-premium.css?v=2" />
+  <link rel="stylesheet" href="/interview.css?v=2" />
+  <link rel="apple-touch-icon" href="/icon-pwa.jpg" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="KazYouth" />
+  <link rel="manifest" href="/manifest.json" />
+  <script src="/pwa.js" defer></script>
+  <link rel="stylesheet" href="/inner-premium.css?v=v1.1" />
+  <script src="/sidebar.js?v=v1.1" defer></script>
+</head>
+<body class="interview-page route-page inner-premium-page" data-assistant-page="interview">
+
+<header class="header home-figma-header premium-nav" id="siteHeader">
+  <a href="/" class="logo-wrap logo-intro premium-brand" aria-label="KazYouthDiplomacy">
+    <img src="/logo.png" alt="KazYouthDiplomacy logo" />
+    <span>KazYouthDiplomacy</span>
+  </a>
+
+  <nav class="home-figma-nav premium-nav-menu" aria-label="Основная навигация">
+    <div class="card-nav-links premium-nav-links">
+      <a href="/" data-i18n="nav.home">Главная</a>
+      <a href="/youth">AI Youth</a>
+      <a href="/interview" aria-current="page">Mock Interview</a>
+      <a href="/#pricing" data-i18n="nav.pricing">Тарифы</a>
+    </div>
+    <div class="card-nav-actions premium-nav-actions">
+      <div class="lang-switcher" aria-label="Language / Язык / Тіл">
+        <button class="lang-btn" data-lang="ru" type="button">RU</button>
+        <button class="lang-btn" data-lang="en" type="button">EN</button>
+        <button class="lang-btn" data-lang="kk" type="button">KK</button>
+      </div>
+      <a id="homeNavDashboard" href="/dashboard" class="nav-btn premium-nav-secondary" hidden data-i18n="nav.dashboard">Кабинет</a>
+      <form id="homeNavLogoutForm" method="POST" action="/logout" class="home-figma-nav-logout" hidden>
+        <button class="nav-btn premium-nav-secondary" type="submit" data-i18n="nav.logout">Выйти</button>
+      </form>
+      <a id="homeNavLogin" href="/login" class="nav-btn premium-nav-login" data-i18n="nav.login">Войти</a>
+      <a href="/register-survey" class="nav-btn premium-nav-cta route-link" data-transition-direction="right" data-i18n="nav.start">Начать</a>
+    </div>
+  </nav>
+</header>
+
+<section class="dashboard-page">
+  <aside class="dashboard-left-sidebar"></aside>
+  <div class="dashboard-main-wrapper">
+    <main id="interviewMain">
+
+  <!-- ── Stage 1: Program Selection ──────────────────────────── -->
+  <section class="iv-stage" id="ivStageSelect" data-stage="select">
+    <div class="iv-select-shell">
+      <div class="iv-select-head">
+        <span class="iv-kicker" data-i18n="iv.kicker">Mock Interview</span>
+        <h1 data-i18n="iv.h1">Выбери программу для симуляции</h1>
+        <p data-i18n="iv.lead">AI задаст 5 реальных вопросов, которые используют HR-комиссии этих программ, и разберёт каждый ответ.</p>
+      </div>
+      <div class="iv-program-grid" role="list" aria-label="Доступные программы">
+
+        <button class="iv-program-card iv-card--blue" type="button" role="listitem"
+          data-program="college-of-europe"
+          data-program-name="College of Europe"
+          data-program-flag="🇧🇪"
+          data-program-level="Master"
+          style="--iv-bg:url('/img/college.jpg')">
+          <div class="iv-program-card-top">
+            <div class="iv-program-icon iv-icon--blue">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3L2 9l10 6 10-6-10-6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M2 17l10 6 10-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 13l10 6 10-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span class="iv-program-badge" data-i18n="iv.badge.master">Магистратура</span>
+          </div>
+          <div class="iv-program-card-body">
+            <h3>College of Europe</h3>
+            <p class="iv-program-location">📍 Брюгге, Бельгия</p>
+            <p data-i18n="iv.desc.coe">Европейские исследования, право, экономика</p>
+          </div>
+          <div class="iv-program-tags">
+            <span>EU Politics</span><span>Law</span><span>Economics</span>
+          </div>
+          <div class="iv-program-card-cta">
+            <span data-i18n="iv.card.cta">Начать интервью</span>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </button>
+
+        <button class="iv-program-card iv-card--teal" type="button" role="listitem"
+          data-program="un-volunteers"
+          data-program-name="UN Volunteers"
+          data-program-flag="🇺🇳"
+          data-program-level="Internship"
+          style="--iv-bg:url('/img/un.jpg')">
+          <div class="iv-program-card-top">
+            <div class="iv-program-icon iv-icon--teal">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </div>
+            <span class="iv-program-badge iv-program-badge--teal" data-i18n="iv.badge.volunteer">Волонтёрство</span>
+          </div>
+          <div class="iv-program-card-body">
+            <h3>UN Volunteers</h3>
+            <p class="iv-program-location">📍 Глобально</p>
+            <p data-i18n="iv.desc.unv">Программа волонтёрства ООН</p>
+          </div>
+          <div class="iv-program-tags">
+            <span>SDGs</span><span>Development</span><span>Field Work</span>
+          </div>
+          <div class="iv-program-card-cta">
+            <span data-i18n="iv.card.cta">Начать интервью</span>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </button>
+
+        <button class="iv-program-card iv-card--violet" type="button" role="listitem"
+          data-program="osce-academy"
+          data-program-name="OSCE Academy"
+          data-program-flag="🇰🇬"
+          data-program-level="Master"
+          style="--iv-bg:url('/img/osce.jpg')">
+          <div class="iv-program-card-top">
+            <div class="iv-program-icon iv-icon--violet">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 22s8-4.5 8-11.8V5l-8-3-8 3v5.2C4 17.5 12 22 12 22z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+            </div>
+            <span class="iv-program-badge iv-program-badge--violet" data-i18n="iv.badge.master">Магистратура</span>
+          </div>
+          <div class="iv-program-card-body">
+            <h3>OSCE Academy</h3>
+            <p class="iv-program-location">📍 Бишкек, Кыргызстан</p>
+            <p data-i18n="iv.desc.osce">Политика и безопасность</p>
+          </div>
+          <div class="iv-program-tags">
+            <span>Security</span><span>Governance</span><span>Central Asia</span>
+          </div>
+          <div class="iv-program-card-cta">
+            <span data-i18n="iv.card.cta">Начать интервью</span>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </button>
+
+        <button class="iv-program-card iv-card--indigo" type="button" role="listitem"
+          data-program="erasmus-mundus"
+          data-program-name="Erasmus Mundus"
+          data-program-flag="🇪🇺"
+          data-program-level="Master"
+          style="--iv-bg:url('/img/erasmus.jpg')">
+          <div class="iv-program-card-top">
+            <div class="iv-program-icon iv-icon--indigo">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M22 10v8a2 2 0 01-2 2H4a2 2 0 01-2-2v-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M12 15V3m0 0l-4 4m4-4l4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span class="iv-program-badge" data-i18n="iv.badge.master">Магистратура</span>
+          </div>
+          <div class="iv-program-card-body">
+            <h3>Erasmus Mundus</h3>
+            <p class="iv-program-location">📍 Европа</p>
+            <p data-i18n="iv.desc.erasmus">Совместная европейская степень с грантом</p>
+          </div>
+          <div class="iv-program-tags">
+            <span>Scholarship</span><span>Joint Degree</span><span>Europe</span>
+          </div>
+          <div class="iv-program-card-cta">
+            <span data-i18n="iv.card.cta">Начать интервью</span>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </button>
+
+        <button class="iv-program-card iv-card--amber" type="button" role="listitem"
+          data-program="daad"
+          data-program-name="DAAD Scholarship"
+          data-program-flag="🇩🇪"
+          data-program-level="Scholarship"
+          style="--iv-bg:url('/img/daad.jpg')">
+          <div class="iv-program-card-top">
+            <div class="iv-program-icon iv-icon--amber">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+            </div>
+            <span class="iv-program-badge iv-program-badge--amber" data-i18n="iv.badge.scholarship">Грант</span>
+          </div>
+          <div class="iv-program-card-body">
+            <h3>DAAD Scholarship</h3>
+            <p class="iv-program-location">📍 Германия</p>
+            <p data-i18n="iv.desc.daad">Немецкая служба академических обменов</p>
+          </div>
+          <div class="iv-program-tags">
+            <span>Research</span><span>Germany</span><span>STEM</span>
+          </div>
+          <div class="iv-program-card-cta">
+            <span data-i18n="iv.card.cta">Начать интервью</span>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </button>
+
+        <button class="iv-program-card iv-card--rose" type="button" role="listitem"
+          data-program="chevening"
+          data-program-name="Chevening"
+          data-program-flag="🇬🇧"
+          data-program-level="Scholarship"
+          style="--iv-bg:url('/img/chevening.jpg')">
+          <div class="iv-program-card-top">
+            <div class="iv-program-icon iv-icon--rose">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </div>
+            <span class="iv-program-badge iv-program-badge--amber" data-i18n="iv.badge.scholarship">Грант</span>
+          </div>
+          <div class="iv-program-card-body">
+            <h3>Chevening</h3>
+            <p class="iv-program-location">📍 Великобритания</p>
+            <p data-i18n="iv.desc.chevening">Правительственная стипендия для лидеров</p>
+          </div>
+          <div class="iv-program-tags">
+            <span>Leadership</span><span>UK</span><span>Public Policy</span>
+          </div>
+          <div class="iv-program-card-cta">
+            <span data-i18n="iv.card.cta">Начать интервью</span>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </button>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Stage 2: Chat Interview ─────────────────────────────── -->
+  <section class="iv-stage" id="ivStageChat" data-stage="chat" hidden>
+    <div class="iv-chat-shell">
+      <div class="iv-chat-header">
+        <button class="iv-back-btn" id="ivBackBtn" type="button" aria-label="Назад к выбору программы">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span data-i18n="iv.back">Назад</span>
+        </button>
+        <div class="iv-chat-program-info">
+          <span id="ivChatProgramFlag" class="iv-chat-flag">🇧🇪</span>
+          <div>
+            <span id="ivChatProgramName" class="iv-chat-program-name">College of Europe</span>
+            <span class="iv-chat-subtitle" data-i18n="iv.chat.subtitle">Mock Interview · AI</span>
+          </div>
+        </div>
+        <div class="iv-progress-wrap" aria-label="Прогресс интервью">
+          <div class="iv-progress-bar" id="ivProgressBar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="5">
+            <div class="iv-progress-fill" id="ivProgressFill"></div>
+          </div>
+          <span class="iv-progress-label" id="ivProgressLabel">0 / 5</span>
+        </div>
+      </div>
+
+      <div class="iv-chat-messages" id="ivMessages" aria-live="polite" aria-label="Диалог интервью"></div>
+
+      <div class="iv-chat-form-wrap" id="ivFormWrap">
+        <form class="iv-chat-form" id="ivForm">
+          <textarea
+            id="ivInput"
+            class="iv-chat-input"
+            rows="3"
+            maxlength="2000"
+            data-i18n-ph="iv.ph"
+            placeholder="Напишите ваш ответ..."
+          ></textarea>
+          <div class="iv-chat-form-actions">
+            <span id="ivHint" class="iv-chat-hint" data-i18n="iv.hint">Отвечайте развёрнуто — это влияет на оценку.</span>
+            <button id="ivSubmit" class="btn primary" type="submit" data-i18n="iv.submit">Ответить</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Stage 3: Analysis + Certificate ────────────────────── -->
+  <section class="iv-stage" id="ivStageResult" data-stage="result" hidden>
+    <div class="iv-result-shell">
+      <div class="iv-result-head">
+        <span class="iv-result-icon" aria-hidden="true">🎓</span>
+        <span class="iv-kicker" data-i18n="iv.result.kicker">Интервью завершено</span>
+        <h2 id="ivResultTitle" data-i18n="iv.result.h2">Твой результат готов</h2>
+        <p id="ivResultSubtitle" data-i18n="iv.result.lead">AI разобрал каждый из твоих 5 ответов</p>
+      </div>
+
+      <div class="iv-result-body">
+        <div class="iv-result-left">
+          <div class="iv-result-score-row">
+            <div class="iv-score-card">
+              <span class="iv-score-number" id="ivScoreNumber">—</span>
+              <span class="iv-score-label" data-i18n="iv.result.score">Общая оценка</span>
+            </div>
+            <div class="iv-score-card">
+              <span class="iv-score-number" id="ivScoreStrong">—</span>
+              <span class="iv-score-label" data-i18n="iv.result.strong">Сильных ответов</span>
+            </div>
+            <div class="iv-score-card">
+              <span class="iv-score-number" id="ivScoreImprove">—</span>
+              <span class="iv-score-label" data-i18n="iv.result.improve">Нужно улучшить</span>
+            </div>
+          </div>
+
+          <div class="iv-analysis-block" id="ivAnalysisBlock" aria-label="Детальный анализ">
+            <div class="iv-analysis-loading" id="ivAnalysisLoading">
+              <span class="iv-spinner" aria-hidden="true"></span>
+              <p data-i18n="iv.result.analyzing">AI анализирует ваши ответы...</p>
+            </div>
+            <div id="ivAnalysisContent" hidden></div>
+          </div>
+        </div>
+
+        <div class="iv-result-right">
+          <div class="iv-cert-block" id="ivCertBlock" hidden>
+            <canvas id="ivCertCanvas" class="iv-cert-canvas" width="800" height="500" aria-label="Сертификат прохождения Mock Interview"></canvas>
+            <div class="iv-cert-actions">
+              <button class="btn primary" id="ivDownloadCert" type="button" data-i18n="iv.result.download">Скачать сертификат</button>
+              <button class="btn secondary" id="ivShareCert" type="button" data-i18n="iv.result.share">Поделиться</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="iv-result-actions">
+        <button class="btn secondary" id="ivTryAgainBtn" type="button" data-i18n="iv.result.again">Пройти снова</button>
+        <a href="/youth" class="btn primary route-link" data-transition-direction="left" data-i18n="iv.result.youth">Открыть AI Youth</a>
+      </div>
+    </div>
+  </section>
+
+    </main>
+  </div>
+</section>
+
+<footer class="home-figma-footer premium-footer">
+  <div class="home-figma-footer-shell">
+    <div>
+      <strong>KazYouthDiplomacy</strong>
+      <p data-i18n="ft.tagline">AI Career GPS для молодых специалистов.</p>
+    </div>
+    <div class="home-figma-footer-links">
+      <a href="/#opportunities" data-i18n="nav.opportunities">Возможности</a>
+      <a href="/youth">AI Youth</a>
+      <a href="/subscribe" class="route-link" data-transition-direction="right" data-i18n="nav.pricing">Тарифы</a>
+      <a href="https://t.me/perlll1" target="_blank" rel="noreferrer" data-i18n="ft.contact">Написать нам</a>
+    </div>
+  </div>
+</footer>
+
+<script src="/card-nav.js" defer></script>
+<script src="/access-control.js" defer></script>
+<script src="/i18n.js?v=3" defer></script>
+<script src="/web.js" defer></script>
+<script src="/interview.js" defer></script>
+<script src="/page-transitions.js" defer></script>
+</body>
+</html>

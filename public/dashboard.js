@@ -39,6 +39,44 @@ function formatPreviewLimits(previewLimits) {
     + " материалов.";
 }
 
+function updateCompletionCircle(percent, first_name, last_name) {
+  var circleBar = document.getElementById("completionCircleBar");
+  var badgeVal = document.getElementById("completionBadgeVal");
+  var welcomeUser = document.getElementById("completionWelcomeUser");
+  var userInitials = document.getElementById("completionUserInitials");
+
+  var topWelcome = document.getElementById("topBarWelcomeUser");
+  var topName = document.getElementById("topBarUserName");
+  var topInitials = document.getElementById("userAvatarInitials");
+
+  var fName = first_name || "";
+  var lName = last_name || "";
+  var fullName = [fName, lName].filter(Boolean).join(" ").trim();
+  var initials = [fName, lName].filter(Boolean).map(function(s) { return s.charAt(0).toUpperCase(); }).join("");
+  if (!initials) initials = "KY";
+
+  if (fullName) {
+    if (welcomeUser) welcomeUser.textContent = "Привет, " + fName + "! 👋";
+    if (topWelcome) topWelcome.textContent = "Добрый день, " + fName + "! 👋";
+    if (topName) topName.textContent = fullName;
+  }
+  if (userInitials) userInitials.textContent = initials;
+  if (topInitials) topInitials.textContent = initials;
+
+  var p = percent || 0;
+  if (badgeVal) {
+    badgeVal.textContent = String(p) + "%";
+  }
+
+  if (circleBar) {
+    // r = 50, circumference = 2 * PI * r = 314
+    var circumference = 314;
+    var offset = circumference - (p / 100) * circumference;
+    circleBar.style.strokeDasharray = String(circumference);
+    circleBar.style.strokeDashoffset = String(offset);
+  }
+}
+
 function renderProfile(profile, fallbackEmail) {
   var profileName = document.getElementById("dashboardProfileName");
   var profileEmail = document.getElementById("dashboardProfileEmail");
@@ -47,19 +85,22 @@ function renderProfile(profile, fallbackEmail) {
   var profileWorkplace = document.getElementById("dashboardProfileWorkplace");
   var verifyBadge = document.getElementById("dashboardVerifyBadge");
 
-  if (!profileName || !profileEmail || !profileBirthDate || !profileUniversity || !profileWorkplace || !verifyBadge) {
-    return;
-  }
-
   var fullName = [profile.first_name, profile.last_name].filter(Boolean).join(" ").trim();
 
-  profileName.textContent = fullName || "Профиль пользователя";
-  profileEmail.textContent = profile.email || fallbackEmail || "-";
-  profileBirthDate.textContent = formatBirthDate(profile.birth_date);
-  profileUniversity.textContent = profile.university || "-";
-  profileWorkplace.textContent = profile.workplace || "Не указано";
-  verifyBadge.textContent = profile.is_verified ? "Почта подтверждена" : "Почта не подтверждена";
-  verifyBadge.classList.toggle("dashboard-badge-warning", !profile.is_verified);
+  if (profileName) profileName.textContent = fullName || "Профиль пользователя";
+  if (profileEmail) profileEmail.textContent = profile.email || fallbackEmail || "-";
+  if (profileBirthDate) profileBirthDate.textContent = formatBirthDate(profile.birth_date);
+  if (profileUniversity) profileUniversity.textContent = profile.university || "-";
+  if (profileWorkplace) profileWorkplace.textContent = profile.workplace || "Не указано";
+  if (verifyBadge) {
+    verifyBadge.textContent = profile.is_verified ? "Почта подтверждена" : "Почта не подтверждена";
+    verifyBadge.classList.toggle("dashboard-badge-warning", !profile.is_verified);
+  }
+
+  // Save profile info globally for completion circle sync
+  window.dashboardUserFirstName = profile.first_name;
+  window.dashboardUserLastName = profile.last_name;
+  updateCompletionCircle(window.dashboardProfileCompletionPercent, profile.first_name, profile.last_name);
 }
 
 function renderSubscription(subscription, accessTier, accessPolicy) {
@@ -320,25 +361,30 @@ function renderCareerProfileSummary(payload) {
   var certificates = document.getElementById("dashboardCareerCertificates");
   var publicLink = document.getElementById("dashboardCareerPublicLink");
 
-  if (!badge || !text || !projects || !skills || !links || !certificates || !publicLink) {
-    return;
-  }
-
   var summary = payload && payload.summary ? payload.summary : {};
   var urls = payload && payload.urls ? payload.urls : {};
   var isPublic = payload && payload.public_enabled === true;
+  var completionPercent = summary.completion_percent || 0;
 
-  badge.textContent = String(summary.completion_percent || 0) + "%";
-  projects.textContent = String(summary.projects_count || 0);
-  skills.textContent = String(summary.skills_count || 0);
-  links.textContent = String(summary.links_count || 0);
-  certificates.textContent = String(summary.certificates_count || 0);
-  text.textContent = isPublic
-    ? "Публичная страница включена. QR уже может вести работодателя на вашу карьерную визитку."
-    : "Пока это черновик. Заполните ключевые блоки и включите public mode, когда будете готовы.";
+  if (badge) badge.textContent = String(completionPercent) + "%";
+  if (projects) projects.textContent = String(summary.projects_count || 0);
+  if (skills) skills.textContent = String(summary.skills_count || 0);
+  if (links) links.textContent = String(summary.links_count || 0);
+  if (certificates) certificates.textContent = String(summary.certificates_count || 0);
+  if (text) {
+    text.textContent = isPublic
+      ? "Публичная страница включена. QR уже может вести работодателя на вашу карьерную визитку."
+      : "Пока это черновик. Заполните ключевые блоки и включите public mode, когда будете готовы.";
+  }
 
-  publicLink.hidden = !isPublic;
-  publicLink.href = urls.public_url || "#";
+  if (publicLink) {
+    publicLink.hidden = !isPublic;
+    publicLink.href = urls.public_url || "#";
+  }
+
+  // Save completion percent globally and update circular progress widget
+  window.dashboardProfileCompletionPercent = completionPercent;
+  updateCompletionCircle(completionPercent, window.dashboardUserFirstName, window.dashboardUserLastName);
 }
 
 async function loadCareerProfileSummary() {

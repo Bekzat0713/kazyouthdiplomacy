@@ -59,6 +59,15 @@ PGSSLMODE=disable
 SESSION_SECRET=replace-with-a-random-secret-at-least-32-characters-long
 SESSION_COOKIE_NAME=kyd.sid
 
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+APPLE_CLIENT_ID=
+# Either provide APPLE_CLIENT_SECRET directly or provide the team/key/private key below.
+APPLE_CLIENT_SECRET=
+APPLE_TEAM_ID=
+APPLE_KEY_ID=
+APPLE_PRIVATE_KEY=
+
 EMAIL_VERIFICATION_ENABLED=true
 EMAIL_VERIFY_TOKEN_TTL_MINUTES=1440
 EMAIL_RESEND_COOLDOWN_SECONDS=60
@@ -112,4 +121,6 @@ KASPI_QR_URL=https://pay.kaspi.kz/pay/your-qr-code
 4. Verify login rate limits trigger after repeated bad attempts.
 5. Verify email confirmation is required before login.
 6. Verify forgot password sends a reset link and the reset flow updates the password.
-7. Verify `/api/internships/access` returns expected `can_manage` for manager emails.
+7. Verify Google OAuth callback is configured as `https://your-domain.example/auth/google/callback`.
+8. Verify Apple redirect URL is configured as `https://your-domain.example/auth/apple/callback`.
+9. Verify `/api/internships/access` returns expected `can_manage` for manager emails.

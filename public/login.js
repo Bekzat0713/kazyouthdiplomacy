@@ -9,6 +9,8 @@
   var verifyCodeInput = document.getElementById("verifyCodeInput");
   var verifyCodeButton = document.getElementById("verifyCodeButton");
   var errorBox = document.getElementById("authError");
+  var authSocial = document.querySelector("[data-auth-social]");
+  var authSocialDivider = document.querySelector("[data-auth-social-divider]");
   var runtime = window.KYD_RUNTIME;
   var mustUseBackendHost = window.location.protocol === "file:";
   var backendBase = mustUseBackendHost && runtime ? runtime.getBackendBaseUrl() : window.location.origin;
@@ -26,6 +28,10 @@
     "verify-code-expired": "Срок действия кода закончился. Запросите новый код.",
     "rate-limit": "Слишком много попыток. Подождите немного и попробуйте снова.",
     session: "Ошибка сессии. Попробуйте снова.",
+    "oauth-config": "Вход через Google/Apple пока не настроен.",
+    "oauth-denied": "Вход через провайдера был отменён.",
+    "oauth-email": "Провайдер не вернул подтверждённый email.",
+    "oauth-callback": "Не получилось завершить вход через провайдера. Попробуйте ещё раз.",
     server: "Ошибка сервера или базы данных. Проверьте логи терминала."
   };
 
@@ -95,6 +101,56 @@
     hiddenEmail.value = emailInput.value.trim();
   }
 
+  function setupOAuthButtons() {
+    if (!authSocial) {
+      return;
+    }
+
+    fetch(backendBase + "/api/auth/providers", {
+      headers: { "Accept": "application/json" }
+    })
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error("Could not load OAuth providers");
+        }
+        return response.json();
+      })
+      .then(function (payload) {
+        var providers = Array.isArray(payload.providers) ? payload.providers : [];
+        var providerMap = {};
+
+        providers.forEach(function (provider) {
+          providerMap[provider.id] = provider;
+        });
+
+        Array.prototype.forEach.call(
+          authSocial.querySelectorAll("[data-oauth-provider]"),
+          function (button) {
+            var provider = providerMap[button.getAttribute("data-oauth-provider")];
+            if (!provider) {
+              button.style.display = "none";
+              return;
+            }
+            button.href = backendBase + provider.auth_url;
+            button.style.display = "";
+          }
+        );
+
+        if (providers.length > 0) {
+          authSocial.hidden = false;
+          if (authSocialDivider) {
+            authSocialDivider.hidden = false;
+          }
+        }
+      })
+      .catch(function () {
+        authSocial.hidden = true;
+        if (authSocialDivider) {
+          authSocialDivider.hidden = true;
+        }
+      });
+  }
+
   if (mustUseBackendHost && backendBase) {
     if (form) {
       form.action = backendBase + "/login";
@@ -106,6 +162,8 @@
       registerLink.href = backendBase + "/register-survey";
     }
   }
+
+  setupOAuthButtons();
 
   if (email && emailInput) {
     emailInput.value = email;

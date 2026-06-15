@@ -144,14 +144,14 @@ function redactUrlForLogs(value) {
 const cspDirectives = {
   defaultSrc: ["'self'"],
   baseUri: ["'self'"],
-  connectSrc: ["'self'"],
-  fontSrc: ["'self'", "data:"],
+  connectSrc: ["'self'", "https://fonts.googleapis.com"],
+  fontSrc: ["'self'", "data:", "https://fonts.gstatic.com"],
   formAction: ["'self'"],
   frameAncestors: ["'none'"],
   imgSrc: ["'self'", "data:", "https:"],
   objectSrc: ["'none'"],
   scriptSrc: ["'self'"],
-  styleSrc: ["'self'", "'unsafe-inline'"],
+  styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
   workerSrc: ["'self'"],
 };
 
@@ -3305,7 +3305,7 @@ function trimAssistantText(value, maxLength = 1200) {
 
 function normalizeAssistantPage(value) {
   const normalized = String(value || "").trim().toLowerCase();
-  const allowedPages = new Set(["dashboard", "internships", "opportunities", "resources", "subscribe"]);
+  const allowedPages = new Set(["dashboard", "profile", "internships", "opportunities", "resources", "subscribe"]);
   return allowedPages.has(normalized) ? normalized : "dashboard";
 }
 
@@ -3869,7 +3869,7 @@ function getAssistantTools() {
         properties: {
           page: {
             type: "string",
-            enum: ["dashboard", "internships", "opportunities", "resources", "subscribe"],
+            enum: ["dashboard", "profile", "internships", "opportunities", "resources", "subscribe"],
           },
           include_saved: {
             type: "boolean",
@@ -4006,6 +4006,7 @@ function buildAssistantInstructions(context) {
     "Если у пользователя нет нужного доступа, честно скажи, что ограничено, но все равно помоги тем, что доступно прямо сейчас: общий план, логика выбора и следующий шаг.",
     "Для фактов о пользователе, доступе, подписке, сохранениях и каталоге используй только предоставленный контекст и tool calls.",
     "Не выдумывай дедлайны, статусы оплаты, доступы, количество элементов или содержимое каталога.",
+    "Будь честен и реалистичен: никогда не обещай и не выдумывай стажировки или программы в технологических гигантах (Google, Meta, FAANG и т.д.) или элитные гранты, если их нет в текущих результатах поиска или профиле. Предлагай реальные, локальные и практически достижимые шаги для студентов.",
     "Если ответ связан с ограничением Free или Plus, скажи это прямо и предложи следующий шаг на сайте.",
     "Если рекомендуешь элементы, указывай название, организацию и коротко почему это релевантно.",
     "Если данных недостаточно, честно скажи, что именно не видно, и предложи открыть нужный раздел.",
@@ -5553,12 +5554,24 @@ app.get("/dashboard", requireAuth, (req, res) =>
   res.sendFile(path.join(__dirname, "public", "dashboard.html"))
 );
 
+app.get("/profile", requireAuth, (req, res) =>
+  res.sendFile(path.join(__dirname, "public", "profile.html"))
+);
+
 app.get("/internships", requireAuth, (req, res) =>
   res.sendFile(path.join(__dirname, "public", "internships.html"))
 );
 
 app.get("/internships.html", requireAuth, (req, res) =>
   res.redirect("/internships")
+);
+
+app.get("/interview", requireAuth, (req, res) =>
+  res.sendFile(path.join(__dirname, "public", "interview.html"))
+);
+
+app.get("/interview.html", requireAuth, (req, res) =>
+  res.redirect("/interview")
 );
 
 app.get("/api/career-profile", requireAuth, async (req, res) => {

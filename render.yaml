@@ -18,6 +18,20 @@ services:
         generateValue: true
       - key: DATABASE_URL
         sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: APPLE_CLIENT_ID
+        sync: false
+      - key: APPLE_CLIENT_SECRET
+        sync: false
+      - key: APPLE_TEAM_ID
+        sync: false
+      - key: APPLE_KEY_ID
+        sync: false
+      - key: APPLE_PRIVATE_KEY
+        sync: false
       - key: EMAIL_VERIFICATION_ENABLED
         value: true
       - key: AUTH_MIN_PASSWORD_LENGTH
