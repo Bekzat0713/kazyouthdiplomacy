@@ -7312,47 +7312,14 @@ app.post("/api/admin/subscription/:subscriptionId/cancel", requireAuth, requireA
 });
 
 function saveBase64File(base64Data, folder = "uploads") {
-  if (!base64Data || !base64Data.startsWith("data:")) {
-    return base64Data; // Already a URL or empty
-  }
-
-  const match = base64Data.match(/^data:([^;]+);base64,(.+)$/);
-  if (!match) {
-    return base64Data;
-  }
-
-  const mimeType = match[1];
-  const base64Str = match[2];
-  const buffer = Buffer.from(base64Str, "base64");
-
-  // Determine extension
-  let ext = "bin";
-  const mimeLower = mimeType.toLowerCase();
-  if (mimeLower.includes("audio/mpeg") || mimeLower.includes("audio/mp3") || mimeLower.includes("audio/mpeg3") || mimeLower.includes("audio/x-mpeg-3")) ext = "mp3";
-  else if (mimeLower.includes("audio/wav") || mimeLower.includes("audio/x-wav")) ext = "wav";
-  else if (mimeLower.includes("audio/ogg")) ext = "ogg";
-  else if (mimeLower.includes("image/png")) ext = "png";
-  else if (mimeLower.includes("image/jpeg") || mimeLower.includes("image/jpg")) ext = "jpg";
-  else if (mimeLower.includes("image/webp")) ext = "webp";
-  else if (mimeLower.includes("image/svg+xml")) ext = "svg";
-  else if (mimeLower.includes("image/gif")) ext = "gif";
-
-  const filename = `${folder}-${Date.now()}-${Math.round(Math.random() * 1e9)}.${ext}`;
-  const dirPath = path.join(__dirname, "public", folder);
-  if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath, { recursive: true });
-  }
-
-  const filePath = path.join(dirPath, filename);
-  fs.writeFileSync(filePath, buffer);
-
-  return `/${folder}/${filename}`;
+  // Store Base64 directly in the database to support ephemeral filesystems like Render Free
+  return base64Data;
 }
 
 app.get("/api/insight-packs", requireAuth, async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT id, title, category, audio_url, image_url, cover_image_url, created_at FROM insight_packs ORDER BY created_at DESC"
+      "SELECT id, title, category, cover_image_url, created_at FROM insight_packs ORDER BY created_at DESC"
     );
     const canManage = await canViewAdminAnalytics(req);
     return res.json({ packs: result.rows, canManage });
