@@ -4,7 +4,17 @@ const analyticsOverview = document.getElementById("adminAnalyticsOverview");
 const analyticsGoals = document.getElementById("adminAnalyticsGoals");
 const analyticsCurrentStatuses = document.getElementById("adminAnalyticsCurrentStatuses");
 const analyticsSubscriptions = document.getElementById("adminAnalyticsSubscriptions");
-const analyticsRecentUsers = document.getElementById("adminAnalyticsRecentUsers");
+
+let dynamicsChart = null;
+let subscriptionChart = null;
+let goalsChart = null;
+let statusesChart = null;
+let rawDynamicsData = [];
+
+// All Users Search & Pagination state
+let currentSearchQuery = "";
+let usersOffset = 0;
+const usersLimit = 20;
 
 function setAnalyticsStatus(message, isError = false) {
   if (!analyticsStatus) {
@@ -161,21 +171,252 @@ function renderSubscriptionBreakdown(items) {
   analyticsSubscriptions.appendChild(fragment);
 }
 
-function renderRecentUsers(items) {
-  if (!analyticsRecentUsers) {
+// --- Chart.js Initializations & Updates ---
+
+function updateDynamicsChart(dynamics, days = 30) {
+  const canvas = document.getElementById("registrationDynamicsChart");
+  if (!canvas || typeof Chart === "undefined") return;
+
+  const today = new Date();
+  const labels = [];
+  const dataPoints = [];
+  const dynamicsMap = new Map(dynamics.map((d) => [d.date_str, d.total]));
+
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().slice(0, 10);
+    labels.push(d.toLocaleDateString("ru-RU", { day: "numeric", month: "short" }));
+    dataPoints.push(dynamicsMap.get(dateStr) || 0);
+  }
+
+  if (dynamicsChart) {
+    dynamicsChart.data.labels = labels;
+    dynamicsChart.data.datasets[0].data = dataPoints;
+    dynamicsChart.update();
     return;
   }
 
-  analyticsRecentUsers.innerHTML = "";
+  const ctx = canvas.getContext("2d");
+  dynamicsChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: "Регистрации",
+          data: dataPoints,
+          borderColor: "#1a2332",
+          backgroundColor: "rgba(26, 35, 50, 0.05)",
+          borderWidth: 2,
+          tension: 0.3,
+          fill: true,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { stepSize: 1 },
+        },
+      },
+    },
+  });
+}
 
-  if (!items.length) {
-    analyticsRecentUsers.appendChild(createTextElement("p", "admin-analytics-empty", "Пока нет регистраций."));
+function updateSubscriptionChart(overview) {
+  const canvas = document.getElementById("subscriptionPlansChart");
+  if (!canvas || typeof Chart === "undefined") return;
+
+  const labels = ["1 месяц", "3 месяца", "6 месяцев"];
+  const dataPoints = [
+    overview.active_monthly_users || 0,
+    overview.active_quarterly_users || 0,
+    overview.active_halfyear_users || 0,
+  ];
+
+  if (subscriptionChart) {
+    subscriptionChart.data.datasets[0].data = dataPoints;
+    subscriptionChart.update();
+    return;
+  }
+
+  const ctx = canvas.getContext("2d");
+  subscriptionChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          data: dataPoints,
+          backgroundColor: ["#3b82f6", "#10b981", "#8b5cf6"],
+          borderWidth: 0,
+          borderRadius: 8,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { stepSize: 1 },
+        },
+      },
+    },
+  });
+}
+
+function updateGoalsChart(goals) {
+  const canvas = document.getElementById("goalsChart");
+  if (!canvas || typeof Chart === "undefined") return;
+
+  const sorted = [...goals].sort((a, b) => b.total - a.total);
+  const labels = sorted.map((g) => g.label);
+  const dataPoints = sorted.map((g) => g.total);
+
+  if (goalsChart) {
+    goalsChart.data.labels = labels;
+    goalsChart.data.datasets[0].data = dataPoints;
+    goalsChart.update();
+    return;
+  }
+
+  const ctx = canvas.getContext("2d");
+  goalsChart = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          data: dataPoints,
+          backgroundColor: ["#6366f1", "#3b82f6", "#10b981", "#f59e0b", "#ec4899", "#8b5cf6", "#64748b"],
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: "right",
+          labels: { boxWidth: 12, font: { size: 10 } },
+        },
+      },
+    },
+  });
+}
+
+function updateStatusesChart(statuses) {
+  const canvas = document.getElementById("statusesChart");
+  if (!canvas || typeof Chart === "undefined") return;
+
+  const labels = statuses.map((s) => s.label);
+  const dataPoints = statuses.map((s) => s.total);
+
+  if (statusesChart) {
+    statusesChart.data.labels = labels;
+    statusesChart.data.datasets[0].data = dataPoints;
+    statusesChart.update();
+    return;
+  }
+
+  const ctx = canvas.getContext("2d");
+  statusesChart = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          data: dataPoints,
+          backgroundColor: ["#10b981", "#3b82f6", "#f59e0b", "#ef4444", "#64748b"],
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: "right",
+          labels: { boxWidth: 12, font: { size: 10 } },
+        },
+      },
+    },
+  });
+}
+
+function initTimeframeSelector() {
+  const container = document.querySelector(".chart-timeframe-selector");
+  if (!container) return;
+
+  container.addEventListener("click", (e) => {
+    const btn = e.target.closest(".chart-time-btn");
+    if (!btn) return;
+
+    container.querySelectorAll(".chart-time-btn").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    const days = parseInt(btn.dataset.days, 10);
+    updateDynamicsChart(rawDynamicsData, days);
+  });
+}
+
+// --- All Users Operations ---
+
+async function cancelSubscription(subscriptionId, userEmail) {
+  const confirmed = confirm(`Вы действительно хотите принудительно отменить Plus подписку для пользователя ${userEmail}?`);
+  if (!confirmed) return;
+
+  setAnalyticsStatus("Отменяем подписку...");
+
+  try {
+    const response = await fetch(`/api/admin/subscription/${subscriptionId}/cancel`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+    });
+    const payload = await response.json();
+    if (!response.ok) {
+      throw new Error(payload.error || "Не удалось отменить подписку.");
+    }
+    setAnalyticsStatus("");
+    alert("Подписка успешно отменена.");
+    // Refresh both dashboard summary and user list
+    void loadAdminAnalytics();
+    void searchUsers(false);
+  } catch (err) {
+    setAnalyticsStatus(err.message, true);
+    alert(err.message);
+  }
+}
+
+function renderUsersList(users, append = false) {
+  const container = document.getElementById("adminAllUsersList");
+  if (!container) return;
+
+  if (!append) {
+    container.innerHTML = "";
+  }
+
+  if (!users.length && !append) {
+    container.innerHTML = '<p class="admin-analytics-empty">Пользователи не найдены.</p>';
     return;
   }
 
   const fragment = document.createDocumentFragment();
 
-  items.forEach((user) => {
+  users.forEach((user) => {
     const card = document.createElement("article");
     card.className = "admin-analytics-user-card";
 
@@ -189,26 +430,97 @@ function renderRecentUsers(items) {
     meta.appendChild(createTextElement("span", "", user.is_verified ? "Почта подтверждена" : "Почта не подтверждена"));
     meta.appendChild(createTextElement("span", "", user.main_goal ? `Цель: ${user.main_goal.label}` : "Цель не указана"));
     meta.appendChild(createTextElement("span", "", user.current_status ? `Статус: ${user.current_status.label}` : "Статус не указан"));
-    meta.appendChild(
-      createTextElement(
-        "span",
-        "",
-        user.subscription
-          ? `Подписка: ${user.subscription.status}${user.subscription.plan ? ` • ${user.subscription.plan}` : ""}`
-          : "Подписки нет"
-      )
-    );
+
+    const subText = user.subscription
+      ? `Подписка: ${user.subscription.status}${user.subscription.plan ? ` • ${user.subscription.plan}` : ""}`
+      : "Подписки нет";
+    meta.appendChild(createTextElement("span", "", subText));
 
     if (user.subscription && user.subscription.expires_at) {
       meta.appendChild(createTextElement("span", "", `Действует до: ${formatDateTime(user.subscription.expires_at)}`));
     }
 
     card.appendChild(meta);
+
+    // If subscription is active, show the cancel button
+    if (user.subscription && user.subscription.active) {
+      const cancelBtn = document.createElement("button");
+      cancelBtn.className = "admin-cancel-sub-btn";
+      cancelBtn.textContent = "Отменить подписку";
+      cancelBtn.addEventListener("click", () => {
+        void cancelSubscription(user.subscription.id, user.email);
+      });
+      card.appendChild(cancelBtn);
+    }
+
     fragment.appendChild(card);
   });
 
-  analyticsRecentUsers.appendChild(fragment);
+  container.appendChild(fragment);
 }
+
+async function searchUsers(append = false) {
+  const searchInput = document.getElementById("adminUserSearchInput");
+  const query = searchInput ? searchInput.value.trim() : "";
+
+  if (!append) {
+    usersOffset = 0;
+    currentSearchQuery = query;
+  }
+
+  try {
+    const response = await fetch(`/api/admin/users?q=${encodeURIComponent(currentSearchQuery)}&limit=${usersLimit}&offset=${usersOffset}`, {
+      credentials: "include",
+      headers: { Accept: "application/json" },
+    });
+    const payload = await response.json();
+    if (!response.ok) {
+      throw new Error(payload.error || "Не удалось загрузить пользователей.");
+    }
+
+    renderUsersList(payload.users, append);
+
+    const loadMoreContainer = document.getElementById("adminUsersLoadMoreContainer");
+    if (loadMoreContainer) {
+      const shownSoFar = usersOffset + payload.users.length;
+      if (shownSoFar < payload.total) {
+        loadMoreContainer.style.display = "flex";
+      } else {
+        loadMoreContainer.style.display = "none";
+      }
+    }
+  } catch (err) {
+    console.error("Search users error:", err);
+  }
+}
+
+function initUserSearch() {
+  const searchBtn = document.getElementById("adminUserSearchBtn");
+  const searchInput = document.getElementById("adminUserSearchInput");
+  const loadMoreBtn = document.getElementById("adminUsersLoadMoreBtn");
+
+  if (searchBtn) {
+    searchBtn.addEventListener("click", () => searchUsers(false));
+  }
+  if (searchInput) {
+    searchInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        searchUsers(false);
+      }
+    });
+  }
+  if (loadMoreBtn) {
+    loadMoreBtn.addEventListener("click", () => {
+      usersOffset += usersLimit;
+      searchUsers(true);
+    });
+  }
+
+  // Load initial list of users
+  void searchUsers(false);
+}
+
+// --- Main Analytics Loader ---
 
 async function loadAdminAnalytics() {
   setAnalyticsStatus("Загружаем аналитику...");
@@ -228,7 +540,17 @@ async function loadAdminAnalytics() {
     renderBreakdown(analyticsGoals, Array.isArray(payload.goal_breakdown) ? payload.goal_breakdown : []);
     renderBreakdown(analyticsCurrentStatuses, Array.isArray(payload.current_status_breakdown) ? payload.current_status_breakdown : []);
     renderSubscriptionBreakdown(Array.isArray(payload.subscription_breakdown) ? payload.subscription_breakdown : []);
-    renderRecentUsers(Array.isArray(payload.recent_users) ? payload.recent_users : []);
+
+    // Save and render registration dynamics
+    rawDynamicsData = Array.isArray(payload.registration_dynamics) ? payload.registration_dynamics : [];
+    const activeTimeBtn = document.querySelector(".chart-time-btn.active");
+    const activeDays = activeTimeBtn ? parseInt(activeTimeBtn.dataset.days, 10) : 30;
+    updateDynamicsChart(rawDynamicsData, activeDays);
+
+    // Render static charts
+    updateSubscriptionChart(payload.overview || {});
+    updateGoalsChart(Array.isArray(payload.goal_breakdown) ? payload.goal_breakdown : []);
+    updateStatusesChart(Array.isArray(payload.current_status_breakdown) ? payload.current_status_breakdown : []);
 
     if (analyticsGeneratedAt) {
       analyticsGeneratedAt.textContent = `Обновлено: ${formatDateTime(payload.generated_at)}`;
@@ -242,6 +564,9 @@ async function loadAdminAnalytics() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  initTimeframeSelector();
+  initUserSearch();
+
   void loadAdminAnalytics();
   window.setInterval(() => {
     void loadAdminAnalytics();

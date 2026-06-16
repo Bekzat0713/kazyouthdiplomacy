@@ -329,8 +329,8 @@ app.use(
   })
 );
 
-app.use(express.json({ limit: "25mb" }));
-app.use(express.urlencoded({ extended: true, limit: "25mb" }));
+app.use(express.json({ limit: "100mb" }));
+app.use(express.urlencoded({ extended: true, limit: "100mb" }));
 
 app.use(
   session({
@@ -760,6 +760,25 @@ async function initDB() {
         created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS insight_packs (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        category VARCHAR(100) NOT NULL,
+        audio_url TEXT,
+        image_url TEXT,
+        cover_image_url TEXT,
+        content_markdown TEXT NOT NULL,
+        quiz_json JSONB,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    await pool.query(`
+      ALTER TABLE insight_packs ADD COLUMN IF NOT EXISTS cover_image_url TEXT
     `);
 
     const opportunitiesCount = await pool.query(
@@ -4212,7 +4231,7 @@ async function requireAdminAnalytics(req, res, next) {
 }
 
 async function getAdminAnalyticsSnapshot() {
-  const [overviewResult, goalBreakdownResult, currentStatusBreakdownResult, subscriptionStatusResult, recentUsersResult] = await Promise.all([
+  const [overviewResult, goalBreakdownResult, currentStatusBreakdownResult, subscriptionStatusResult, recentUsersResult, registrationDynamicsResult] = await Promise.all([
     pool.query(`
       SELECT
         (SELECT COUNT(*)::INT FROM users) AS users_total,
@@ -4276,6 +4295,15 @@ async function getAdminAnalyticsSnapshot() {
       LEFT JOIN subscriptions s ON s.user_id = u.id
       ORDER BY u.created_at DESC, u.id DESC
       LIMIT 14
+    `),
+    pool.query(`
+      SELECT
+        TO_CHAR(created_at, 'YYYY-MM-DD') AS date_str,
+        COUNT(*)::INT AS total
+      FROM users
+      WHERE created_at >= NOW() - INTERVAL '90 days'
+      GROUP BY TO_CHAR(created_at, 'YYYY-MM-DD')
+      ORDER BY date_str ASC
     `),
   ]);
 
@@ -4344,6 +4372,10 @@ async function getAdminAnalyticsSnapshot() {
         plan: row.subscription_plan || null,
         expires_at: row.subscription_expires_at,
       } : null,
+    })),
+    registration_dynamics: registrationDynamicsResult.rows.map((row) => ({
+      date_str: row.date_str,
+      total: Number(row.total || 0),
     })),
   };
 }
@@ -5702,6 +5734,14 @@ app.get("/interview", requireAuth, (req, res) =>
 
 app.get("/interview.html", requireAuth, (req, res) =>
   res.redirect("/interview")
+);
+
+app.get("/insight-packs", requireAuth, (req, res) =>
+  res.sendFile(path.join(__dirname, "public", "insight-packs.html"))
+);
+
+app.get("/insight-packs.html", requireAuth, (req, res) =>
+  res.redirect("/insight-packs")
 );
 
 app.get("/api/career-profile", requireAuth, async (req, res) => {
@@ -7163,6 +7203,257 @@ app.get("/api/admin-analytics", requireAuth, requireAdminAnalytics, async (req, 
   } catch (err) {
     console.error("Admin analytics error:", err);
     return res.status(500).json({ error: "Failed to load admin analytics" });
+  }
+});
+
+app.get("/api/admin/users", requireAuth, requireAdminAnalytics, async (req, res) => {
+  try {
+    const q = String(req.query.q || "").trim();
+    const limit = Number.parseInt(req.query.limit, 10) || 50;
+    const offset = Number.parseInt(req.query.offset, 10) || 0;
+
+    let countQuery = `SELECT COUNT(*)::INT FROM users u`;
+    let selectQuery = `
+      SELECT
+        u.id,
+        u.first_name,
+        u.last_name,
+        u.email,
+        u.is_verified,
+        u.created_at,
+        rs.survey_payload ->> 'main_goal' AS main_goal,
+        rs.survey_payload ->> 'current_status' AS current_status,
+        s.id AS subscription_id,
+        s.status AS subscription_status,
+        s.active AS subscription_active,
+        s.plan AS subscription_plan,
+        s.expires_at AS subscription_expires_at
+      FROM users u
+      LEFT JOIN registration_surveys rs ON rs.user_id = u.id
+      LEFT JOIN subscriptions s ON s.user_id = u.id
+    `;
+    const params = [];
+    let whereClause = "";
+
+    if (q) {
+      whereClause = ` WHERE u.email ILIKE $1 OR u.first_name ILIKE $1 OR u.last_name ILIKE $1 `;
+      params.push(`%${q}%`);
+      countQuery += whereClause;
+      selectQuery += whereClause;
+    }
+
+    selectQuery += ` ORDER BY u.created_at DESC, u.id DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2} `;
+    params.push(limit, offset);
+
+    const [countResult, selectResult] = await Promise.all([
+      pool.query(countQuery, q ? [`%${q}%`] : []),
+      pool.query(selectQuery, params)
+    ]);
+
+    const total = countResult.rows[0]?.count || 0;
+    const users = selectResult.rows.map(row => ({
+      id: Number(row.id),
+      first_name: normalizeProfileText(row.first_name),
+      last_name: normalizeProfileText(row.last_name),
+      email: normalizeEmail(row.email),
+      is_verified: !EMAIL_VERIFICATION_ENABLED || row.is_verified !== false,
+      created_at: row.created_at,
+      main_goal: row.main_goal ? {
+        key: row.main_goal,
+        label: getSurveyLabel("main_goal", row.main_goal) || row.main_goal,
+      } : null,
+      current_status: row.current_status ? {
+        key: row.current_status,
+        label: getSurveyLabel("current_status", row.current_status) || row.current_status,
+      } : null,
+      subscription: row.subscription_status ? {
+        id: Number(row.subscription_id),
+        status: row.subscription_status,
+        active: row.subscription_active === true,
+        plan: row.subscription_plan || null,
+        expires_at: row.subscription_expires_at,
+      } : null,
+    }));
+
+    return res.json({
+      users,
+      total,
+      limit,
+      offset
+    });
+  } catch (err) {
+    console.error("Admin user search error:", err);
+    return res.status(500).json({ error: "Failed to fetch users" });
+  }
+});
+
+app.post("/api/admin/subscription/:subscriptionId/cancel", requireAuth, requireAdminAnalytics, async (req, res) => {
+  const subscriptionId = Number.parseInt(req.params.subscriptionId, 10);
+  if (!Number.isInteger(subscriptionId) || subscriptionId <= 0) {
+    return res.status(400).json({ error: "Invalid subscription id" });
+  }
+  try {
+    await pool.query(
+      `
+      UPDATE subscriptions
+      SET active = false,
+          status = 'expired',
+          expires_at = CURRENT_TIMESTAMP,
+          review_note = COALESCE(review_note, '') || '\nПодписка отменена администратором.'
+      WHERE id = $1
+      `,
+      [subscriptionId]
+    );
+    return res.json({ ok: true, message: "Подписка отменена." });
+  } catch (err) {
+    console.error("Cancel subscription error:", err);
+    return res.status(500).json({ error: "Failed to cancel subscription" });
+  }
+});
+
+function saveBase64File(base64Data, folder = "uploads") {
+  if (!base64Data || !base64Data.startsWith("data:")) {
+    return base64Data; // Already a URL or empty
+  }
+
+  const match = base64Data.match(/^data:([^;]+);base64,(.+)$/);
+  if (!match) {
+    return base64Data;
+  }
+
+  const mimeType = match[1];
+  const base64Str = match[2];
+  const buffer = Buffer.from(base64Str, "base64");
+
+  // Determine extension
+  let ext = "bin";
+  const mimeLower = mimeType.toLowerCase();
+  if (mimeLower.includes("audio/mpeg") || mimeLower.includes("audio/mp3") || mimeLower.includes("audio/mpeg3") || mimeLower.includes("audio/x-mpeg-3")) ext = "mp3";
+  else if (mimeLower.includes("audio/wav") || mimeLower.includes("audio/x-wav")) ext = "wav";
+  else if (mimeLower.includes("audio/ogg")) ext = "ogg";
+  else if (mimeLower.includes("image/png")) ext = "png";
+  else if (mimeLower.includes("image/jpeg") || mimeLower.includes("image/jpg")) ext = "jpg";
+  else if (mimeLower.includes("image/webp")) ext = "webp";
+  else if (mimeLower.includes("image/svg+xml")) ext = "svg";
+  else if (mimeLower.includes("image/gif")) ext = "gif";
+
+  const filename = `${folder}-${Date.now()}-${Math.round(Math.random() * 1e9)}.${ext}`;
+  const dirPath = path.join(__dirname, "public", folder);
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
+  }
+
+  const filePath = path.join(dirPath, filename);
+  fs.writeFileSync(filePath, buffer);
+
+  return `/${folder}/${filename}`;
+}
+
+app.get("/api/insight-packs", requireAuth, async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT id, title, category, audio_url, image_url, cover_image_url, created_at FROM insight_packs ORDER BY created_at DESC"
+    );
+    const canManage = await canViewAdminAnalytics(req);
+    return res.json({ packs: result.rows, canManage });
+  } catch (err) {
+    console.error("Fetch insight packs error:", err);
+    return res.status(500).json({ error: "Failed to fetch insight packs" });
+  }
+});
+
+app.get("/api/insight-packs/:id", requireAuth, async (req, res) => {
+  const id = Number.parseInt(req.params.id, 10);
+  if (!Number.isInteger(id) || id <= 0) {
+    return res.status(400).json({ error: "Invalid pack id" });
+  }
+  try {
+    const result = await pool.query(
+      "SELECT id, title, category, audio_url, image_url, cover_image_url, content_markdown, quiz_json FROM insight_packs WHERE id = $1 LIMIT 1",
+      [id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Insight Pack not found" });
+    }
+    const canManage = await canViewAdminAnalytics(req);
+    return res.json({ pack: result.rows[0], canManage });
+  } catch (err) {
+    console.error("Fetch single insight pack error:", err);
+    return res.status(500).json({ error: "Failed to fetch insight pack" });
+  }
+});
+
+app.post("/api/admin/insight-packs", requireAuth, requireAdminAnalytics, async (req, res) => {
+  const id = req.body.id ? Number.parseInt(req.body.id, 10) : null;
+  const title = String(req.body.title || "").trim();
+  const category = String(req.body.category || "").trim();
+  const rawAudioUrl = String(req.body.audio_url || "").trim();
+  const rawImageUrl = String(req.body.image_url || "").trim();
+  const rawCoverImageUrl = String(req.body.cover_image_url || "").trim();
+  const content_markdown = String(req.body.content_markdown || "").trim();
+  let quiz_json = null;
+
+  if (!title || !category || !content_markdown) {
+    return res.status(400).json({ error: "Title, category, and markdown content are required." });
+  }
+
+  if (req.body.quiz_json) {
+    try {
+      quiz_json = typeof req.body.quiz_json === "string"
+        ? JSON.parse(req.body.quiz_json)
+        : req.body.quiz_json;
+    } catch (err) {
+      return res.status(400).json({ error: "Invalid JSON in quiz_json field." });
+    }
+  }
+
+  try {
+    // Process and save local uploads if any
+    const audio_url = saveBase64File(rawAudioUrl, "uploads") || null;
+    const image_url = saveBase64File(rawImageUrl, "uploads") || null;
+    const cover_image_url = saveBase64File(rawCoverImageUrl, "uploads") || null;
+
+    if (id && Number.isInteger(id) && id > 0) {
+      const result = await pool.query(
+        `UPDATE insight_packs
+         SET title = $1, category = $2, audio_url = $3, image_url = $4, cover_image_url = $5, content_markdown = $6, quiz_json = $7, updated_at = CURRENT_TIMESTAMP
+         WHERE id = $8
+         RETURNING id`,
+        [title, category, audio_url, image_url, cover_image_url, content_markdown, quiz_json, id]
+      );
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: "Insight Pack not found to update." });
+      }
+      return res.json({ ok: true, id: result.rows[0].id, message: "Insight Pack обновлен." });
+    } else {
+      const result = await pool.query(
+        `INSERT INTO insight_packs (title, category, audio_url, image_url, cover_image_url, content_markdown, quiz_json)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
+         RETURNING id`,
+        [title, category, audio_url, image_url, cover_image_url, content_markdown, quiz_json]
+      );
+      return res.json({ ok: true, id: result.rows[0].id, message: "Insight Pack создан." });
+    }
+  } catch (err) {
+    console.error("Save insight pack error:", err);
+    return res.status(500).json({ error: "Failed to save insight pack." });
+  }
+});
+
+app.delete("/api/admin/insight-packs/:id", requireAuth, requireAdminAnalytics, async (req, res) => {
+  const id = Number.parseInt(req.params.id, 10);
+  if (!Number.isInteger(id) || id <= 0) {
+    return res.status(400).json({ error: "Invalid pack id" });
+  }
+  try {
+    const result = await pool.query("DELETE FROM insight_packs WHERE id = $1 RETURNING id", [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Insight Pack not found" });
+    }
+    return res.json({ ok: true, message: "Insight Pack удален." });
+  } catch (err) {
+    console.error("Delete insight pack error:", err);
+    return res.status(500).json({ error: "Failed to delete insight pack." });
   }
 });
 

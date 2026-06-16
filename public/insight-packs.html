@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <title>Insight Packs — KazYouthDiplomacy</title>
+  <link rel="stylesheet" href="/web.css" />
+  <link rel="stylesheet" href="/card-nav.css">
+  <link rel="stylesheet" href="/access-control.css">
+  <link rel="stylesheet" href="/inner-premium.css?v=v1.1">
+  <link rel="apple-touch-icon" href="/icon-pwa.jpg" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="KazYouth" />
+  <link rel="manifest" href="/manifest.json" />
+  <script src="/pwa.js" defer></script>
+  <script src="/sidebar.js?v=v1.1" defer></script>
+  <script src="/vendor/marked.js" defer></script>
+  <style>
+    /* Специфичные стили для Insight Packs */
+    .packs-header {
+      margin-bottom: 24px;
+    }
+    .packs-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      gap: 16px;
+      flex-flow: row wrap;
+    }
+    .packs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+    .pack-card {
+      background: #fff;
+      border: 1px solid rgba(203, 213, 225, 0.7);
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      height: 320px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.02);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      overflow: hidden;
+    }
+    .pack-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 32px rgba(15, 23, 42, 0.08);
+      border-color: #1a2332;
+    }
+    .pack-card-cover {
+      height: 140px;
+      width: 100%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-image: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border-bottom: 1px solid rgba(203, 213, 225, 0.5);
+    }
+    .pack-card-body {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .pack-card-top {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .pack-category {
+      display: inline-block;
+      align-self: flex-start;
+      padding: 4px 10px;
+      background: rgba(59, 130, 246, 0.1);
+      color: #2563eb;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .pack-card h3 {
+      font-size: 18px;
+      line-height: 1.4;
+      color: #1a2332;
+      margin: 0;
+      font-weight: 700;
+    }
+    .pack-card-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: #64748b;
+    }
+    .pack-go-btn {
+      font-weight: 700;
+      color: #1a2332;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Стили для детального вида пака */
+    .pack-detail-header {
+      margin-bottom: 28px;
+    }
+    .back-btn-wrapper {
+      margin-bottom: 20px;
+    }
+    .btn-back {
+      background: none;
+      border: none;
+      color: #64748b;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      transition: color 0.2s;
+    }
+    .btn-back:hover {
+      color: #1a2332;
+    }
+    .pack-meta-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .pack-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: #f1f5f9;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+    }
+
+    /* Кастомный аудио-плеер */
+    .custom-audio-player {
+      background: rgba(30, 41, 59, 0.03);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 24px;
+      padding: 20px 24px;
+      margin: 28px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.01);
+    }
+    .player-controls-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .player-play-btn {
+      background: #1a2332;
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 12px 28px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(26, 35, 50, 0.2);
+    }
+    .player-play-btn:hover {
+      background: #2d3b4e;
+      transform: translateY(-1px);
+    }
+    .player-play-btn:active {
+      transform: translateY(0);
+    }
+    .player-timeline-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 260px;
+    }
+    .player-timeline-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      border-radius: 3px;
+      background: #cbd5e1;
+      outline: none;
+      cursor: pointer;
+    }
+    .player-timeline-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #1a2332;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+    .player-timeline-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+    .player-time-display {
+      font-size: 13px;
+      color: #64748b;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+    .player-volume-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .player-volume-slider {
+      width: 80px;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 4px;
+      border-radius: 2px;
+      background: #cbd5e1;
+      outline: none;
+      cursor: pointer;
+    }
+    .player-volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #475569;
+      cursor: pointer;
+    }
+
+    /* Блок Takeaways (Главные инсайты) */
+    .takeaways-container {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.03) 0%, rgba(139, 92, 246, 0.03) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.15);
+      border-radius: 24px;
+      padding: 24px 28px;
+      margin-bottom: 32px;
+    }
+    .takeaways-container h3 {
+      font-size: 18px;
+      color: #1e3a8a;
+      margin: 0 0 16px 0;
+      font-weight: 700;
+    }
+    .takeaways-list {
+      margin: 0;
+      padding-left: 20px;
+      display: grid;
+      gap: 10px;
+    }
+    .takeaways-list li {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #334155;
+    }
+
+    /* Рендеринг Markdown контента */
+    .markdown-content-body {
+      font-size: 16px;
+      line-height: 1.8;
+      color: #1a2332;
+      margin-bottom: 40px;
+    }
+    .markdown-content-body h2 {
+      font-size: 22px;
+      margin-top: 36px;
+      margin-bottom: 16px;
+      font-weight: 700;
+      color: #1a2332;
+    }
+    .markdown-content-body h3 {
+      font-size: 18px;
+      margin-top: 28px;
+      margin-bottom: 12px;
+      font-weight: 700;
+      color: #334155;
+    }
+    .markdown-content-body p {
+      margin-bottom: 18px;
+    }
+    .markdown-content-body ul, .markdown-content-body ol {
+      margin-bottom: 18px;
+      padding-left: 24px;
+    }
+    .markdown-content-body li {
+      margin-bottom: 8px;
+    }
+    .markdown-content-body blockquote {
+      border-left: 4px solid #cbd5e1;
+      padding: 8px 0 8px 18px;
+      margin: 24px 0;
+      color: #475569;
+      font-style: italic;
+    }
+
+    /* Кастомные плашки-акценты в Markdown */
+    .markdown-insight {
+      padding: 16px 20px;
+      border-radius: 16px;
+      border-left: 4px solid #10b981;
+      background: rgba(16, 185, 129, 0.04);
+      color: #065f46;
+      margin: 24px 0;
+      font-size: 15px;
+      line-height: 1.6;
+      display: flex;
+      gap: 12px;
+    }
+    .markdown-insight::before {
+      content: "💡";
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .markdown-mistake {
+      padding: 16px 20px;
+      border-radius: 16px;
+      border-left: 4px solid #ef4444;
+      background: rgba(239, 68, 68, 0.04);
+      color: #991b1b;
+      margin: 24px 0;
+      font-size: 15px;
+      line-height: 1.6;
+      display: flex;
+      gap: 12px;
+    }
+    .markdown-mistake::before {
+      content: "⚠️";
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    /* Ментальные карты (Схемы) */
+    .pack-mindmap-section {
+      margin: 36px 0 44px;
+      text-align: center;
+    }
+    .pack-mindmap-section h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 18px;
+      text-align: left;
+    }
+    .pack-mindmap-img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 20px;
+      border: 1px solid rgba(203, 213, 225, 0.8);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.03);
+    }
+
+    /* Флеш-карточки (Flip Cards) */
+    .flashcards-section {
+      margin: 44px 0;
+    }
+    .flashcards-section h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+    .flashcards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .flashcard {
+      height: 160px;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.03);
+      box-sizing: border-box;
+    }
+    .flashcard-front {
+      background: #fff;
+      color: #1a2332;
+      border: 1px solid rgba(203, 213, 225, 0.8);
+      font-weight: 700;
+      font-size: 18px;
+      text-align: center;
+    }
+    .flashcard-back {
+      background: #1a2332;
+      color: #fff;
+      transform: rotateY(180deg);
+      font-size: 14px;
+      line-height: 1.5;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    /* Квиз (Тест) */
+    .quiz-section {
+      margin: 44px 0;
+      padding: 28px;
+      background: #fff;
+      border: 1px solid rgba(203, 213, 225, 0.8);
+      border-radius: 24px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.02);
+    }
+    .quiz-section h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0 0 18px 0;
+    }
+    .quiz-question {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a2332;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .quiz-options {
+      display: grid;
+      gap: 12px;
+    }
+    .quiz-option {
+      display: block;
+      width: 100%;
+      padding: 16px 20px;
+      border-radius: 14px;
+      border: 1px solid rgba(203, 213, 225, 0.8);
+      background: #fff;
+      font-size: 15px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 500;
+      color: #334155;
+    }
+    .quiz-option:hover {
+      background: #f8fafc;
+      border-color: #1a2332;
+    }
+    .quiz-option.correct {
+      background: #ecfdf5;
+      border-color: #10b981;
+      color: #065f46;
+      font-weight: 700;
+    }
+    .quiz-option.incorrect {
+      background: #fef2f2;
+      border-color: #ef4444;
+      color: #991b1b;
+    }
+    .quiz-explanation {
+      margin-top: 20px;
+      padding: 18px 22px;
+      border-radius: 16px;
+      background: rgba(59, 130, 246, 0.05);
+      border-left: 4px solid #3b82f6;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #1e3a8a;
+    }
+
+    /* Админ-форма */
+    .pack-form-card {
+      background: #fff;
+      border: 1px solid rgba(203, 213, 225, 0.8);
+      border-radius: 24px;
+      padding: 28px;
+      margin-bottom: 32px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+    }
+    .pack-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .pack-form-grid input,
+    .pack-form-grid select {
+      padding: 12px 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(203, 213, 225, 0.8);
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.9);
+      outline: none;
+      transition: all 0.2s;
+    }
+    .pack-form-grid input:focus,
+    .pack-form-grid select:focus,
+    .pack-form-card textarea:focus {
+      border-color: #1a2332;
+      box-shadow: 0 0 0 2px rgba(26, 35, 50, 0.1);
+    }
+    .pack-form-card textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(203, 213, 225, 0.8);
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.9);
+      outline: none;
+      transition: all 0.2s;
+      margin-bottom: 18px;
+      font-family: monospace;
+      box-sizing: border-box;
+    }
+    .pack-form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    .pack-admin-actions-bar {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      border-top: 1px solid rgba(203, 213, 225, 0.5);
+      padding-top: 20px;
+    }
+    .file-upload-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .file-upload-field label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #475569;
+    }
+    .file-upload-field input[type="file"] {
+      padding: 10px;
+    }
+    .file-preview-info {
+      font-size: 12px;
+      color: #10b981;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+    .pack-detail-cover {
+      height: 240px;
+      width: 100%;
+      background-size: cover;
+      background-position: center;
+      border-radius: 24px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(203, 213, 225, 0.5);
+    }
+  </style>
+</head>
+<body class="inner-premium-page" data-assistant-page="insight-packs">
+
+<header class="header home-figma-header premium-nav" id="siteHeader">
+  <a href="/" class="logo-wrap premium-brand" aria-label="KazYouthDiplomacy">
+    <img src="/logo.png" alt="KazYouthDiplomacy logo" />
+    <span>KazYouthDiplomacy</span>
+  </a>
+  <nav class="home-figma-nav premium-nav-menu" aria-label="Основная навигация">
+    <div class="card-nav-links premium-nav-links">
+      <a href="/dashboard">Кабинет</a>
+      <a href="/internships">Стажировки</a>
+      <a href="/opportunities">Возможности</a>
+      <a href="/resources">Материалы</a>
+    </div>
+    <div class="card-nav-actions premium-nav-actions">
+      <form method="POST" action="/logout">
+        <button class="nav-btn" type="submit">Выйти</button>
+      </form>
+    </div>
+  </nav>
+</header>
+
+<section class="dashboard-page">
+  <aside class="dashboard-left-sidebar"></aside>
+  
+  <div class="dashboard-main-wrapper">
+    <!-- БЛОК СТАТУСА/ОШИБОК -->
+    <p id="insightPacksStatus" class="opportunity-form-status" style="margin-bottom: 16px;"></p>
+
+    <!-- 1. РЕЖИМ СПИСКА ПАКОВ -->
+    <div id="insightPacksListView">
+      <div class="packs-header">
+        <h1>Интерактивные конспекты (Insight Packs)</h1>
+        <p>Сверхбыстрые выжимки лекций и книг. ИИ-подкаст + ключевые инсайты + схемы + тесты.</p>
+      </div>
+
+      <div class="packs-controls">
+        <div class="filters-modern" id="packsFilters">
+          <button class="filter active" type="button" data-category="all">Все</button>
+          <button class="filter" type="button" data-category="management">Менеджмент</button>
+          <button class="filter" type="button" data-category="design">Дизайн</button>
+          <button class="filter" type="button" data-category="it">ИТ</button>
+          <button class="filter" type="button" data-category="other">Разное</button>
+        </div>
+        <button id="togglePackFormBtn" class="btn secondary small-btn" type="button" hidden>
+          + Создать Insight Pack
+        </button>
+      </div>
+
+      <!-- ФОРМА СОЗДАНИЯ/РЕДАКТИРОВАНИЯ (ПОД ФИЛЬТРАМИ) -->
+      <form id="packFormPanel" class="pack-form-card" hidden>
+        <h2 id="packFormTitle">Новый Insight Pack</h2>
+        <input type="hidden" name="id" />
+        <div class="pack-form-grid">
+          <input type="text" name="title" placeholder="Название пака (например: Agile и Scrum для проджектов)" required maxlength="255" />
+          <select name="category" required>
+            <option value="management">Менеджмент</option>
+            <option value="design">Дизайн</option>
+            <option value="it">ИТ</option>
+            <option value="other">Разное</option>
+          </select>
+          
+          <div class="file-upload-field">
+            <label>Обложка пака (картинка):</label>
+            <input type="file" id="packCoverImageFileInput" accept="image/*" />
+            <input type="hidden" name="cover_image_url" />
+            <div id="coverImagePreviewInfo" class="file-preview-info"></div>
+          </div>
+          
+          <div class="file-upload-field">
+            <label>Ментальная карта (схема):</label>
+            <input type="file" id="packMindmapFileInput" accept="image/*" />
+            <input type="hidden" name="image_url" />
+            <div id="mindmapPreviewInfo" class="file-preview-info"></div>
+          </div>
+
+          <div class="file-upload-field" style="grid-column: span 2;">
+            <label>Аудио подкаст (.mp3):</label>
+            <input type="file" id="packAudioFileInput" accept="audio/*" />
+            <input type="hidden" name="audio_url" />
+            <div id="audioPreviewInfo" class="file-preview-info"></div>
+          </div>
+        </div>
+        <textarea name="content_markdown" rows="12" placeholder="Текст конспекта в формате Markdown... (Используйте лампочку 💡 или предупреждение ⚠️ для оформления)" required></textarea>
+        <textarea name="quiz_json" rows="8" placeholder="JSON структура тестов и карточек..."></textarea>
+        <div class="pack-form-actions">
+          <button type="button" id="cancelPackFormBtn" class="btn secondary">Отмена</button>
+          <button type="submit" class="btn primary">Сохранить</button>
+        </div>
+      </form>
+
+      <div id="packsGrid" class="packs-grid">
+        <!-- Сюда JS загрузит карточки -->
+      </div>
+    </div>
+
+    <!-- 2. ДЕТАЛЬНЫЙ ВИД ОДНОГО ПАКА -->
+    <div id="insightPackDetailView" hidden>
+      <div class="back-btn-wrapper">
+        <button id="backToPacksBtn" class="btn-back">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          Вернуться к списку
+        </button>
+      </div>
+
+      <article class="pack-detail-header">
+        <span id="detailCategory" class="pack-category">Категория</span>
+        <h1 id="detailTitle" style="margin: 12px 0 0 0;">Название пака</h1>
+        <div class="pack-meta-row">
+          <span class="pack-badge">⏱️ Время чтения: 5 мин</span>
+          <span class="pack-badge">🎯 Уровень: Любой</span>
+        </div>
+      </article>
+
+      <div class="pack-detail-cover" id="detailCoverImg" style="display: none;"></div>
+
+      <!-- Плеер подкаста -->
+      <section class="custom-audio-player" id="detailAudioPlayer" style="display: none;">
+        <audio id="packAudioElement"></audio>
+        <div class="player-controls-row">
+          <button class="player-play-btn" id="playerPlayBtn" type="button">
+            <!-- Play Icon -->
+            <svg id="playIcon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <!-- Pause Icon -->
+            <svg id="pauseIcon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+            <span id="playerBtnText">Слушать ИИ-подкаст по теме (5 мин)</span>
+          </button>
+
+          <div class="player-timeline-wrapper">
+            <span class="player-time-display" id="playerCurrentTime">00:00</span>
+            <input type="range" class="player-timeline-slider" id="playerTimeline" value="0" min="0" max="100">
+            <span class="player-time-display" id="playerDuration">00:00</span>
+          </div>
+
+          <div class="player-volume-wrapper">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+            <input type="range" class="player-volume-slider" id="playerVolume" value="80" min="0" max="100">
+          </div>
+        </div>
+      </section>
+
+      <!-- Главные инсайты (Takeaways) -->
+      <section class="takeaways-container" id="detailTakeawaysContainer" style="display: none;">
+        <h3>Главные инсайты (Takeaways)</h3>
+        <ul class="takeaways-list" id="detailTakeawaysList">
+          <!-- Сюда вставляются основные инсайты -->
+        </ul>
+      </section>
+
+      <!-- Тело конспекта (Markdown) -->
+      <section class="markdown-content-body" id="detailMarkdownContent">
+        <!-- Сюда рендерится Markdown -->
+      </section>
+
+      <!-- Ментальная карта (Изображение) -->
+      <section class="pack-mindmap-section" id="detailMindmapSection" style="display: none;">
+        <h3>Визуальная схема (Ментальная карта)</h3>
+        <img class="pack-mindmap-img" id="detailMindmapImg" src="" alt="Ментальная карта конспекта">
+      </section>
+
+      <!-- Интерактивные карточки -->
+      <section class="flashcards-section" id="detailFlashcardsSection" style="display: none;">
+        <h3>Флеш-карточки (Закрепление понятий)</h3>
+        <div class="flashcards-grid" id="detailFlashcardsGrid">
+          <!-- Флеш-карточки с CSS переворотом -->
+        </div>
+      </section>
+
+      <!-- Квиз-тест -->
+      <section class="quiz-section" id="detailQuizSection" style="display: none;">
+        <h3>Проверьте себя (Квиз-тест)</h3>
+        <div id="detailQuizContainer">
+          <!-- Сюда JS вставит вопросы теста -->
+        </div>
+      </section>
+
+      <!-- Панель управления паком для админов -->
+      <div class="pack-admin-actions-bar" id="packAdminActionsBar" hidden>
+        <button id="editPackBtn" class="btn secondary">Редактировать пак</button>
+        <button id="deletePackBtn" class="btn secondary" style="color: #ef4444; border-color: #fca5a5; background: #fee2e2;">Удалить пак</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="/page-transitions.js" defer></script>
+<script src="/insight-packs.js" defer></script>
+</body>
+</html>
