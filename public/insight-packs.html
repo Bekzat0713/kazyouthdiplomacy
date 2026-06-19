@@ -160,6 +160,16 @@
       flex-direction: column;
       gap: 16px;
       box-shadow: 0 10px 20px rgba(0, 0, 0, 0.01);
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .custom-audio-player.audio-error {
+      border-color: rgba(239, 68, 68, 0.4);
+      background: rgba(239, 68, 68, 0.04);
+    }
+    .custom-audio-player.audio-error .player-play-btn {
+      background: #94a3b8;
+      cursor: not-allowed;
+      box-shadow: none;
     }
     .player-controls-row {
       display: flex;
@@ -701,7 +711,7 @@
 
       <!-- Плеер подкаста -->
       <section class="custom-audio-player" id="detailAudioPlayer" style="display: none;">
-        <audio id="packAudioElement"></audio>
+        <audio id="packAudioElement" preload="metadata"></audio>
         <div class="player-controls-row">
           <button class="player-play-btn" id="playerPlayBtn" type="button">
             <!-- Play Icon -->

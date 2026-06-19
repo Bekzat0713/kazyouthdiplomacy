@@ -240,15 +240,18 @@ function renderSinglePack(pack) {
   }
 
   // Audio player setup
-  if (pack.audio_url) {
-    packAudioElement.src = pack.audio_url;
+  if (pack.has_audio) {
+    packAudioElement.src = `/api/insight-packs/${pack.id}/audio`;
     packAudioElement.load();
     detailAudioPlayer.style.display = "flex";
+    detailAudioPlayer.classList.remove("audio-error");
     playIcon.style.display = "block";
     pauseIcon.style.display = "none";
     playerCurrentTime.textContent = "00:00";
     playerDuration.textContent = "00:00";
     playerTimeline.value = 0;
+    const btnText = document.getElementById("playerBtnText");
+    if (btnText) btnText.textContent = "Слушать ИИ-подкаст по теме (5 мин)";
   } else {
     detailAudioPlayer.style.display = "none";
     packAudioElement.src = "";
@@ -415,6 +418,37 @@ function setupAudioPlayer() {
 
   playerVolume.addEventListener("input", () => {
     packAudioElement.volume = playerVolume.value / 100;
+  });
+
+  // Handle playback end
+  packAudioElement.addEventListener("ended", () => {
+    playIcon.style.display = "block";
+    pauseIcon.style.display = "none";
+    playerTimeline.value = 0;
+    playerCurrentTime.textContent = "00:00";
+    const btnText = document.getElementById("playerBtnText");
+    if (btnText) btnText.textContent = "Прослушать ещё раз";
+  });
+
+  // Handle audio errors
+  packAudioElement.addEventListener("error", () => {
+    console.error("Audio playback error:", packAudioElement.error);
+    detailAudioPlayer.classList.add("audio-error");
+    const btnText = document.getElementById("playerBtnText");
+    if (btnText) btnText.textContent = "⚠️ Ошибка загрузки аудио";
+    playIcon.style.display = "block";
+    pauseIcon.style.display = "none";
+  });
+
+  // Handle stalled/waiting states
+  packAudioElement.addEventListener("waiting", () => {
+    const btnText = document.getElementById("playerBtnText");
+    if (btnText) btnText.textContent = "Буферизация...";
+  });
+
+  packAudioElement.addEventListener("playing", () => {
+    const btnText = document.getElementById("playerBtnText");
+    if (btnText) btnText.textContent = "Слушать ИИ-подкаст по теме";
   });
 }
 
@@ -675,8 +709,8 @@ function setupForms() {
       packFormPanel.querySelector('input[name="title"]').value = pack.title;
       packFormPanel.querySelector('select[name="category"]').value = pack.category || "other";
       
-      packFormPanel.querySelector('input[name="audio_url"]').value = pack.audio_url || "";
-      document.getElementById("audioPreviewInfo").textContent = pack.audio_url ? "Файл подкаста загружен и сохранен на сервере" : "";
+      packFormPanel.querySelector('input[name="audio_url"]').value = "";
+      document.getElementById("audioPreviewInfo").textContent = pack.has_audio ? "✅ Аудио-подкаст уже загружен (выберите новый файл для замены)" : "";
       
       packFormPanel.querySelector('input[name="image_url"]').value = pack.image_url || "";
       document.getElementById("mindmapPreviewInfo").textContent = pack.image_url ? "Схема загружена и сохранена на сервере" : "";

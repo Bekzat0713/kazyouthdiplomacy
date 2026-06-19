@@ -7336,7 +7336,7 @@ app.get("/api/insight-packs/:id", requireAuth, async (req, res) => {
   }
   try {
     const result = await pool.query(
-      "SELECT id, title, category, audio_url, image_url, cover_image_url, content_markdown, quiz_json FROM insight_packs WHERE id = $1 LIMIT 1",
+      "SELECT id, title, category, (audio_url IS NOT NULL AND audio_url != '') AS has_audio, image_url, cover_image_url, content_markdown, quiz_json FROM insight_packs WHERE id = $1 LIMIT 1",
       [id]
     );
     if (result.rows.length === 0) {
@@ -7347,6 +7347,60 @@ app.get("/api/insight-packs/:id", requireAuth, async (req, res) => {
   } catch (err) {
     console.error("Fetch single insight pack error:", err);
     return res.status(500).json({ error: "Failed to fetch insight pack" });
+  }
+});
+
+app.get("/api/insight-packs/:id/audio", requireAuth, async (req, res) => {
+  const id = Number.parseInt(req.params.id, 10);
+  if (!Number.isInteger(id) || id <= 0) {
+    return res.status(400).json({ error: "Invalid pack id" });
+  }
+  try {
+    const result = await pool.query(
+      "SELECT audio_url FROM insight_packs WHERE id = $1 LIMIT 1",
+      [id]
+    );
+    if (result.rows.length === 0 || !result.rows[0].audio_url) {
+      return res.status(404).json({ error: "Audio not found" });
+    }
+    const dataUrl = result.rows[0].audio_url;
+    const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/);
+    if (!match) {
+      return res.status(500).json({ error: "Invalid audio data format" });
+    }
+    const mimeType = match[1];
+    const base64Data = match[2];
+    const audioBuffer = Buffer.from(base64Data, "base64");
+    const totalSize = audioBuffer.length;
+
+    // Support Range requests for seeking
+    const range = req.headers.range;
+    if (range) {
+      const parts = range.replace(/bytes=/, "").split("-");
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : totalSize - 1;
+      const chunkSize = end - start + 1;
+      res.status(206);
+      res.set({
+        "Content-Type": mimeType,
+        "Content-Range": `bytes ${start}-${end}/${totalSize}`,
+        "Accept-Ranges": "bytes",
+        "Content-Length": chunkSize,
+        "Cache-Control": "private, max-age=3600"
+      });
+      return res.end(audioBuffer.slice(start, end + 1));
+    }
+
+    res.set({
+      "Content-Type": mimeType,
+      "Content-Length": totalSize,
+      "Accept-Ranges": "bytes",
+      "Cache-Control": "private, max-age=3600"
+    });
+    return res.end(audioBuffer);
+  } catch (err) {
+    console.error("Stream audio error:", err);
+    return res.status(500).json({ error: "Failed to stream audio" });
   }
 });
 
@@ -7376,14 +7430,14 @@ app.post("/api/admin/insight-packs", requireAuth, requireAdminAnalytics, async (
 
   try {
     // Process and save local uploads if any
-    const audio_url = saveBase64File(rawAudioUrl, "uploads") || null;
+    const audio_url = rawAudioUrl ? (saveBase64File(rawAudioUrl, "uploads") || null) : null;
     const image_url = saveBase64File(rawImageUrl, "uploads") || null;
     const cover_image_url = saveBase64File(rawCoverImageUrl, "uploads") || null;
 
     if (id && Number.isInteger(id) && id > 0) {
       const result = await pool.query(
         `UPDATE insight_packs
-         SET title = $1, category = $2, audio_url = $3, image_url = $4, cover_image_url = $5, content_markdown = $6, quiz_json = $7, updated_at = CURRENT_TIMESTAMP
+         SET title = $1, category = $2, audio_url = COALESCE($3, audio_url), image_url = COALESCE($4, image_url), cover_image_url = COALESCE($5, cover_image_url), content_markdown = $6, quiz_json = $7, updated_at = CURRENT_TIMESTAMP
          WHERE id = $8
          RETURNING id`,
         [title, category, audio_url, image_url, cover_image_url, content_markdown, quiz_json, id]
