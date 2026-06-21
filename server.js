@@ -7287,6 +7287,84 @@ app.get("/api/admin/users", requireAuth, requireAdminAnalytics, async (req, res)
   }
 });
 
+app.get("/api/admin/subscribers", requireAuth, requireAdminAnalytics, async (req, res) => {
+  try {
+    const plan = String(req.query.plan || "").trim(); // monthly | quarterly | halfyear | '' (all)
+    const q = String(req.query.q || "").trim();
+    const limit = Number.parseInt(req.query.limit, 10) || 50;
+    const offset = Number.parseInt(req.query.offset, 10) || 0;
+
+    const validPlans = ["monthly", "quarterly", "halfyear"];
+    const conditions = ["s.active IS TRUE", "s.status = 'active'"];
+    const params = [];
+
+    if (plan && validPlans.includes(plan)) {
+      params.push(plan);
+      conditions.push(`s.plan = $${params.length}`);
+    }
+
+    if (q) {
+      params.push(`%${q}%`);
+      conditions.push(`(u.email ILIKE $${params.length} OR u.first_name ILIKE $${params.length} OR u.last_name ILIKE $${params.length})`);
+    }
+
+    const whereClause = conditions.length ? ` WHERE ${conditions.join(" AND ")}` : "";
+
+    const countQuery = `SELECT COUNT(*)::INT FROM subscriptions s JOIN users u ON u.id = s.user_id${whereClause}`;
+    const selectQuery = `
+      SELECT
+        u.id,
+        u.first_name,
+        u.last_name,
+        u.email,
+        u.is_verified,
+        u.created_at,
+        s.id AS subscription_id,
+        s.status AS subscription_status,
+        s.active AS subscription_active,
+        s.plan AS subscription_plan,
+        s.expires_at AS subscription_expires_at,
+        s.created_at AS subscription_created_at
+      FROM subscriptions s
+      JOIN users u ON u.id = s.user_id
+      ${whereClause}
+      ORDER BY s.created_at DESC, s.id DESC
+      LIMIT $${params.length + 1} OFFSET $${params.length + 2}
+    `;
+
+    const countParams = [...params];
+    params.push(limit, offset);
+
+    const [countResult, selectResult] = await Promise.all([
+      pool.query(countQuery, countParams),
+      pool.query(selectQuery, params),
+    ]);
+
+    const total = countResult.rows[0]?.count || 0;
+    const subscribers = selectResult.rows.map((row) => ({
+      id: Number(row.id),
+      first_name: normalizeProfileText(row.first_name),
+      last_name: normalizeProfileText(row.last_name),
+      email: normalizeEmail(row.email),
+      is_verified: !EMAIL_VERIFICATION_ENABLED || row.is_verified !== false,
+      created_at: row.created_at,
+      subscription: {
+        id: Number(row.subscription_id),
+        status: row.subscription_status,
+        active: row.subscription_active === true,
+        plan: row.subscription_plan || null,
+        expires_at: row.subscription_expires_at,
+        created_at: row.subscription_created_at,
+      },
+    }));
+
+    return res.json({ subscribers, total, limit, offset });
+  } catch (err) {
+    console.error("Admin subscribers error:", err);
+    return res.status(500).json({ error: "Failed to fetch subscribers" });
+  }
+});
+
 app.post("/api/admin/subscription/:subscriptionId/cancel", requireAuth, requireAdminAnalytics, async (req, res) => {
   const subscriptionId = Number.parseInt(req.params.subscriptionId, 10);
   if (!Number.isInteger(subscriptionId) || subscriptionId <= 0) {

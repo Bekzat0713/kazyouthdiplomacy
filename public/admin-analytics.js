@@ -520,6 +520,236 @@ function initUserSearch() {
   void searchUsers(false);
 }
 
+// --- Subscribers Tab ---
+
+let currentSubsPlan = "";
+let currentSubsQuery = "";
+let subsOffset = 0;
+const subsLimit = 20;
+let subscribersTabLoaded = false;
+
+const PLAN_LABELS = {
+  monthly: "Месяц",
+  quarterly: "3 Месяца",
+  halfyear: "Полгода",
+};
+
+function getPlanBadgeHtml(plan) {
+  const label = PLAN_LABELS[plan] || plan || "—";
+  const cls = plan || "unknown";
+  return `<span class="sub-plan-badge ${cls}">${label}</span>`;
+}
+
+function renderSubscribersList(subscribers, append = false) {
+  const container = document.getElementById("subscribersList");
+  if (!container) return;
+
+  if (!append) {
+    container.innerHTML = "";
+  }
+
+  if (!subscribers.length && !append) {
+    container.innerHTML = '<p class="admin-analytics-empty">Подписчиков не найдено.</p>';
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+
+  subscribers.forEach((sub) => {
+    const card = document.createElement("div");
+    card.className = "subscriber-card";
+    card.id = `subscriber-${sub.subscription.id}`;
+
+    const name = [sub.first_name, sub.last_name].filter(Boolean).join(" ").trim() || sub.email;
+    const expiresText = sub.subscription.expires_at ? formatDateTime(sub.subscription.expires_at) : "Не указано";
+    const createdText = sub.subscription.created_at ? formatDateTime(sub.subscription.created_at) : formatDateTime(sub.created_at);
+
+    card.innerHTML = `
+      <div class="subscriber-info">
+        <h4>${escapeHtml(name)}</h4>
+        <p class="subscriber-email">${escapeHtml(sub.email)}</p>
+        <div class="subscriber-meta-row">
+          ${getPlanBadgeHtml(sub.subscription.plan)}
+          <span>📅 Подписка до: ${expiresText}</span>
+          <span>🕐 Оформлена: ${createdText}</span>
+        </div>
+      </div>
+      <div class="subscriber-actions"></div>
+    `;
+
+    // Add deactivate button
+    const actionsDiv = card.querySelector(".subscriber-actions");
+    const deactivateBtn = document.createElement("button");
+    deactivateBtn.className = "admin-deactivate-btn";
+    deactivateBtn.textContent = "Деактивировать";
+    deactivateBtn.addEventListener("click", () => {
+      void deactivateSubscription(sub.subscription.id, sub.email);
+    });
+    actionsDiv.appendChild(deactivateBtn);
+
+    fragment.appendChild(card);
+  });
+
+  container.appendChild(fragment);
+}
+
+function escapeHtml(text) {
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+async function deactivateSubscription(subscriptionId, userEmail) {
+  const confirmed = confirm(`Вы действительно хотите деактивировать подписку для ${userEmail}?`);
+  if (!confirmed) return;
+
+  setAnalyticsStatus("Деактивируем подписку...");
+
+  try {
+    const response = await fetch(`/api/admin/subscription/${subscriptionId}/cancel`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+    });
+    const payload = await response.json();
+    if (!response.ok) {
+      throw new Error(payload.error || "Не удалось деактивировать подписку.");
+    }
+    setAnalyticsStatus("");
+    alert("Подписка успешно деактивирована.");
+    // Refresh subscribers list and analytics
+    void loadSubscribers(false);
+    void loadAdminAnalytics();
+  } catch (err) {
+    setAnalyticsStatus(err.message, true);
+    alert(err.message);
+  }
+}
+
+async function loadSubscribers(append = false) {
+  const container = document.getElementById("subscribersList");
+
+  if (!append) {
+    subsOffset = 0;
+    if (container) {
+      container.innerHTML = '<p class="admin-analytics-empty" style="color: #94a3b8;">Загружаем подписчиков...</p>';
+    }
+  }
+
+  try {
+    const params = new URLSearchParams({
+      plan: currentSubsPlan,
+      q: currentSubsQuery,
+      limit: subsLimit,
+      offset: subsOffset,
+    });
+    const response = await fetch(`/api/admin/subscribers?${params.toString()}`, {
+      credentials: "include",
+      headers: { Accept: "application/json" },
+    });
+    const payload = await response.json();
+    if (!response.ok) {
+      throw new Error(payload.error || "Не удалось загрузить подписчиков.");
+    }
+
+    renderSubscribersList(payload.subscribers, append);
+
+    // Update total badge
+    const totalBadge = document.getElementById("subsTotalBadge");
+    if (totalBadge) {
+      totalBadge.style.display = "inline-flex";
+      const planLabel = currentSubsPlan ? PLAN_LABELS[currentSubsPlan] : "Все тарифы";
+      totalBadge.innerHTML = `${planLabel}: <strong>${payload.total}</strong> активных подписчиков`;
+    }
+
+    // Load more button
+    const loadMoreContainer = document.getElementById("subsLoadMoreContainer");
+    if (loadMoreContainer) {
+      const shownSoFar = subsOffset + payload.subscribers.length;
+      loadMoreContainer.style.display = shownSoFar < payload.total ? "flex" : "none";
+    }
+  } catch (err) {
+    console.error("Load subscribers error:", err);
+    if (container && !append) {
+      container.innerHTML = `<p class="admin-analytics-empty" style="color: #ef4444;">${err.message}</p>`;
+    }
+  }
+}
+
+function initTabSwitcher() {
+  const tabContainer = document.querySelector(".admin-tabs");
+  if (!tabContainer) return;
+
+  tabContainer.addEventListener("click", (e) => {
+    const btn = e.target.closest(".admin-tab-btn");
+    if (!btn) return;
+
+    const tabId = btn.dataset.tab;
+
+    // Toggle active tab button
+    tabContainer.querySelectorAll(".admin-tab-btn").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    // Toggle active tab content
+    document.querySelectorAll(".admin-tab-content").forEach((panel) => panel.classList.remove("active"));
+    const targetPanel = document.getElementById(tabId === "analytics" ? "tabAnalytics" : "tabSubscribers");
+    if (targetPanel) {
+      targetPanel.classList.add("active");
+    }
+
+    // Lazy-load subscribers on first tab switch
+    if (tabId === "subscribers" && !subscribersTabLoaded) {
+      subscribersTabLoaded = true;
+      void loadSubscribers(false);
+    }
+  });
+}
+
+function initSubscribersTab() {
+  // Plan filter buttons
+  const filtersContainer = document.getElementById("subsPlanFilters");
+  if (filtersContainer) {
+    filtersContainer.addEventListener("click", (e) => {
+      const btn = e.target.closest(".subs-plan-btn");
+      if (!btn) return;
+
+      filtersContainer.querySelectorAll(".subs-plan-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      currentSubsPlan = btn.dataset.plan || "";
+      void loadSubscribers(false);
+    });
+  }
+
+  // Search
+  const searchBtn = document.getElementById("subsSearchBtn");
+  const searchInput = document.getElementById("subsSearchInput");
+
+  if (searchBtn) {
+    searchBtn.addEventListener("click", () => {
+      currentSubsQuery = searchInput ? searchInput.value.trim() : "";
+      void loadSubscribers(false);
+    });
+  }
+  if (searchInput) {
+    searchInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        currentSubsQuery = searchInput.value.trim();
+        void loadSubscribers(false);
+      }
+    });
+  }
+
+  // Load more
+  const loadMoreBtn = document.getElementById("subsLoadMoreBtn");
+  if (loadMoreBtn) {
+    loadMoreBtn.addEventListener("click", () => {
+      subsOffset += subsLimit;
+      void loadSubscribers(true);
+    });
+  }
+}
+
 // --- Main Analytics Loader ---
 
 async function loadAdminAnalytics() {
@@ -566,9 +796,12 @@ async function loadAdminAnalytics() {
 document.addEventListener("DOMContentLoaded", () => {
   initTimeframeSelector();
   initUserSearch();
+  initTabSwitcher();
+  initSubscribersTab();
 
   void loadAdminAnalytics();
   window.setInterval(() => {
     void loadAdminAnalytics();
   }, 30000);
 });
+

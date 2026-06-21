@@ -1,0 +1,9 @@
+C:\projectwithalibi\_gr8food_extract\Gr8FoodSystem\Gr8FoodSystem\obj\Debug\Gr8FoodSystem.csproj.AssemblyReference.cache
+C:\projectwithalibi\_gr8food_extract\Gr8FoodSystem\Gr8FoodSystem\obj\Debug\Gr8FoodSystem.Properties.Resources.resources
+C:\projectwithalibi\_gr8food_extract\Gr8FoodSystem\Gr8FoodSystem\obj\Debug\Gr8FoodSystem.csproj.GenerateResource.cache
+C:\projectwithalibi\_gr8food_extract\Gr8FoodSystem\Gr8FoodSystem\obj\Debug\Gr8FoodSystem.csproj.CoreCompileInputs.cache
+C:\projectwithalibi\_gr8food_extract\Gr8FoodSystem\Gr8FoodSystem\bin\Debug\Gr8FoodSystem.exe.config
+C:\projectwithalibi\_gr8food_extract\Gr8FoodSystem\Gr8FoodSystem\bin\Debug\Gr8FoodSystem.exe
+C:\projectwithalibi\_gr8food_extract\Gr8FoodSystem\Gr8FoodSystem\bin\Debug\Gr8FoodSystem.pdb
+C:\projectwithalibi\_gr8food_extract\Gr8FoodSystem\Gr8FoodSystem\obj\Debug\Gr8FoodSystem.exe
+C:\projectwithalibi\_gr8food_extract\Gr8FoodSystem\Gr8FoodSystem\obj\Debug\Gr8FoodSystem.pdb
