@@ -418,7 +418,8 @@ async function initDB() {
       ADD COLUMN IF NOT EXISTS prepared_at TIMESTAMP,
       ADD COLUMN IF NOT EXISTS submitted_at TIMESTAMP,
       ADD COLUMN IF NOT EXISTS reviewed_at TIMESTAMP,
-      ADD COLUMN IF NOT EXISTS review_note TEXT
+      ADD COLUMN IF NOT EXISTS review_note TEXT,
+      ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     `);
 
     await pool.query(`
