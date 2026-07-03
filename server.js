@@ -7292,12 +7292,21 @@ app.get("/api/admin/subscribers", requireAuth, requireAdminAnalytics, async (req
   try {
     const plan = String(req.query.plan || "").trim(); // monthly | quarterly | halfyear | '' (all)
     const q = String(req.query.q || "").trim();
+    const statusFilter = String(req.query.status || "active").trim(); // active | expired | all
     const limit = Number.parseInt(req.query.limit, 10) || 50;
     const offset = Number.parseInt(req.query.offset, 10) || 0;
 
     const validPlans = ["monthly", "quarterly", "halfyear"];
-    const conditions = ["s.active IS TRUE", "s.status = 'active'"];
+    const conditions = [];
     const params = [];
+
+    if (statusFilter === "active") {
+      conditions.push("s.active IS TRUE", "s.status = 'active'");
+    } else if (statusFilter === "expired") {
+      conditions.push("(s.active IS NOT TRUE OR s.status = 'expired')");
+      conditions.push("s.status IN ('expired', 'active')");
+    }
+    // statusFilter === 'all' — no status conditions
 
     if (plan && validPlans.includes(plan)) {
       params.push(plan);
@@ -7325,11 +7334,11 @@ app.get("/api/admin/subscribers", requireAuth, requireAdminAnalytics, async (req
         s.active AS subscription_active,
         s.plan AS subscription_plan,
         s.expires_at AS subscription_expires_at,
-        s.created_at AS subscription_created_at
+        s.started_at AS subscription_started_at
       FROM subscriptions s
       JOIN users u ON u.id = s.user_id
       ${whereClause}
-      ORDER BY s.created_at DESC, s.id DESC
+      ORDER BY s.started_at DESC, s.id DESC
       LIMIT $${params.length + 1} OFFSET $${params.length + 2}
     `;
 
@@ -7355,7 +7364,7 @@ app.get("/api/admin/subscribers", requireAuth, requireAdminAnalytics, async (req
         active: row.subscription_active === true,
         plan: row.subscription_plan || null,
         expires_at: row.subscription_expires_at,
-        created_at: row.subscription_created_at,
+        started_at: row.subscription_started_at,
       },
     }));
 
@@ -8058,11 +8067,42 @@ app.use((err, req, res, next) => {
    Start Server
 ====================== */
 
+/* ======================
+   Auto-expire subscriptions
+====================== */
+
+async function expireOverdueSubscriptions() {
+  try {
+    const result = await pool.query(`
+      UPDATE subscriptions
+      SET active = false,
+          status = 'expired'
+      WHERE active IS TRUE
+        AND status = 'active'
+        AND expires_at IS NOT NULL
+        AND expires_at <= CURRENT_TIMESTAMP
+      RETURNING id, user_id, plan, expires_at
+    `);
+    if (result.rowCount > 0) {
+      console.log(`[Cron] Auto-expired ${result.rowCount} subscription(s):`, result.rows.map(r => `user=${r.user_id} plan=${r.plan} expired=${r.expires_at}`));
+    }
+  } catch (err) {
+    console.error("[Cron] expireOverdueSubscriptions error:", err);
+  }
+}
+
+const EXPIRE_CHECK_INTERVAL_MS = 10 * 60 * 1000; // every 10 minutes
+
 async function startServer() {
   try {
     await pool.query("SELECT 1");
     console.log("PostgreSQL connected");
     await initDB();
+
+    // Run expiry check on startup and then every 10 minutes
+    await expireOverdueSubscriptions();
+    setInterval(expireOverdueSubscriptions, EXPIRE_CHECK_INTERVAL_MS);
+
     app.listen(PORT, () => {
       console.log(`Server running on ${APP_BASE_URL}`);
     });

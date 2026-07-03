@@ -222,6 +222,42 @@
     .subs-plan-btn.active .plan-count {
       background: rgba(255, 255, 255, 0.2);
     }
+    .subs-status-btn {
+      padding: 8px 18px;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid rgba(203, 213, 225, 0.8);
+      background: #fff;
+      color: #64748b;
+      transition: all 0.2s ease;
+    }
+    .subs-status-btn:hover {
+      border-color: #1a2332;
+      color: #1a2332;
+    }
+    .subs-status-btn.active {
+      background: #1a2332;
+      color: #fff;
+      border-color: #1a2332;
+    }
+    .subs-status-badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 8px;
+    }
+    .subs-status-active {
+      background: rgba(34, 197, 94, 0.12);
+      color: #16a34a;
+    }
+    .subs-status-expired {
+      background: rgba(239, 68, 68, 0.12);
+      color: #dc2626;
+    }
     .subscriber-card {
       display: flex;
       align-items: center;
@@ -500,6 +536,12 @@
           <button class="subs-plan-btn" data-plan="monthly">🗓 Месяц</button>
           <button class="subs-plan-btn" data-plan="quarterly">📅 3 Месяца</button>
           <button class="subs-plan-btn" data-plan="halfyear">📆 Полгода</button>
+        </div>
+
+        <div class="subs-plan-filters" id="subsStatusFilters" style="margin-top: 10px;">
+          <button class="subs-status-btn active" data-status="active">✅ Активные</button>
+          <button class="subs-status-btn" data-status="expired">❌ Истёкшие</button>
+          <button class="subs-status-btn" data-status="all">📋 Все</button>
         </div>
 
         <div class="admin-search-wrapper" style="margin-bottom: 20px;">

@@ -524,6 +524,7 @@ function initUserSearch() {
 
 let currentSubsPlan = "";
 let currentSubsQuery = "";
+let currentSubsStatus = "active";
 let subsOffset = 0;
 const subsLimit = 20;
 let subscribersTabLoaded = false;
@@ -562,7 +563,11 @@ function renderSubscribersList(subscribers, append = false) {
 
     const name = [sub.first_name, sub.last_name].filter(Boolean).join(" ").trim() || sub.email;
     const expiresText = sub.subscription.expires_at ? formatDateTime(sub.subscription.expires_at) : "Не указано";
-    const createdText = sub.subscription.created_at ? formatDateTime(sub.subscription.created_at) : formatDateTime(sub.created_at);
+    const startedText = sub.subscription.started_at ? formatDateTime(sub.subscription.started_at) : formatDateTime(sub.created_at);
+    const isExpired = !sub.subscription.active || sub.subscription.status === "expired";
+    const statusBadge = isExpired
+      ? '<span class="subs-status-badge subs-status-expired">❌ Истекла</span>'
+      : '<span class="subs-status-badge subs-status-active">✅ Активна</span>';
 
     card.innerHTML = `
       <div class="subscriber-info">
@@ -570,22 +575,25 @@ function renderSubscribersList(subscribers, append = false) {
         <p class="subscriber-email">${escapeHtml(sub.email)}</p>
         <div class="subscriber-meta-row">
           ${getPlanBadgeHtml(sub.subscription.plan)}
+          ${statusBadge}
           <span>📅 Подписка до: ${expiresText}</span>
-          <span>🕐 Оформлена: ${createdText}</span>
+          <span>🕐 Оформлена: ${startedText}</span>
         </div>
       </div>
       <div class="subscriber-actions"></div>
     `;
 
-    // Add deactivate button
-    const actionsDiv = card.querySelector(".subscriber-actions");
-    const deactivateBtn = document.createElement("button");
-    deactivateBtn.className = "admin-deactivate-btn";
-    deactivateBtn.textContent = "Деактивировать";
-    deactivateBtn.addEventListener("click", () => {
-      void deactivateSubscription(sub.subscription.id, sub.email);
-    });
-    actionsDiv.appendChild(deactivateBtn);
+    // Add deactivate button only for active subscriptions
+    if (!isExpired) {
+      const actionsDiv = card.querySelector(".subscriber-actions");
+      const deactivateBtn = document.createElement("button");
+      deactivateBtn.className = "admin-deactivate-btn";
+      deactivateBtn.textContent = "Деактивировать";
+      deactivateBtn.addEventListener("click", () => {
+        void deactivateSubscription(sub.subscription.id, sub.email);
+      });
+      actionsDiv.appendChild(deactivateBtn);
+    }
 
     fragment.appendChild(card);
   });
@@ -640,6 +648,7 @@ async function loadSubscribers(append = false) {
     const params = new URLSearchParams({
       plan: currentSubsPlan,
       q: currentSubsQuery,
+      status: currentSubsStatus,
       limit: subsLimit,
       offset: subsOffset,
     });
@@ -659,7 +668,8 @@ async function loadSubscribers(append = false) {
     if (totalBadge) {
       totalBadge.style.display = "inline-flex";
       const planLabel = currentSubsPlan ? PLAN_LABELS[currentSubsPlan] : "Все тарифы";
-      totalBadge.innerHTML = `${planLabel}: <strong>${payload.total}</strong> активных подписчиков`;
+      const statusLabel = currentSubsStatus === "expired" ? "истёкших" : currentSubsStatus === "all" ? "всего" : "активных";
+      totalBadge.innerHTML = `${planLabel}: <strong>${payload.total}</strong> ${statusLabel} подписчиков`;
     }
 
     // Load more button
@@ -717,6 +727,21 @@ function initSubscribersTab() {
       btn.classList.add("active");
 
       currentSubsPlan = btn.dataset.plan || "";
+      void loadSubscribers(false);
+    });
+  }
+
+  // Status filter buttons
+  const statusFiltersContainer = document.getElementById("subsStatusFilters");
+  if (statusFiltersContainer) {
+    statusFiltersContainer.addEventListener("click", (e) => {
+      const btn = e.target.closest(".subs-status-btn");
+      if (!btn) return;
+
+      statusFiltersContainer.querySelectorAll(".subs-status-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      currentSubsStatus = btn.dataset.status || "active";
       void loadSubscribers(false);
     });
   }
