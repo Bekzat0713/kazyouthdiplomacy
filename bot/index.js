@@ -72,6 +72,10 @@ function createBot({ pool }) {
 
     // Deep-link intent for a known member
     if (payload === "migrate" && !menu.isAccepted(profile)) {
+      if (!menu.isMigrationEnabled()) {
+        await ctx.reply(t(lang, "migration_closed"));
+        return deps.showMenu(ctx, lang);
+      }
       return registration.startMigration(ctx, deps);
     }
 
@@ -124,12 +128,21 @@ function createBot({ pool }) {
         if (stateRow && stateRow.state === "start:lang") {
           const deep = (stateRow.payload || {}).deep;
           await db.clearState(pool, ctx.from.id);
-          if (deep === "migrate") return registration.startMigration(ctx, deps);
+          if (deep === "migrate" && menu.isMigrationEnabled()) {
+            return registration.startMigration(ctx, deps);
+          }
+          if (deep === "migrate") await ctx.reply(t(newLang, "migration_closed"));
           return deps.showMenu(ctx, newLang);
         }
         if (stateRow && stateRow.state === "reg:lang") {
           const payload = stateRow.payload || {};
-          if (payload.flow === "mig") return registration.startMigration(ctx, deps);
+          if (payload.flow === "mig") {
+            if (!menu.isMigrationEnabled()) {
+              await ctx.reply(t(newLang, "migration_closed"));
+              return deps.showMenu(ctx, newLang);
+            }
+            return registration.startMigration(ctx, deps);
+          }
           return registration.startNew(ctx, deps, payload.source);
         }
         await ctx.reply(t(newLang, "lang_switched"));
@@ -225,6 +238,7 @@ function createBot({ pool }) {
       }
       if (action === "amb_current") {
         if (menu.isAccepted(profile)) return deps.showMenu(ctx, lang);
+        if (!menu.isMigrationEnabled()) return ctx.reply(t(lang, "migration_closed"));
         return registration.startMigration(ctx, deps);
       }
       if (action === "events") {

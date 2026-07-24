@@ -36,11 +36,21 @@ function botRole(profile, telegramId) {
   return "regular_user";
 }
 
+/* Verification of existing ambassadors stays closed until the migration code +
+   admin review are in place (stage 2). Off unless explicitly enabled. */
+function isMigrationEnabled() {
+  return process.env.AMB_MIGRATION_ENABLED === "1";
+}
+
 /* General entry menu for regular users (and staff without an ambassador cabinet). */
 function generalMenuKeyboard(lang, showAdmin) {
-  const kb = new Keyboard()
-    .text(t(lang, "gmenu_current")).text(t(lang, "gmenu_join")).row()
-    .text(t(lang, "gmenu_vacancies")).text(t(lang, "gmenu_events")).row()
+  const kb = new Keyboard();
+  if (isMigrationEnabled()) {
+    kb.text(t(lang, "gmenu_current")).text(t(lang, "gmenu_join")).row();
+  } else {
+    kb.text(t(lang, "gmenu_join")).row();
+  }
+  kb.text(t(lang, "gmenu_vacancies")).text(t(lang, "gmenu_events")).row()
     .text(t(lang, "gmenu_training")).text(t(lang, "gmenu_ask")).row()
     .text(t(lang, "gmenu_about"));
   if (showAdmin) kb.row().text(t(lang, "gmenu_admin"));
@@ -306,7 +316,7 @@ function fullName(profile) {
 }
 
 module.exports = {
-  isAccepted, isStaff, botRole, showMenu, menuAction,
+  isAccepted, isStaff, botRole, showMenu, menuAction, isMigrationEnabled,
   showProfile, showTracks, showTeam, showPoints,
   showOpportunities, showHelp, showMyApplication, fullName,
   showAbout, showVacancies, showTraining, showAskSoon, showAdminPanelLink, showPublicEvents,
