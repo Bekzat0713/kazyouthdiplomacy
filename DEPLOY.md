@@ -124,3 +124,38 @@ KASPI_QR_URL=https://pay.kaspi.kz/pay/your-qr-code
 7. Verify Google OAuth callback is configured as `https://your-domain.example/auth/google/callback`.
 8. Verify Apple redirect URL is configured as `https://your-domain.example/auth/apple/callback`.
 9. Verify `/api/internships/access` returns expected `can_manage` for manager emails.
+
+## 6) Амбассадорская программа (Telegram-бот + админ-панель)
+
+Документация: `docs/ambassador-program/`. Код: `bot/`, `routes/amb-admin.js`, `lib/amb-*.js`,
+страницы `public/ambassador.html` и `public/amb-admin.html`. Таблицы `amb_*` создаются автоматически при старте.
+
+### Переменные окружения (Render → Environment)
+
+```
+TG_BOT_TOKEN=...           # токен от @BotFather (обязательно для бота)
+TG_BOT_USERNAME=...        # username бота без @ (для ссылок с сайта и QR)
+TG_WEBHOOK_SECRET=...      # случайная строка 32+ символов (openssl rand -hex 24)
+TG_ADMIN_CHAT_ID=...       # id чата/группы для уведомлений о новых заявках (необязательно)
+TG_SUPPORT_CONTACT=@...    # контакт для раздела «Помощь» в боте (необязательно)
+AMB_HEAD_EMAILS=...        # email руководителя программы (доступ head в веб-панели);
+                           # если не задан — используется OPPORTUNITIES_ADMIN_EMAIL
+AMB_OWNER_TG_IDS=...       # Telegram ID владельца(ев) — роль owner в боте, через запятую
+AMB_ADMIN_TG_IDS=...       # Telegram ID админов — роль admin в боте, через запятую
+                           # (свой ID можно узнать командой /myid в боте)
+CORE_SKILLS_URL=...        # ссылка на Core Skills для меню «Возможности» (необязательно)
+```
+
+### Порядок запуска
+
+1. Создать бота у @BotFather (`/newbot`), включить в настройках бота Inline-режим НЕ нужно.
+2. Прописать переменные выше, задеплоить. Webhook ставится автоматически при старте
+   (нужен https-адрес в `APP_BASE_URL`).
+3. Открыть `/amb-admin.html` под аккаунтом head → вкладка «Структура» → создать 4 потока и команды.
+4. Проверить цикл на себе: /start в боте → анкета → принять заявку в панели → назначить команду.
+5. Локальная разработка без https: `TG_USE_POLLING=1` в .env — бот работает через polling.
+
+### Ограничение
+
+Тимлиды и координаторы входят в админ-панель под аккаунтом сайта, который привязан
+к их профилю амбассадора: в карточке участника (head) — «Привязать аккаунт сайта».

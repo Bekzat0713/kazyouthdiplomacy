@@ -1,78 +1,301 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Кабинет амбассадора</title>
-    <link rel="stylesheet" href="/web.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Стать амбассадором — KazYouthDiplomacy</title>
+  <meta name="description" content="Амбассадорская программа KazYouthDiplomacy: сообщество молодых лидеров — дипломатия, бизнес, медиа и социальные проекты.">
+  <meta property="og:title" content="Стань амбассадором KazYouthDiplomacy">
+  <meta property="og:description" content="Развивайся, участвуй в форумах и открывай карьерные возможности. 370+ амбассадоров по всему Казахстану.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="/logo.png">
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" />
   <link rel="apple-touch-icon" href="/icon-pwa.jpg" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="KazYouth" />
   <link rel="manifest" href="/manifest.json" />
-  <script src="/pwa.js" defer></script>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --bg-subtle: #f9fafb;
+      --bg-muted: #f3f4f6;
+      --bg-blue: #f0f4ff;
+      --text: #0f1117;
+      --muted: #6b7280;
+      --faint: #9ca3af;
+      --accent: #3b6ef6;
+      --accent-hover: #2d5ce8;
+      --accent-soft: rgba(59,110,246,0.08);
+      --border: #e5e7eb;
+      --border-strong: #d1d5db;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.07);
+      --radius: 14px;
+      --ease: cubic-bezier(0.22,1,0.36,1);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "DM Sans", system-ui, -apple-system, sans-serif;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    h1, h2, h3 { font-family: "Syne", "DM Sans", sans-serif; }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+
+    .topbar {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(255,255,255,.85); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .topbar-in {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      max-width: 1080px; margin: 0 auto; padding: 12px 20px;
+    }
+    .brand { font-family: "Syne", sans-serif; font-weight: 700; font-size: 1rem; color: var(--text); text-decoration: none; }
+    .brand span { color: var(--accent); }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .back-link { color: var(--muted); text-decoration: none; font-size: .85rem; }
+    .back-link:hover { color: var(--text); }
+    .lang-toggle {
+      display: flex; gap: 2px; background: var(--bg-muted); border: 1px solid var(--border);
+      border-radius: 999px; padding: 3px;
+    }
+    .lang-toggle button {
+      border: 0; background: transparent; color: var(--muted); font: inherit;
+      font-size: .8rem; font-weight: 500; padding: 5px 13px; border-radius: 999px; cursor: pointer;
+    }
+    .lang-toggle button.active { background: #fff; color: var(--accent); box-shadow: var(--shadow-sm); }
+
+    .hero { padding: 80px 0 64px; text-align: center; position: relative; }
+    .hero::before {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(640px 320px at 50% 0%, var(--accent-soft), transparent 70%);
+    }
+    .kicker {
+      display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--accent);
+      background: var(--accent-soft); border-radius: 999px; padding: 6px 14px;
+      margin-bottom: 20px; position: relative;
+    }
+    .hero h1 {
+      font-size: clamp(1.9rem, 5.2vw, 3.1rem); font-weight: 800; line-height: 1.14;
+      letter-spacing: -.02em; position: relative;
+    }
+    .hero h1 em { font-style: normal; color: var(--accent); }
+    .hero p.sub { max-width: 620px; margin: 20px auto 0; color: var(--muted); font-size: 1.06rem; position: relative; }
+    .cta {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      margin-top: 32px; min-height: 48px; padding: 0 28px;
+      background: var(--accent); color: #fff; text-decoration: none;
+      font-weight: 600; font-size: .95rem; border-radius: 10px; position: relative;
+      box-shadow: 0 4px 14px rgba(59,110,246,.25);
+      transition: background .18s ease, transform .18s ease, box-shadow .18s ease;
+    }
+    .cta:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(59,110,246,.3); }
+    .proof { margin-top: 28px; color: var(--muted); font-size: .88rem; position: relative; }
+    .proof b { color: var(--text); font-weight: 600; }
+
+    section { padding: 56px 0; }
+    section.alt { background: var(--bg-subtle); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    h2.sec { font-size: clamp(1.35rem, 3.2vw, 1.9rem); font-weight: 700; margin-bottom: 10px; letter-spacing: -.01em; }
+    p.sec-sub { color: var(--muted); max-width: 680px; margin-bottom: 32px; }
+
+    .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .card {
+      background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 22px; box-shadow: var(--shadow-sm);
+      transition: transform .2s var(--ease), box-shadow .2s var(--ease), border-color .2s;
+    }
+    .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--border-strong); }
+    .card .ic {
+      width: 40px; height: 40px; display: grid; place-items: center; font-size: 1.15rem;
+      background: var(--bg-blue); border-radius: 10px;
+    }
+    .card h3 { font-size: .98rem; margin: 12px 0 6px; font-weight: 600; font-family: "DM Sans", sans-serif; }
+    .card p { color: var(--muted); font-size: .88rem; }
+
+    .note {
+      margin-top: 20px; padding: 16px 20px; border-radius: 12px;
+      background: var(--bg-blue); border: 1px solid rgba(59,110,246,.18);
+      color: #33415f; font-size: .92rem;
+    }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+    .chip {
+      background: #fff; border: 1px solid var(--border); border-radius: 999px;
+      padding: 8px 18px; font-size: .88rem; color: var(--text); box-shadow: var(--shadow-sm);
+    }
+    .chips + p { margin-top: 16px; color: var(--muted); font-size: .9rem; }
+
+    .steps { counter-reset: step; display: grid; gap: 10px; max-width: 620px; }
+    .step {
+      display: flex; gap: 16px; align-items: center;
+      background: #fff; border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 18px; box-shadow: var(--shadow-sm);
+    }
+    .step::before {
+      counter-increment: step; content: counter(step);
+      flex: 0 0 30px; height: 30px; border-radius: 50%;
+      display: grid; place-items: center; font-weight: 700; font-size: .85rem;
+      background: var(--accent-soft); color: var(--accent);
+    }
+
+    .ladder { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .rung {
+      background: #fff; border: 1px solid var(--border); border-radius: 10px;
+      padding: 9px 14px; font-size: .86rem; white-space: nowrap; box-shadow: var(--shadow-sm);
+    }
+    .rung.hot { border-color: rgba(59,110,246,.4); color: var(--accent); background: var(--bg-blue); font-weight: 600; }
+    .arrow { color: var(--faint); }
+
+    details {
+      background: #fff; border: 1px solid var(--border); border-radius: 12px;
+      padding: 0 20px; margin-bottom: 10px;
+    }
+    details summary {
+      cursor: pointer; padding: 15px 0; font-weight: 600; font-size: .95rem; list-style: none;
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    }
+    details summary::-webkit-details-marker { display: none; }
+    details summary::after { content: "+"; color: var(--accent); font-size: 1.2rem; flex-shrink: 0; }
+    details[open] summary::after { content: "–"; }
+    details p { color: var(--muted); padding-bottom: 16px; font-size: .9rem; }
+
+    .final { text-align: center; padding: 72px 0 84px; }
+    .final .legal { margin-top: 26px; font-size: .8rem; color: var(--faint); }
+    .final .legal a { color: var(--muted); }
+
+    footer { border-top: 1px solid var(--border); padding: 24px 0 40px; color: var(--faint); font-size: .82rem; text-align: center; }
+
+    @media (max-width: 560px) {
+      .hero { padding: 52px 0 44px; }
+      section { padding: 40px 0; }
+      .rung { white-space: normal; }
+      .back-link { display: none; }
+    }
+  </style>
 </head>
 <body>
 
-<header class="header">
-    <div class="logo">KazYouthDiplomacy</div>
-    <nav class="nav">
-        <a href="web.html">Главная</a>
-        <a href="login.html">Выйти</a>
-    </nav>
+<div class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="/">KazYouth<span>Diplomacy</span></a>
+    <div class="topbar-right">
+      <a class="back-link" href="/" data-i18n="back">← На главную</a>
+      <div class="lang-toggle" role="group" aria-label="Language">
+        <button type="button" data-lang="ru" class="active">Рус</button>
+        <button type="button" data-lang="kz">Қаз</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<header class="hero wrap">
+  <span class="kicker" data-i18n="kicker">Амбассадорская программа</span>
+  <h1 data-i18n="hero_h1">Стань амбассадором <em>KazYouthDiplomacy</em></h1>
+  <p class="sub" data-i18n="hero_sub">Сообщество молодых лидеров: дипломатия, бизнес, медиа и социальные проекты. Развивайся, участвуй в форумах и открывай карьерные возможности.</p>
+  <a class="cta js-bot-link" href="#" data-i18n="cta">Стать амбассадором →</a>
+  <p class="proof" data-i18n="proof"><b>370+</b> амбассадоров · <b>35 000+</b> аудитория · партнеры среди госорганов и дипмиссий</p>
 </header>
-<form method="POST" action="/logout">
-     <button type="submit">Выйти</button>
-</form>
 
-<section class="student-hero">
-    <h2>Кабинет амбассадора</h2>
-    <p>
-        Вы являетесь официальным амбассадором платформы  
-        <strong>СтудКарьера</strong>
-    </p>
+<section class="wrap">
+  <h2 class="sec" data-i18n="who_h">Кто такой амбассадор?</h2>
+  <p class="sec-sub" data-i18n="who_p">Амбассадор KazYouthDiplomacy — участник молодежного сообщества, который развивает свои навыки, участвует в проектах организации и получает доступ к образовательным, карьерным, общественным и международным возможностям.</p>
+
+  <h2 class="sec" data-i18n="get_h">Что ты получаешь</h2>
+  <div class="grid">
+    <div class="card"><div class="ic">🎓</div><h3 data-i18n="b1_h">Обучение Core Skills</h3><p data-i18n="b1_p">Лидерство, менторство, коммуникации, языки и гибкие навыки.</p></div>
+    <div class="card"><div class="ic">💼</div><h3 data-i18n="b2_h">Career GPS</h3><p data-i18n="b2_p">Доступ к вакансиям, стажировкам и карьерному сопровождению.</p></div>
+    <div class="card"><div class="ic">🤝</div><h3 data-i18n="b3_h">Встречи с лидерами</h3><p data-i18n="b3_p">Дипломаты, бизнесмены, представители госорганов и НПО.</p></div>
+    <div class="card"><div class="ic">🎤</div><h3 data-i18n="b4_h">Форумы и мероприятия</h3><p data-i18n="b4_p">Бизнес-завтраки, дипломатические ужины, гостевые лекции.</p></div>
+    <div class="card"><div class="ic">🧭</div><h3 data-i18n="b5_h">Профессиональные треки</h3><p data-i18n="b5_p">Развитие в выбранных направлениях — от дипломатии до IT.</p></div>
+    <div class="card"><div class="ic">📜</div><h3 data-i18n="b6_h">Сертификаты и рекомендации</h3><p data-i18n="b6_p">Подтвержденные достижения и рекомендательные письма.</p></div>
+    <div class="card"><div class="ic">📈</div><h3 data-i18n="b7_h">Карьерный рост</h3><p data-i18n="b7_p">Реальный управленческий опыт: тимлид → координатор потока.</p></div>
+    <div class="card"><div class="ic">🌍</div><h3 data-i18n="b8_h">Сообщество</h3><p data-i18n="b8_p">Единомышленники по всему Казахстану и alumni-сеть.</p></div>
+  </div>
+  <div class="note" data-i18n="note">Активные амбассадоры получают приоритетный доступ к конкурсам, стажировкам, мероприятиям и карьерным возможностям.</div>
 </section>
 
-<section class="student-actions">
-
-    <div class="action-card">
-        <h3>🆔 Статус</h3>
-        <p><strong>Активный амбассадор</strong></p>
-        <p>Регион: Алматы</p>
-        <p>ВУЗ: (указывается)</p>
+<section class="alt">
+  <div class="wrap">
+    <h2 class="sec" data-i18n="tracks_h">11 профессиональных направлений</h2>
+    <div class="chips">
+      <span class="chip" data-i18n="t1">Дипломатия и МО</span>
+      <span class="chip" data-i18n="t2">Госслужба</span>
+      <span class="chip" data-i18n="t3">Бизнес</span>
+      <span class="chip" data-i18n="t4">Медиа и SMM</span>
+      <span class="chip" data-i18n="t5">Мероприятия</span>
+      <span class="chip" data-i18n="t6">Образование</span>
+      <span class="chip" data-i18n="t7">Соцпроекты</span>
+      <span class="chip" data-i18n="t8">Волонтерство</span>
+      <span class="chip" data-i18n="t9">Карьера и HR</span>
+      <span class="chip" data-i18n="t10">IT</span>
+      <span class="chip" data-i18n="t11">Технические специальности</span>
     </div>
-
-    <div class="action-card">
-        <h3>📨 Инициативы</h3>
-        <p>Подано инициатив: <strong>2</strong></p>
-        <p>На рассмотрении: <strong>1</strong></p>
-        <button>Подать инициативу</button>
-    </div>
-
-    <div class="action-card">
-        <h3>📢 Активность</h3>
-        <p>Мероприятия: <strong>3</strong></p>
-        <p>Публикации: <strong>5</strong></p>
-        <button>Добавить отчёт</button>
-    </div>
-
-    <div class="action-card">
-        <h3>⭐ Возможности</h3>
-        <p>Закрытые стажировки</p>
-        <p>Приоритетный отбор</p>
-        <button>Смотреть</button>
-    </div>
-
+    <p data-i18n="tracks_p">Выбираешь одно основное и до двух дополнительных направлений.</p>
+  </div>
 </section>
 
-<section class="how-it-works">
-    <h2>Важно</h2>
-    <p style="max-width:700px;margin:0 auto;color:#555;">
-        Это демонстрационная версия кабинета.  
-        Авторизация по SMS и проверка статуса амбассадора  
-        реализуются на backend-уровне.
-    </p>
+<section class="wrap">
+  <h2 class="sec" data-i18n="expect_h">Что ожидается от тебя</h2>
+  <p class="sec-sub" data-i18n="expect_p">Регулярная активность, выполнение заданий, участие в мероприятиях, еженедельные мини-отчеты (2 минуты), уважительное общение и профессиональное представление организации. Достаточно 1–3 часов в неделю.</p>
+
+  <h2 class="sec" data-i18n="how_h">Как стать амбассадором</h2>
+  <div class="steps">
+    <div class="step"><span data-i18n="s1">Перейди в Telegram-бот</span></div>
+    <div class="step"><span data-i18n="s2">Заполни анкету (5–7 минут)</span></div>
+    <div class="step"><span data-i18n="s3">Выбери профессиональные направления</span></div>
+    <div class="step"><span data-i18n="s4">Выполни вводное задание</span></div>
+    <div class="step"><span data-i18n="s5">Дождись решения (5–7 дней)</span></div>
+    <div class="step"><span data-i18n="s6">Пройди вводное обучение</span></div>
+    <div class="step"><span data-i18n="s7">Получи поток, команду и тимлида</span></div>
+  </div>
+  <p style="margin-top:24px"><a class="cta js-bot-link" href="#" data-i18n="cta2">Начать в Telegram →</a></p>
 </section>
 
+<section class="alt">
+  <div class="wrap">
+    <h2 class="sec" data-i18n="ladder_h">Путь роста</h2>
+    <p class="sec-sub" data-i18n="ladder_p">Тимлиды и координаторы получают реальный управленческий опыт для резюме.</p>
+    <div class="ladder">
+      <span class="rung" data-i18n="l1">Кандидат</span><span class="arrow">→</span>
+      <span class="rung" data-i18n="l2">Стажер</span><span class="arrow">→</span>
+      <span class="rung" data-i18n="l3">Амбассадор</span><span class="arrow">→</span>
+      <span class="rung" data-i18n="l4">Активный</span><span class="arrow">→</span>
+      <span class="rung" data-i18n="l5">Старший</span><span class="arrow">→</span>
+      <span class="rung hot" data-i18n="l6">Тимлид</span><span class="arrow">→</span>
+      <span class="rung hot" data-i18n="l7">Координатор</span>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2 class="sec">FAQ</h2>
+  <details><summary data-i18n="f1_q">Это платно?</summary><p data-i18n="f1_a">Нет, участие в программе бесплатное.</p></details>
+  <details><summary data-i18n="f2_q">Мне 16 — я могу участвовать?</summary><p data-i18n="f2_a">Да, с согласия законного представителя (родителя).</p></details>
+  <details><summary data-i18n="f3_q">Я работаю, времени мало.</summary><p data-i18n="f3_a">Достаточно 1–3 часов в неделю — задания и отчеты занимают минимум времени.</p></details>
+  <details><summary data-i18n="f4_q">Я не из Астаны или Алматы.</summary><p data-i18n="f4_a">Программа работает онлайн, а мероприятия проходят и в регионах.</p></details>
+  <details><summary data-i18n="f5_q">Вы гарантируете работу или стажировку?</summary><p data-i18n="f5_a">Нет. Активные амбассадоры получают приоритетный доступ к возможностям, но отбор всегда проводит работодатель.</p></details>
+  <details><summary data-i18n="f6_q">Я уже амбассадор — что делать?</summary><p data-i18n="f6_a">Пройди короткую верификацию по ссылке из группы амбассадоров — займет 3 минуты.</p></details>
+  <details><summary data-i18n="f7_q">На каком языке программа?</summary><p data-i18n="f7_a">Қазақша и на русском — язык выбирается в боте.</p></details>
+</section>
+
+<section class="final wrap">
+  <h2 class="sec" data-i18n="final_h">Готов(а) присоединиться?</h2>
+  <a class="cta js-bot-link" href="#" data-i18n="cta">Стать амбассадором →</a>
+  <p class="legal" data-i18n="legal">Нажимая кнопку, ты переходишь в Telegram-бот. <a href="/about.html">Политика персональных данных</a> · <a href="/about.html">Правила сообщества</a></p>
+</section>
+
+<footer>
+  <div class="wrap">© KazYouthDiplomacy — Казахстанское агентство развития молодежной дипломатии</div>
+</footer>
+
+<script src="/app-config.js"></script>
+<script src="/ambassador.js" defer></script>
 </body>
 </html>

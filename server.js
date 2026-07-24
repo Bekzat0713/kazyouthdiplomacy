@@ -376,6 +376,7 @@ app.get("/app-config.js", (_req, res) => {
     `window.__APP_CONFIG__ = Object.freeze(${JSON.stringify({
       appBaseUrl: APP_BASE_URL,
       kaspiQrUrl: KASPI_QR_URL,
+      tgBotUsername: process.env.TG_BOT_USERNAME || "",
     })});`
   );
 });
@@ -4624,6 +4625,14 @@ app.get("/register", (req, res) => {
   return res.sendFile(path.join(__dirname, "public", "register.html"));
 });
 
+app.get("/verify-email-code", (req, res) => {
+  if (req.session.userId) {
+    return res.redirect("/dashboard");
+  }
+
+  return res.sendFile(path.join(__dirname, "public", "verify-email-code.html"));
+});
+
 app.get("/subscribe", (req, res) => {
   if (req.session.userId) {
     applyNoStoreHeaders(res);
@@ -5026,15 +5035,17 @@ app.post("/register", registerRateLimiter, async (req, res) => {
         console.error("Session save error after register:", saveErr);
       }
 
-      const loginPath =
-        `/login?notice=${encodeURIComponent(verificationNotice)}` +
+      const verifyPath =
+        `/verify-email-code?notice=${encodeURIComponent(verificationNotice)}` +
         `&email=${encodeURIComponent(user.email)}`;
 
       if (wantsJson(req)) {
-        return res.json({ ok: true, redirectTo: loginPath });
+        return res.json({ ok: true, redirectTo: verifyPath });
       }
 
-      return res.redirect(loginPath);
+      return res.redirect(
+        verifyPath
+      );
     });
   } catch (err) {
     console.error("Register server error:", err);
@@ -5571,11 +5582,13 @@ app.post("/login", loginRateLimiter, async (req, res) => {
 
     if (EMAIL_VERIFICATION_ENABLED && user.is_verified === false) {
       console.warn("Login failed: email is not verified", normalizedEmail);
+      const verifyPath =
+        `/verify-email-code?error=unverified&email=${encodeURIComponent(normalizedEmail)}`;
       return respondWithLoginError(
         "unverified",
-        "Email не подтверждён.",
+        "Сначала подтвердите email.",
         403,
-        `/login?error=unverified&email=${encodeURIComponent(normalizedEmail)}`
+        verifyPath
       );
     }
 
@@ -8143,6 +8156,7 @@ async function startServer() {
     console.log("PostgreSQL connected");
     await initDB();
 
+    await require("./lib/amb-init").initAmbProgram({ app, pool });
 
     // Run expiry check on startup and then every 10 minutes
     await expireOverdueSubscriptions();

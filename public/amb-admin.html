@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Амбассадоры — админ-панель</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" />
+  <link rel="stylesheet" href="/amb-admin.css">
+</head>
+<body>
+
+<header class="ah">
+  <div class="ah-brand">KYD · <span>Амбассадоры</span></div>
+  <nav class="ah-tabs" id="tabs">
+    <button data-tab="dashboard" class="active">Дашборд</button>
+    <button data-tab="applications">Заявки <span class="badge" id="appsBadge"></span></button>
+    <button data-tab="people">Участники</button>
+    <button data-tab="tasks">Задания <span class="badge" id="reviewBadge"></span></button>
+    <button data-tab="events">Мероприятия</button>
+    <button data-tab="weekly">Отчеты</button>
+    <button data-tab="structure" id="structureTabBtn">Структура</button>
+  </nav>
+  <div class="ah-me" id="meBox">…</div>
+</header>
+
+<main class="am">
+  <div id="accessDenied" class="denied" hidden>
+    <h2>Нет доступа</h2>
+    <p>Эта панель доступна руководителю программы, координаторам и тимлидам.
+       Войдите на сайт под аккаунтом с соответствующей ролью. <a href="/login.html">Войти</a></p>
+  </div>
+
+  <section id="tab-dashboard" class="tab active"><div class="loading">Загрузка…</div></section>
+  <section id="tab-applications" class="tab"><div class="loading">Загрузка…</div></section>
+  <section id="tab-people" class="tab"><div class="loading">Загрузка…</div></section>
+  <section id="tab-tasks" class="tab"><div class="loading">Загрузка…</div></section>
+  <section id="tab-events" class="tab"><div class="loading">Загрузка…</div></section>
+  <section id="tab-weekly" class="tab"><div class="loading">Загрузка…</div></section>
+  <section id="tab-structure" class="tab"><div class="loading">Загрузка…</div></section>
+</main>
+
+<div id="drawer" class="drawer" hidden>
+  <div class="drawer-inner">
+    <button class="drawer-close" id="drawerClose">×</button>
+    <div id="drawerBody"></div>
+  </div>
+</div>
+
+<script src="/amb-admin.js" defer></script>
+</body>
+</html>
