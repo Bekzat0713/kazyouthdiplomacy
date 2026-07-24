@@ -1,8 +1,7 @@
-var CACHE_NAME = 'kyd-v27';
+var CACHE_NAME = 'kyd-v28';
 var PRECACHE_URLS = ['/'];
 var STATIC_EXTENSIONS = ['.css', '.js', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.woff', '.woff2', '.ttf'];
 var NETWORK_FIRST_EXTENSIONS = ['.css', '.js', '.svg'];
-var AUTH_PAGE_PATHS = ['/login', '/login.html', '/register', '/register.html'];
 
 function isStaticAsset(url) {
   var pathname = new URL(url).pathname;
@@ -35,23 +34,6 @@ function fetchAndCache(request) {
   });
 }
 
-function reloadAuthClients() {
-  return self.clients.matchAll({
-    type: 'window',
-    includeUncontrolled: true,
-  }).then(function (clientList) {
-    return Promise.all(
-      clientList.map(function (client) {
-        var pathname = new URL(client.url).pathname;
-        if (AUTH_PAGE_PATHS.indexOf(pathname) === -1 || !client.navigate) {
-          return Promise.resolve();
-        }
-        return client.navigate(client.url).catch(function () {});
-      })
-    );
-  });
-}
-
 self.addEventListener('install', function (event) {
   event.waitUntil(
     caches.open(CACHE_NAME).then(function (cache) {
@@ -74,8 +56,6 @@ self.addEventListener('activate', function (event) {
       );
     }).then(function () {
       return self.clients.claim();
-    }).then(function () {
-      return reloadAuthClients();
     })
   );
 });

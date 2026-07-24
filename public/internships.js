@@ -793,10 +793,17 @@ function renderCardCollection(target, items, createCard) {
   target.innerHTML = "";
   const fragment = document.createDocumentFragment();
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const isAppleTouchDevice =
+    /iPhone|iPad|iPod/i.test(navigator.userAgent || "") ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const useRevealMotion =
+    !prefersReducedMotion &&
+    !isAppleTouchDevice &&
+    window.matchMedia("(min-width: 992px)").matches;
 
   items.forEach((item, index) => {
     const card = createCard(item);
-    if (!prefersReducedMotion) {
+    if (useRevealMotion) {
       card.classList.add("surface-reveal");
       card.style.setProperty("--reveal-delay", `${Math.min(index, 7) * 60}ms`);
     } else {
@@ -807,7 +814,7 @@ function renderCardCollection(target, items, createCard) {
 
   target.appendChild(fragment);
 
-  if (!prefersReducedMotion) {
+  if (useRevealMotion) {
     window.requestAnimationFrame(() => {
       target.querySelectorAll(".surface-reveal").forEach((card) => {
         card.classList.add("surface-reveal-visible");
