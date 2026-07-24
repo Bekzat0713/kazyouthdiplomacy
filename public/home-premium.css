@@ -3788,3 +3788,21 @@ body.home-figma-page .premium-opportunity-card {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* Clean section pills: neutral white surface, black text, no frame. */
+body.home-figma-page .home-figma-kicker,
+body.home-figma-page .premium-kicker,
+body.home-figma-page .premium-final-box .home-figma-kicker,
+body.home-figma-page .premium-final-box .premium-kicker {
+  background: #ffffff !important;
+  color: #111111 !important;
+  -webkit-text-fill-color: #111111 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+body.home-figma-page .home-figma-kicker::before,
+body.home-figma-page .premium-kicker::before {
+  display: none !important;
+  content: none !important;
+}
+
