@@ -920,7 +920,11 @@ function requireAuth(req, res, next) {
     if (wantsJson(req)) {
       return res.status(401).json({ error: "Unauthorized" });
     }
-    return res.redirect("/login");
+    const requestedPath = String(req.originalUrl || req.path || "").trim();
+    const nextPath = requestedPath.startsWith("/") && !requestedPath.startsWith("//")
+      ? requestedPath
+      : "/dashboard";
+    return res.redirect(`/login?next=${encodeURIComponent(nextPath)}`);
   }
   applyNoStoreHeaders(res);
   return next();
@@ -954,6 +958,29 @@ function createAuthRateLimiter(options) {
 
 function normalizeEmail(email) {
   return String(email || "").trim().toLowerCase();
+}
+
+function normalizePostAuthRedirect(value, fallback = "/dashboard") {
+  const normalized = String(value || "").trim();
+  if (!normalized.startsWith("/") || normalized.startsWith("//")) {
+    return fallback;
+  }
+
+  const pathname = normalized.split(/[?#]/, 1)[0];
+  const allowedPaths = new Set([
+    "/dashboard",
+    "/profile",
+    "/career-profile",
+    "/internships",
+    "/opportunities",
+    "/resources",
+    "/interview",
+    "/insight-packs",
+    "/subscribe",
+    "/register-survey",
+  ]);
+
+  return allowedPaths.has(pathname) ? normalized : fallback;
 }
 
 function normalizeProfileText(value) {
@@ -4432,47 +4459,19 @@ function normalizeSurveyAnswer(value) {
 function validatePreRegisterSurveyPayload(payload) {
   const normalized = {
     current_status: normalizeSurveyAnswer(payload.current_status),
-    age_group: normalizeSurveyAnswer(payload.age_group),
     main_goal: normalizeSurveyAnswer(payload.main_goal),
-    goal_clarity: normalizeSurveyAnswer(payload.goal_clarity),
-    main_blocker: normalizeSurveyAnswer(payload.main_blocker),
-    current_experience: normalizeSurveyAnswer(payload.current_experience),
     english_level: normalizeSurveyAnswer(payload.english_level),
-    discovery_channels: Array.isArray(payload.discovery_channels)
-      ? payload.discovery_channels.map(normalizeSurveyAnswer).filter(Boolean)
-      : [],
-    needs_action_plan: normalizeSurveyAnswer(payload.needs_action_plan),
   };
 
-  for (const [key, allowedValues] of Object.entries(preRegisterSurveyOptionSets)) {
-    if (key === "discovery_channels") {
-      continue;
-    }
-
+  for (const key of ["current_status", "main_goal", "english_level"]) {
+    const allowedValues = preRegisterSurveyOptionSets[key];
     if (!allowedValues.has(normalized[key])) {
       return {
         ok: false,
-        error: `Invalid value for ${key}`,
+        error: "Выберите ответ на каждый вопрос.",
       };
     }
   }
-
-  if (normalized.discovery_channels.length === 0) {
-    return {
-      ok: false,
-      error: "Choose at least one discovery channel",
-    };
-  }
-
-  const uniqueChannels = Array.from(new Set(normalized.discovery_channels));
-  if (uniqueChannels.some((channel) => !preRegisterSurveyOptionSets.discovery_channels.has(channel))) {
-    return {
-      ok: false,
-      error: "Invalid value for discovery_channels",
-    };
-  }
-
-  normalized.discovery_channels = uniqueChannels;
 
   return {
     ok: true,
@@ -4609,7 +4608,7 @@ app.get("/reset-password.html", (req, res) => {
   return res.redirect(`/reset-password${suffix}`);
 });
 
-app.get("/register-survey", (req, res) =>
+app.get("/register-survey", requireAuth, (req, res) =>
   res.sendFile(path.join(__dirname, "public", "register-survey.html"))
 );
 
@@ -4618,8 +4617,8 @@ app.get("/register-survey.html", (req, res) =>
 );
 
 app.get("/register", (req, res) => {
-  if (!req.session.preRegisterSurveyCompleted) {
-    return res.redirect("/register-survey");
+  if (req.session.userId) {
+    return res.redirect("/dashboard");
   }
 
   return res.sendFile(path.join(__dirname, "public", "register.html"));
@@ -4838,23 +4837,29 @@ app.get("/api/reviews", async (_req, res) => {
   }
 });
 
-app.post("/api/register-survey", (req, res) => {
+app.post("/api/register-survey", requireAuth, async (req, res) => {
   const validation = validatePreRegisterSurveyPayload(req.body || {});
   if (!validation.ok) {
     return res.status(400).json({ error: validation.error });
   }
 
-  req.session.preRegisterSurvey = validation.survey;
-  req.session.preRegisterSurveyCompleted = true;
+  try {
+    await pool.query(
+      `
+      INSERT INTO registration_surveys (user_id, survey_payload, submitted_at)
+      VALUES ($1, $2::jsonb, CURRENT_TIMESTAMP)
+      ON CONFLICT (user_id) DO UPDATE
+      SET survey_payload = EXCLUDED.survey_payload,
+          submitted_at = CURRENT_TIMESTAMP
+      `,
+      [req.session.userId, JSON.stringify(validation.survey)]
+    );
 
-  return req.session.save((saveErr) => {
-    if (saveErr) {
-      console.error("Failed to save pre-register survey session:", saveErr);
-      return res.status(500).json({ error: "Failed to save survey" });
-    }
-
-    return res.json({ ok: true, redirect: "/register" });
-  });
+    return res.json({ ok: true, redirect: "/dashboard" });
+  } catch (err) {
+    console.error("Failed to save onboarding survey:", err);
+    return res.status(500).json({ error: "Не удалось сохранить ответы. Попробуйте ещё раз." });
+  }
 });
 
 /* ======================
@@ -4862,10 +4867,6 @@ app.post("/api/register-survey", (req, res) => {
 ====================== */
 
 app.post("/register", registerRateLimiter, async (req, res) => {
-  if (!req.session.preRegisterSurveyCompleted || !req.session.preRegisterSurvey) {
-    return res.redirect("/register-survey?error=required");
-  }
-
   const {
     firstName,
     lastName,
@@ -4882,33 +4883,37 @@ app.post("/register", registerRateLimiter, async (req, res) => {
   const normalizedUniversity = normalizeProfileText(university);
   const normalizedWorkplace = normalizeProfileText(workplace);
   const normalizedEmail = normalizeEmail(email);
+  const respondWithRegisterError = (code, message, status = 400) => {
+    if (wantsJson(req)) {
+      return res.status(status).json({ error: code, message });
+    }
+    return res.redirect(`/register?error=${encodeURIComponent(code)}`);
+  };
 
   if (
     !normalizedFirstName ||
-    !normalizedLastName ||
-    !normalizedBirthDate ||
-    !normalizedUniversity ||
     !normalizedEmail ||
     !password ||
-    !confirmPassword ||
+    normalizedEmail.length > 320 ||
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail) ||
     normalizedFirstName.length > 80 ||
     normalizedLastName.length > 80 ||
     normalizedUniversity.length > 180 ||
     normalizedWorkplace.length > 180
   ) {
     console.warn("Register failed: invalid input");
-    return res.redirect("/register?error=invalid");
+    return respondWithRegisterError("invalid", "Введите имя, корректный email и пароль.");
   }
 
-  if (password !== confirmPassword) {
+  if (confirmPassword && password !== confirmPassword) {
     console.warn("Register failed: passwords do not match");
-    return res.redirect("/register?error=password-match");
+    return respondWithRegisterError("password-match", "Пароли не совпадают.");
   }
 
   const passwordValidation = validatePasswordStrength(password);
   if (!passwordValidation.ok) {
     console.warn("Register failed: weak password");
-    return res.redirect("/register?error=password-weak");
+    return respondWithRegisterError("password-weak", passwordValidation.error);
   }
 
   try {
@@ -4919,7 +4924,11 @@ app.post("/register", registerRateLimiter, async (req, res) => {
 
     if (existing.rows.length > 0) {
       console.warn("Register failed: email exists", normalizedEmail);
-      return res.redirect("/register?error=exists");
+      return respondWithRegisterError(
+        "exists",
+        "Аккаунт с таким email уже есть. Войдите или восстановите пароль.",
+        409
+      );
     }
 
     const hashed = await bcrypt.hash(password, 10);
@@ -4971,25 +4980,31 @@ app.post("/register", registerRateLimiter, async (req, res) => {
       user.email_verified_at = new Date();
     }
 
-    try {
-      await pool.query(
-        `
-        INSERT INTO registration_surveys (user_id, survey_payload, submitted_at)
-        VALUES ($1, $2::jsonb, CURRENT_TIMESTAMP)
-        ON CONFLICT (user_id) DO UPDATE
-        SET survey_payload = EXCLUDED.survey_payload,
-            submitted_at = CURRENT_TIMESTAMP
-        `,
-        [user.id, JSON.stringify(req.session.preRegisterSurvey)]
-      );
-    } catch (surveySaveErr) {
-      console.error("Could not save registration survey:", surveySaveErr);
+    if (req.session.preRegisterSurvey) {
+      try {
+        await pool.query(
+          `
+          INSERT INTO registration_surveys (user_id, survey_payload, submitted_at)
+          VALUES ($1, $2::jsonb, CURRENT_TIMESTAMP)
+          ON CONFLICT (user_id) DO UPDATE
+          SET survey_payload = EXCLUDED.survey_payload,
+              submitted_at = CURRENT_TIMESTAMP
+          `,
+          [user.id, JSON.stringify(req.session.preRegisterSurvey)]
+        );
+      } catch (surveySaveErr) {
+        console.error("Could not save legacy registration survey:", surveySaveErr);
+      }
     }
 
     req.session.preRegisterSurvey = null;
     req.session.preRegisterSurveyCompleted = false;
 
     if (!EMAIL_VERIFICATION_ENABLED) {
+      if (wantsJson(req)) {
+        await saveSessionForUser(req, user);
+        return res.json({ ok: true, redirectTo: "/dashboard" });
+      }
       return saveSessionAndRedirect(req, res, user, "/dashboard");
     }
 
@@ -5011,13 +5026,23 @@ app.post("/register", registerRateLimiter, async (req, res) => {
         console.error("Session save error after register:", saveErr);
       }
 
-      return res.redirect(
-        `/login?notice=${encodeURIComponent(verificationNotice)}&email=${encodeURIComponent(user.email)}`
-      );
+      const loginPath =
+        `/login?notice=${encodeURIComponent(verificationNotice)}` +
+        `&email=${encodeURIComponent(user.email)}`;
+
+      if (wantsJson(req)) {
+        return res.json({ ok: true, redirectTo: loginPath });
+      }
+
+      return res.redirect(loginPath);
     });
   } catch (err) {
     console.error("Register server error:", err);
-    return res.redirect("/register?error=server");
+    return respondWithRegisterError(
+      "server",
+      "Не удалось создать аккаунт. Попробуйте ещё раз немного позже.",
+      500
+    );
   }
 });
 
@@ -5486,13 +5511,19 @@ app.post("/reset-password", resetPasswordRateLimiter, async (req, res) => {
 ====================== */
 
 app.post("/login", loginRateLimiter, async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, next } = req.body;
   const normalizedEmail = normalizeEmail(email);
-  const invalidLoginRedirect = "/login?error=credentials";
+  const successRedirect = normalizePostAuthRedirect(next);
+  const respondWithLoginError = (code, message, status = 400, redirectTo = "") => {
+    if (wantsJson(req)) {
+      return res.status(status).json({ error: code, message, redirectTo });
+    }
+    return res.redirect(redirectTo || `/login?error=${encodeURIComponent(code)}`);
+  };
 
   if (!normalizedEmail || !password) {
     console.warn("Login failed: invalid input");
-    return res.redirect(invalidLoginRedirect);
+    return respondWithLoginError("credentials", "Неверный email или пароль.", 401);
   }
 
   try {
@@ -5503,7 +5534,7 @@ app.post("/login", loginRateLimiter, async (req, res) => {
 
     if (result.rows.length === 0) {
       console.warn("Login failed: user not found", normalizedEmail);
-      return res.redirect(invalidLoginRedirect);
+      return respondWithLoginError("credentials", "Неверный email или пароль.", 401);
     }
 
     const user = result.rows[0];
@@ -5522,7 +5553,7 @@ app.post("/login", loginRateLimiter, async (req, res) => {
 
     if (!match) {
       console.warn("Login failed: wrong password", normalizedEmail);
-      return res.redirect(invalidLoginRedirect);
+      return respondWithLoginError("credentials", "Неверный email или пароль.", 401);
     }
 
     if (!EMAIL_VERIFICATION_ENABLED && user.is_verified === false) {
@@ -5540,13 +5571,26 @@ app.post("/login", loginRateLimiter, async (req, res) => {
 
     if (EMAIL_VERIFICATION_ENABLED && user.is_verified === false) {
       console.warn("Login failed: email is not verified", normalizedEmail);
-      return res.redirect(`/login?error=unverified&email=${encodeURIComponent(normalizedEmail)}`);
+      return respondWithLoginError(
+        "unverified",
+        "Email не подтверждён.",
+        403,
+        `/login?error=unverified&email=${encodeURIComponent(normalizedEmail)}`
+      );
     }
 
-    return saveSessionAndRedirect(req, res, user, "/dashboard");
+    if (wantsJson(req)) {
+      await saveSessionForUser(req, user);
+      return res.json({ ok: true, redirectTo: successRedirect });
+    }
+    return saveSessionAndRedirect(req, res, user, successRedirect);
   } catch (err) {
     console.error("Login server error:", err);
-    return res.redirect("/login?error=server");
+    return respondWithLoginError(
+      "server",
+      "Не удалось войти. Попробуйте ещё раз немного позже.",
+      500
+    );
   }
 });
 
@@ -5577,7 +5621,7 @@ app.get("/auth/google", (req, res) => {
     client_id: GOOGLE_CLIENT_ID,
     access_type: "offline",
     response_type: "code",
-    prompt: "consent",
+    prompt: "select_account",
     scope: [
       "https://www.googleapis.com/auth/userinfo.profile",
       "https://www.googleapis.com/auth/userinfo.email"
@@ -5672,7 +5716,7 @@ app.get("/auth/google/callback", async (req, res) => {
       );
       user = insertRes.rows[0];
       
-      return saveSessionAndRedirect(req, res, user, "/register-survey");
+      return saveSessionAndRedirect(req, res, user, "/dashboard");
     }
   } catch (err) {
     console.error("Google OAuth callback handler error:", err);
@@ -8098,6 +8142,7 @@ async function startServer() {
     await pool.query("SELECT 1");
     console.log("PostgreSQL connected");
     await initDB();
+
 
     // Run expiry check on startup and then every 10 minutes
     await expireOverdueSubscriptions();

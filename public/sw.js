@@ -1,4 +1,4 @@
-var CACHE_NAME = 'kyd-v22';
+var CACHE_NAME = 'kyd-v27';
 var PRECACHE_URLS = ['/'];
 var STATIC_EXTENSIONS = ['.css', '.js', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.woff', '.woff2', '.ttf'];
 var NETWORK_FIRST_EXTENSIONS = ['.css', '.js', '.svg'];

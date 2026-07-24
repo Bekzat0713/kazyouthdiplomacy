@@ -3,159 +3,91 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/png" href="/logo.png" />
-  <title>Вход - KazYouthDiplomacy</title>
+  <link rel="icon" type="image/png" href="/logo.png">
+  <title>Вход — KazYouthDiplomacy</title>
   <link rel="stylesheet" href="/web.css">
-  <link rel="stylesheet" href="/card-nav.css">
   <link rel="stylesheet" href="/auth.css">
-  <link rel="apple-touch-icon" href="/icon-pwa.jpg" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="KazYouth" />
-  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" href="/icon-pwa.jpg">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="KazYouth">
+  <link rel="manifest" href="/manifest.json">
   <script src="/pwa.js" defer></script>
 </head>
-<body class="login-page route-page auth-figma-page">
+<body class="login-page auth-figma-page auth-compact-page">
 
-<header class="header home-figma-header">
-  <a href="/" class="logo-wrap logo-intro" aria-label="KazYouthDiplomacy">
-    <img src="/logo.png" alt="KazYouthDiplomacy logo">
+<header class="auth-compact-header">
+  <a href="/" class="logo-wrap" aria-label="KazYouthDiplomacy — на главную">
+    <img src="/logo.png" alt="">
     <span>KazYouthDiplomacy</span>
   </a>
-
-  <nav class="home-figma-nav" aria-label="Основная навигация">
-    <div class="card-nav-links">
-      <a href="/" class="route-link" data-transition-direction="right">Главная</a>
-      <a href="/about" class="route-link" data-transition-direction="left">О нас</a>
-      <a href="/subscribe" class="route-link" data-transition-direction="right">Подписка</a>
-      <a href="/#ai-youth">AI Youth</a>
-      <a href="/#pricing">Тарифы</a>
-      <a href="/#reviews">Отзывы</a>
-      <a href="/register-survey" class="route-link" data-transition-direction="right">Опрос</a>
-      <a href="/register" class="route-link" data-transition-direction="right">Регистрация</a>
-    </div>
-    <div class="card-nav-actions">
-      <a href="/dashboard" class="nav-btn">Кабинет</a>
-      <a href="/login" class="nav-btn" aria-current="page">Войти</a>
-    </div>
-  </nav>
+  <p>Нет аккаунта? <a href="/register">Создать</a></p>
 </header>
 
-<main class="auth-figma-main">
-  <div class="auth-figma-shell">
-    <section class="auth-figma-panel auth-figma-copy-panel">
-      <span class="home-figma-kicker">Career GPS access</span>
-      <h1>Войдите в аккаунт.</h1>
-      <p>Ваши возможности и roadmap — внутри.</p>
+<main class="auth-compact-main">
+  <section class="auth-figma-card auth-compact-card" aria-labelledby="loginTitle">
+    <div class="auth-figma-card-top auth-compact-title">
+      <span class="auth-figma-card-badge">С возвращением</span>
+      <h1 id="loginTitle">Войдите в аккаунт</h1>
+      <p>Продолжите свой карьерный маршрут.</p>
+    </div>
 
-      <div class="auth-figma-chip-row">
-        <span class="auth-figma-chip">Личный roadmap</span>
-        <span class="auth-figma-chip">Подбор возможностей</span>
-        <span class="auth-figma-chip">Простой вход</span>
-      </div>
+    <div class="auth-social-login" data-auth-social hidden>
+      <a class="auth-social-btn auth-social-google" data-oauth-provider="google" href="/auth/google">
+        <span class="auth-social-icon auth-social-icon-google" aria-hidden="true"></span>
+        <span>Продолжить с Google</span>
+      </a>
+    </div>
 
-      <div class="auth-figma-highlight-card">
-        <strong>Что внутри</strong>
-        <p>Стажировки, рекомендации и структура роста.</p>
-      </div>
-    </section>
+    <div class="auth-divider" data-auth-social-divider hidden>
+      <span>или через email</span>
+    </div>
 
-    <section class="login-card auth-figma-card">
-      <div class="auth-figma-card-top">
-        <span class="auth-figma-card-badge">Вход</span>
-        <h2>Доступ к вашему аккаунту</h2>
-        <p>Пара минут и вы снова в своём карьерном пространстве.</p>
-      </div>
+    <form id="loginForm" method="POST" action="/login" class="auth-figma-form" novalidate>
+      <label class="auth-figma-field">
+        <span>Email</span>
+        <input
+          id="emailInput"
+          type="email"
+          name="email"
+          placeholder="you@example.com"
+          autocomplete="email"
+          inputmode="email"
+          required
+        >
+      </label>
 
-      <div class="auth-social-login" data-auth-social hidden>
-        <a class="auth-social-btn auth-social-google" data-oauth-provider="google" href="/auth/google">
-          <span class="auth-social-icon auth-social-icon-google" aria-hidden="true"></span>
-          <span>Continue with Google</span>
-        </a>
-        <a class="auth-social-btn auth-social-apple" data-oauth-provider="apple" href="/auth/apple">
-          <span class="auth-social-icon auth-social-icon-apple" aria-hidden="true">A</span>
-          <span>Continue with Apple</span>
-        </a>
-      </div>
-
-      <div class="auth-divider" data-auth-social-divider hidden>
-        <span>or email</span>
-      </div>
-
-      <form id="loginForm" method="POST" action="/login" class="auth-figma-form">
-        <label class="auth-figma-field">
-          <span>Email</span>
-          <input
-            id="emailInput"
-            type="email"
-            name="email"
-            placeholder="you@example.com"
-            autocomplete="email"
-            required
-          >
-        </label>
-
-        <label class="auth-figma-field">
+      <label class="auth-figma-field">
+        <span class="auth-field-heading">
           <span>Пароль</span>
+          <a href="/forgot-password">Забыли пароль?</a>
+        </span>
+        <span class="auth-password-control">
           <input
+            id="loginPassword"
             type="password"
             name="password"
             placeholder="Введите пароль"
             autocomplete="current-password"
             required
           >
-        </label>
-
-        <button class="btn primary auth-figma-submit" type="submit">Войти и продолжить</button>
-      </form>
-
-      <p id="authError" class="form-error" style="display:none;"></p>
-
-      <div id="resendWrap" class="auth-figma-inline-action" style="display:none;">
-        <button id="resendButton" class="btn secondary auth-figma-secondary-btn" type="button">
-          Отправить код ещё раз
-        </button>
-      </div>
-
-      <div id="verifyCodeWrap" class="auth-verify-code-wrap" style="display:none;">
-        <form id="verifyCodeForm" class="auth-figma-form" method="POST" action="/verify-email-code">
-          <label class="auth-figma-field">
-            <span>Код подтверждения</span>
-            <input
-              id="verifyCodeInput"
-              type="text"
-              name="code"
-              inputmode="numeric"
-              autocomplete="one-time-code"
-              pattern="[0-9]{6}"
-              maxlength="6"
-              placeholder="Введите 6 цифр"
-              required
-            >
-          </label>
-
-          <button id="verifyCodeButton" class="btn primary auth-figma-submit" type="submit">
-            Подтвердить почту
+          <button class="auth-password-toggle" type="button" data-password-toggle="loginPassword" aria-label="Показать пароль">
+            Показать
           </button>
-        </form>
-      </div>
+        </span>
+      </label>
 
-      <div class="auth-figma-links">
-        <a href="/forgot-password">Забыли пароль?</a>
-        <p>
-          Нет аккаунта?
-          <a id="registerLink" href="/register-survey">Начать регистрацию</a>
-        </p>
-      </div>
-    </section>
-  </div>
+      <p id="authError" class="form-error auth-inline-message" role="alert" aria-live="polite" hidden></p>
+
+      <button id="loginSubmit" class="btn primary auth-figma-submit" type="submit">
+        Войти
+      </button>
+    </form>
+  </section>
 </main>
 
 <script src="/app-config.js"></script>
 <script src="/app-runtime.js"></script>
-<script src="/card-nav.js" defer></script>
 <script src="/login.js" defer></script>
-<script src="/page-transitions.js" defer></script>
-
 </body>
 </html>

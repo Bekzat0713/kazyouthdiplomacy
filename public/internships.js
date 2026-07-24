@@ -123,6 +123,47 @@ const goalAction = document.getElementById("internshipGoalAction");
 const lockedState = document.getElementById("internshipsLockedState");
 const lockedText = document.getElementById("internshipsLockedText");
 
+function fetchWithTimeout(url, options, timeoutMs) {
+  if (typeof AbortController === "undefined") {
+    return fetch(url, options);
+  }
+
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs || 12000);
+
+  return fetch(url, { ...options, signal: controller.signal }).finally(() => {
+    window.clearTimeout(timeoutId);
+  });
+}
+
+function renderInternshipsLoadError(message) {
+  if (!emptyState) {
+    return;
+  }
+
+  emptyState.hidden = false;
+  emptyState.innerHTML = "";
+
+  const title = document.createElement("h3");
+  const description = document.createElement("p");
+  const retryButton = document.createElement("button");
+
+  title.textContent = "Не удалось открыть стажировки";
+  description.textContent = message || "Проверьте соединение и попробуйте ещё раз.";
+  retryButton.type = "button";
+  retryButton.className = "btn secondary";
+  retryButton.textContent = "Попробовать снова";
+  retryButton.addEventListener("click", () => {
+    void loadInternships(state.category);
+  });
+
+  emptyState.append(title, description, retryButton);
+
+  if (summaryPill) {
+    summaryPill.textContent = "Ошибка загрузки";
+  }
+}
+
 function updateToggleFormButtonLabel(isOpen) {
   if (!toggleFormButton) {
     return;
@@ -820,16 +861,31 @@ function renderInternships(internships) {
 }
 
 async function loadInternships(category) {
+  if (!grid || !emptyState) {
+    console.error("Internships page is missing required containers");
+    return;
+  }
+
   grid.innerHTML = "";
   emptyState.hidden = true;
+  if (summaryPill) {
+    summaryPill.textContent = "Стажировки загружаются...";
+  }
 
   try {
-    const response = await fetch("/api/internships?category=all", {
+    const response = await fetchWithTimeout("/api/internships?category=all", {
       headers: { Accept: "application/json" },
-    });
+      credentials: "include",
+    }, 12000);
+
+    if (response.status === 401) {
+      window.location.replace("/login?next=" + encodeURIComponent("/internships"));
+      return;
+    }
 
     if (!response.ok) {
-      throw new Error(`Failed with status ${response.status}`);
+      const errorPayload = await response.json().catch(() => ({}));
+      throw new Error(errorPayload.error || `Сервер вернул ошибку ${response.status}`);
     }
 
     const payload = await response.json();
@@ -862,8 +918,11 @@ async function loadInternships(category) {
 
     renderInternships(internships);
   } catch (error) {
-    emptyState.hidden = false;
-    emptyState.textContent = "Не удалось загрузить объявления. Обнови страницу.";
+    renderInternshipsLoadError(
+      error && error.name === "AbortError"
+        ? "Сервер отвечает слишком долго. Нажмите «Попробовать снова»."
+        : "Не удалось загрузить объявления. Проверьте соединение и повторите попытку."
+    );
     console.error("Load internships error:", error);
   }
 }

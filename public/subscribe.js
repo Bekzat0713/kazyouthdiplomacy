@@ -140,7 +140,7 @@ function navigateToRegistration(plan) {
   }
 
   params.set("source", "subscribe");
-  window.location.assign(`/register-survey?${params.toString()}`);
+  window.location.assign(`/register?${params.toString()}`);
 }
 
 function setBackArrowTarget(href, label) {

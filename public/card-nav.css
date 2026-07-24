@@ -312,3 +312,210 @@
     margin-right: -14px;
   }
 }
+
+/* ================================================================
+   Stable mobile sheet — shared by public and authenticated pages
+================================================================ */
+
+html.mobile-nav-lock,
+body.mobile-nav-lock {
+  overflow: hidden !important;
+  overscroll-behavior: none;
+}
+
+@media (max-width: 1100px) {
+  html body:not(.inner-premium-page) .home-figma-header.card-nav-inline-header {
+    position: fixed !important;
+    inset: 0 0 auto 0 !important;
+    width: 100% !important;
+    height: 64px !important;
+    min-height: 64px !important;
+    padding: 0 max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left)) !important;
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    box-shadow: none !important;
+    z-index: 3000 !important;
+  }
+}
+
+@media (max-width: 991px) {
+  html body.inner-premium-page .home-figma-header.card-nav-inline-header {
+    position: fixed !important;
+    inset: 0 0 auto 0 !important;
+    width: 100% !important;
+    height: 64px !important;
+    min-height: 64px !important;
+    padding: 0 max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left)) !important;
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    box-shadow: none !important;
+    z-index: 3000 !important;
+  }
+}
+
+@media (max-width: 1100px) {
+  html body:not(.inner-premium-page) .home-figma-header.card-nav-inline-header .logo-wrap,
+  html body:not(.inner-premium-page) .home-figma-header.card-nav-inline-header .card-nav-toggle {
+    position: relative !important;
+    z-index: 3002 !important;
+  }
+
+  html body:not(.inner-premium-page) .home-figma-header.card-nav-inline-header .card-nav-toggle {
+    display: inline-flex !important;
+    order: 2 !important;
+    width: 44px !important;
+    height: 44px !important;
+    margin: 0 0 0 auto !important;
+    flex: 0 0 44px !important;
+  }
+
+  html body:not(.inner-premium-page) .home-figma-header.card-nav-inline-header nav.home-figma-nav.card-nav-inline {
+    position: fixed !important;
+    inset: 64px 0 0 0 !important;
+    width: 100% !important;
+    height: calc(100vh - 64px) !important;
+    height: calc(100dvh - 64px) !important;
+    margin: 0 !important;
+    padding: 18px 16px max(24px, env(safe-area-inset-bottom)) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    gap: 12px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transform: translateY(-8px) !important;
+    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s !important;
+    z-index: 3001 !important;
+  }
+
+  html body:not(.inner-premium-page) .home-figma-header.card-nav-inline-header[data-mobile-nav-open="true"] nav.home-figma-nav.card-nav-inline {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transform: translateY(0) !important;
+  }
+}
+
+@media (max-width: 991px) {
+  html body.inner-premium-page .home-figma-header.card-nav-inline-header .logo-wrap,
+  html body.inner-premium-page .home-figma-header.card-nav-inline-header .card-nav-toggle {
+    position: relative !important;
+    z-index: 3002 !important;
+  }
+
+  html body.inner-premium-page .home-figma-header.card-nav-inline-header .card-nav-toggle {
+    display: inline-flex !important;
+    order: 2 !important;
+    width: 44px !important;
+    height: 44px !important;
+    margin: 0 0 0 auto !important;
+    flex: 0 0 44px !important;
+  }
+
+  html body.inner-premium-page .home-figma-header.card-nav-inline-header nav.home-figma-nav.card-nav-inline {
+    position: fixed !important;
+    inset: 64px 0 0 0 !important;
+    width: 100% !important;
+    height: calc(100vh - 64px) !important;
+    height: calc(100dvh - 64px) !important;
+    margin: 0 !important;
+    padding: 18px 16px max(24px, env(safe-area-inset-bottom)) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    gap: 12px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transform: translateY(-8px) !important;
+    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s !important;
+    z-index: 3001 !important;
+  }
+
+  html body.inner-premium-page .home-figma-header.card-nav-inline-header[data-mobile-nav-open="true"] nav.home-figma-nav.card-nav-inline {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transform: translateY(0) !important;
+  }
+}
+
+@media (max-width: 1100px) {
+  html body .home-figma-header.card-nav-inline-header nav.card-nav-inline .card-nav-links,
+  html body .home-figma-header.card-nav-inline-header nav.card-nav-inline .card-nav-actions {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 4px !important;
+    padding: 0 !important;
+  }
+
+  html body .home-figma-header.card-nav-inline-header nav.card-nav-inline .card-nav-actions {
+    margin-top: auto !important;
+    padding-top: 16px !important;
+    border-top: 1px solid #e5e7eb !important;
+  }
+
+  html body .home-figma-header.card-nav-inline-header nav.card-nav-inline .card-nav-links a,
+  html body .home-figma-header.card-nav-inline-header nav.card-nav-inline .card-nav-actions a,
+  html body .home-figma-header.card-nav-inline-header nav.card-nav-inline .card-nav-actions button {
+    width: 100% !important;
+    min-height: 52px !important;
+    padding: 0 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    border-radius: 12px !important;
+    font-size: 16px !important;
+    text-align: left !important;
+  }
+
+  html body .home-figma-header.card-nav-inline-header nav.card-nav-inline .card-nav-actions form {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  html body .home-figma-header.card-nav-inline-header nav.card-nav-inline .lang-switcher {
+    width: 100% !important;
+    margin: 6px 0 12px !important;
+    justify-content: flex-start !important;
+  }
+}
+
+@media (max-width: 420px) {
+  html body .home-figma-header.card-nav-inline-header .logo-wrap span {
+    max-width: 190px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    font-size: 15px !important;
+  }
+}

@@ -2354,6 +2354,150 @@ body.inner-premium-page {
   }
 }
 
+/* ── Mobile stability overrides ────────────────────────────────── */
+@media (max-width: 991px) {
+  body.inner-premium-page {
+    width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  .inner-premium-page .dashboard-page {
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+  }
+
+  .inner-premium-page .dashboard-main-wrapper {
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .inner-premium-page .dashboard-left-sidebar {
+    display: none !important;
+  }
+
+  .inner-premium-page .dashboard-container,
+  .inner-premium-page .internships-page,
+  .inner-premium-page .opportunities-page,
+  .inner-premium-page .resources-page,
+  .inner-premium-page .subscribe-layout {
+    width: min(100% - 32px, 760px) !important;
+    min-width: 0 !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-top: 88px !important;
+  }
+
+  .inner-premium-page .internships-hero-top {
+    min-width: 0 !important;
+  }
+
+  .inner-premium-page .internships-search-shell,
+  .inner-premium-page .internships-search-input,
+  .inner-premium-page .internships-search-actions,
+  .inner-premium-page .internships-filter-wrap,
+  .inner-premium-page .internships-advanced-filters,
+  .inner-premium-page .internships-grid,
+  .inner-premium-page .internship-card {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .inner-premium-page .dashboard-container,
+  .inner-premium-page .internships-page,
+  .inner-premium-page .opportunities-page,
+  .inner-premium-page .resources-page,
+  .inner-premium-page .subscribe-layout {
+    width: calc(100% - 24px) !important;
+    padding-top: 80px !important;
+  }
+
+  .inner-premium-page .internships-hero-top {
+    align-items: flex-start !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .inner-premium-page .internships-summary-pill {
+    max-width: 100% !important;
+    white-space: normal !important;
+    line-height: 1.35 !important;
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+  }
+
+  .inner-premium-page .internships-search-row {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+
+  .inner-premium-page .internships-search-shell {
+    width: 100% !important;
+  }
+
+  .inner-premium-page .internships-search-actions {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+  }
+
+  .inner-premium-page .internships-toolbar-btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .inner-premium-page .internships-filter-chips {
+    margin-left: -12px !important;
+    margin-right: -12px !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    scroll-padding-inline: 12px !important;
+  }
+
+  .inner-premium-page .internships-advanced-filters {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .inner-premium-page .internships-advanced-input {
+    width: 100% !important;
+  }
+
+  .inner-premium-page .internships-grid,
+  .inner-premium-page .internships-grid.view-list {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+@media (max-width: 420px) {
+  body.inner-premium-page .premium-brand span {
+    max-width: 190px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .inner-premium-page .internships-header h1 {
+    font-size: 28px !important;
+  }
+
+  .inner-premium-page .internships-header p {
+    font-size: 14px !important;
+    line-height: 1.55 !important;
+  }
+
+  .inner-premium-page .internships-view-btn {
+    width: 42px !important;
+  }
+}
+
 /* ── Redesigned Dashboard 2-Column Grid Layout (Light Theme) ────────── */
 .inner-premium-page .dashboard-grid-layout {
   display: flex;
