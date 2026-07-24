@@ -519,3 +519,26 @@ body.mobile-nav-lock {
     font-size: 15px !important;
   }
 }
+
+/* Keep the primary navbar action readable in every auth/layout state. */
+html body .home-figma-header.card-nav-inline-header .card-nav-actions a.premium-nav-cta,
+html body .home-figma-header.card-nav-inline-header .card-nav-actions a.premium-nav-cta:visited {
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  min-width: 82px !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  background: #4f46e5 !important;
+  border-color: #4f46e5 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  white-space: nowrap !important;
+}
+
+html body .home-figma-header.card-nav-inline-header .card-nav-actions a.premium-nav-cta:hover,
+html body .home-figma-header.card-nav-inline-header .card-nav-actions a.premium-nav-cta:focus-visible {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  background: #4338ca !important;
+  border-color: #4338ca !important;
+}
