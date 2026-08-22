@@ -97,28 +97,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 3) Hero-bottom reveal on scroll (web.html).
   const revealSections = document.querySelectorAll("[data-scroll-reveal]");
-  const sectionObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
+  const keepSectionsVisible = prefersReducedMotion || window.matchMedia("(max-width: 860px)").matches;
 
-      entry.target.classList.remove("reveal-pending");
-      entry.target.classList.add("reveal-visible");
-      sectionObserver.unobserve(entry.target);
-    });
-  }, {
-    threshold: 0.18,
-    rootMargin: "0px 0px -10% 0px",
-  });
-
-  revealSections.forEach((section) => {
-    if (prefersReducedMotion) {
+  if (keepSectionsVisible || !("IntersectionObserver" in window)) {
+    revealSections.forEach((section) => {
+      section.classList.remove("reveal-pending");
       section.classList.add("reveal-visible");
-      return;
-    }
+    });
+  } else {
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
 
-    section.classList.add("reveal-pending");
-    sectionObserver.observe(section);
-  });
+        entry.target.classList.remove("reveal-pending");
+        entry.target.classList.add("reveal-visible");
+        sectionObserver.unobserve(entry.target);
+      });
+    }, {
+      threshold: 0.18,
+      rootMargin: "0px 0px -10% 0px",
+    });
+
+    revealSections.forEach((section) => {
+      section.classList.add("reveal-pending");
+      sectionObserver.observe(section);
+    });
+  }
 
   // 4) Smooth anchor navigation for the homepage storyboard.
   const inPageLinks = document.querySelectorAll('a[href^="#"]:not([href="#"])');

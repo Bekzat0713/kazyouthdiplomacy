@@ -6267,6 +6267,18 @@ body.home-figma-page .career-document-action .btn span {
    Keep this block last: the product-preview polish above contains
    desktop dimensions that must not win the cascade on narrow screens.
 ================================================================= */
+@media (max-width: 860px) {
+  body.home-figma-page [data-scroll-reveal],
+  body.home-figma-page [data-scroll-reveal].reveal-pending,
+  body.home-figma-page [data-scroll-reveal].reveal-visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    animation: none !important;
+  }
+}
+
 @media (max-width: 640px) {
   body.home-figma-page,
   body.home-figma-page .premium-home-main,
