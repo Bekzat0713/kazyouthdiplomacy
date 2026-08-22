@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="/logo.png" />
-  <title>Career Profile — KazYouthDiplomacy</title>
+  <title>Web CV — KazYouthDiplomacy</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" />
@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="/card-nav.css">
   <link rel="stylesheet" href="/access-control.css">
   <link rel="stylesheet" href="/inner-premium.css?v=v1.1">
-  <link rel="stylesheet" href="/career.css">
+  <link rel="stylesheet" href="/career.css?v=story-premium-v5">
   <link rel="apple-touch-icon" href="/icon-pwa.jpg" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -33,8 +33,7 @@
       <a href="/dashboard">Кабинет</a>
       <a href="/internships">Стажировки</a>
       <a href="/opportunities">Возможности</a>
-      <a href="/resources">Материалы</a>
-      <a href="/career-profile" aria-current="page">Career Profile</a>
+      <a href="/career-profile" aria-current="page">Web CV</a>
     </div>
     <div class="card-nav-actions premium-nav-actions">
       <form method="POST" action="/logout">
@@ -51,14 +50,100 @@
 
     <div class="career-editor-page-head">
       <div>
-        <p class="dashboard-kicker">Public Profile</p>
-        <h1>Career Profile</h1>
-        <p class="career-editor-lead">Карьерная визитка — публичная страница, которую HR откроет по QR без регистрации. Заполни один раз, используй везде.</p>
+        <p class="dashboard-kicker">Конструктор портфолио</p>
+        <h1>Ваш Web CV</h1>
+        <p class="career-editor-lead">Заполните профиль один раз и меняйте дизайн в любой момент. Все шаблоны используют ваши проекты, опыт и достижения.</p>
       </div>
     </div>
 
     <div class="career-editor-grid">
       <form id="careerProfileForm" class="career-editor-main">
+
+        <section class="dashboard-card career-editor-card career-template-picker" aria-labelledby="careerTemplateTitle">
+          <div class="career-section-head">
+            <div>
+              <p class="dashboard-kicker">Design</p>
+              <h3 id="careerTemplateTitle">Выберите шаблон Web CV</h3>
+              <p class="career-template-help">Данные не изменятся — переключается только внешний вид публичной страницы.</p>
+              <p id="careerTemplateAccessNote" class="career-template-access-note" hidden></p>
+            </div>
+            <span id="careerTemplateBadge" class="dashboard-badge">Nova</span>
+          </div>
+
+          <div class="career-template-grid" role="radiogroup" aria-label="Шаблон Web CV">
+            <label class="career-template-option" data-template-card="professional">
+              <input type="radio" name="careerTemplate" value="professional" checked>
+              <span class="career-template-preview career-template-preview-professional" aria-hidden="true">
+                <i class="template-mini-nav"></i><i class="template-mini-photo"></i><i class="template-mini-title"></i>
+                <i class="template-mini-line line-one"></i><i class="template-mini-line line-two"></i>
+                <i class="template-mini-chip chip-one"></i><i class="template-mini-chip chip-two"></i>
+                <i class="template-mini-card card-one"></i><i class="template-mini-card card-two"></i>
+              </span>
+              <span class="career-template-meta"><strong>Nova</strong><small>Воздушный premium-tech</small></span>
+              <span class="career-template-check">✓</span>
+            </label>
+
+            <label class="career-template-option" data-template-card="portfolio">
+              <input type="radio" name="careerTemplate" value="portfolio">
+              <span class="career-template-preview career-template-preview-portfolio" aria-hidden="true">
+                <i class="template-mini-nav"></i><i class="template-mini-photo"></i><i class="template-mini-title"></i>
+                <i class="template-mini-line line-one"></i><i class="template-mini-line line-two"></i>
+                <i class="template-mini-chip chip-one"></i><i class="template-mini-chip chip-two"></i>
+                <i class="template-mini-card card-one"></i><i class="template-mini-card card-two"></i>
+              </span>
+              <span class="career-template-meta"><strong>Aura</strong><small>Glassmorphism и мягкие градиенты</small></span>
+              <span class="career-template-check">✓</span>
+            </label>
+
+            <label class="career-template-option" data-template-card="editorial">
+              <input type="radio" name="careerTemplate" value="editorial">
+              <span class="career-template-preview career-template-preview-editorial" aria-hidden="true">
+                <i class="template-mini-nav"></i><i class="template-mini-photo"></i><i class="template-mini-title"></i>
+                <i class="template-mini-line line-one"></i><i class="template-mini-line line-two"></i>
+                <i class="template-mini-chip chip-one"></i><i class="template-mini-chip chip-two"></i>
+                <i class="template-mini-card card-one"></i><i class="template-mini-card card-two"></i>
+              </span>
+              <span class="career-template-meta"><strong>Atelier</strong><small>Редакционный fashion-стиль</small></span>
+              <span class="career-template-check">✓</span>
+            </label>
+
+            <label class="career-template-option" data-template-card="midnight">
+              <input type="radio" name="careerTemplate" value="midnight">
+              <span class="career-template-preview career-template-preview-midnight" aria-hidden="true">
+                <i class="template-mini-nav"></i><i class="template-mini-photo"></i><i class="template-mini-title"></i>
+                <i class="template-mini-line line-one"></i><i class="template-mini-line line-two"></i>
+                <i class="template-mini-chip chip-one"></i><i class="template-mini-chip chip-two"></i>
+                <i class="template-mini-card card-one"></i><i class="template-mini-card card-two"></i>
+              </span>
+              <span class="career-template-meta"><strong>Noir</strong><small>Кинематографичный тёмный</small></span>
+              <span class="career-template-check">✓</span>
+            </label>
+
+            <label class="career-template-option" data-template-card="orbit">
+              <input type="radio" name="careerTemplate" value="orbit">
+              <span class="career-template-preview career-template-preview-orbit" aria-hidden="true">
+                <i class="template-mini-nav"></i><i class="template-mini-photo"></i><i class="template-mini-title"></i>
+                <i class="template-mini-line line-one"></i><i class="template-mini-line line-two"></i>
+                <i class="template-mini-chip chip-one"></i><i class="template-mini-chip chip-two"></i>
+                <i class="template-mini-card card-one"></i><i class="template-mini-card card-two"></i>
+              </span>
+              <span class="career-template-meta"><strong>Orbit</strong><small>Смелый bento-дизайн</small></span>
+              <span class="career-template-check">✓</span>
+            </label>
+
+            <label class="career-template-option" data-template-card="mono">
+              <input type="radio" name="careerTemplate" value="mono">
+              <span class="career-template-preview career-template-preview-mono" aria-hidden="true">
+                <i class="template-mini-nav"></i><i class="template-mini-photo"></i><i class="template-mini-title"></i>
+                <i class="template-mini-line line-one"></i><i class="template-mini-line line-two"></i>
+                <i class="template-mini-chip chip-one"></i><i class="template-mini-chip chip-two"></i>
+                <i class="template-mini-card card-one"></i><i class="template-mini-card card-two"></i>
+              </span>
+              <span class="career-template-meta"><strong>Mono</strong><small>Швейцарская типографика</small></span>
+              <span class="career-template-check">✓</span>
+            </label>
+          </div>
+        </section>
 
         <section class="dashboard-card career-editor-card">
           <div class="dashboard-profile-head">
@@ -146,6 +231,23 @@
             <span>3–10 ключевых навыков</span>
             <textarea id="careerSkills" rows="4" placeholder="Один навык на строку или через запятую"></textarea>
           </label>
+        </section>
+
+        <section class="dashboard-card career-editor-card career-proof-editor-card">
+          <div class="career-section-head">
+            <div>
+              <p class="dashboard-kicker">Signature feature</p>
+              <h3>Доказательства навыков</h3>
+              <p class="career-template-help">Не просто напишите «Leadership» — покажите, где вы применили навык и какого результата достигли. Эти истории появятся в интерактивном Proof Mode.</p>
+            </div>
+            <button type="button" class="btn secondary career-add-btn" data-add-section="skill_proofs">+ Добавить</button>
+          </div>
+          <div class="career-proof-example">
+            <span>Пример</span>
+            <strong>Leadership</strong>
+            <p>Координировал 12 волонтёров → провели форум для 250 участников</p>
+          </div>
+          <div id="careerSkillProofsList" class="career-repeat-list"></div>
         </section>
 
         <section class="dashboard-card career-editor-card">
@@ -246,8 +348,8 @@
               <span>Ссылки</span>
             </div>
             <div class="career-metric-item">
-              <strong id="careerSummaryCertificates">0</strong>
-              <span>Сертификаты</span>
+              <strong id="careerSummaryProofs">0</strong>
+              <span>Доказательства</span>
             </div>
           </div>
 
@@ -280,7 +382,7 @@
 <script src="/card-nav.js" defer></script>
 <script src="/access-control.js" defer></script>
 <script src="/page-transitions.js" defer></script>
-<script src="/career-profile.js" defer></script>
+<script src="/career-profile.js?v=story-premium-v5" defer></script>
 <script src="/assistant-widget.js?v=2" defer></script>
 </body>
 </html>

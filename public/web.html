@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KazYouthDiplomacy - AI Career GPS</title>
+  <title>KazYouthDiplomacy — стажировки, Career Passport и Web CV</title>
   <meta
     name="description"
-    content="KazYouthDiplomacy помогает студентам находить стажировки, гранты и карьерные возможности без хаотичного поиска."
+    content="Career Passport, Web CV, стажировки и образовательные программы для студентов и выпускников."
   />
   <link rel="icon" type="image/png" href="/logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="/web.css" />
   <link rel="stylesheet" href="/card-nav.css" />
   <link rel="stylesheet" href="/access-control.css" />
-  <link rel="stylesheet" href="/home-premium.css?v=clean-section-pills-v1" />
+  <link rel="stylesheet" href="/home-premium.css?v=career-document-responsive-v3" />
   <link rel="apple-touch-icon" href="/icon-pwa.jpg" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -60,10 +60,8 @@
     <div class="card-nav-links premium-nav-links">
       <a href="#homeHero" aria-current="page" data-i18n="nav.home">Главная</a>
       <a href="#opportunities" data-i18n="nav.opportunities">Возможности</a>
-      <a href="/youth">AI Youth</a>
       <a href="/ambassador.html" data-i18n="nav.ambassador">Амбассадорство</a>
       <a href="#pricing" data-i18n="nav.pricing">Тарифы</a>
-      <a href="#reviews" data-i18n="nav.reviews">Отзывы</a>
     </div>
     <div class="card-nav-actions premium-nav-actions">
       <div class="lang-switcher" aria-label="Language / Язык / Тіл">
@@ -83,73 +81,262 @@
 
 <main class="home-figma-main premium-home-main">
   <section class="hero home-figma-hero premium-hero" id="homeHero">
-    <div class="premium-hero-grid">
-      <div class="premium-hero-copy">
-        <span class="home-figma-kicker premium-kicker home-motion" data-i18n="hero.kicker">AI Career GPS</span>
-        <h1 class="home-motion" data-i18n="hero.h1">Your AI Career GPS for global opportunities</h1>
+    <div class="ecosystem-hero-shell">
+      <div class="premium-hero-copy ecosystem-hero-copy">
+        <span class="home-figma-kicker premium-kicker ecosystem-kicker home-motion" data-i18n="hero.kicker">Для студентов и выпускников</span>
+        <h1 class="home-motion" data-i18n="hero.h1">Соберите профиль.<br>Найдите, куда податься.</h1>
         <p class="premium-hero-lead home-motion" data-i18n="hero.lead">
-          KazYouthDiplomacy helps students find internships, grants, deadlines and build a clear application roadmap — without chaotic searching.
+          Соберите профиль, покажите проекты и находите стажировки — всё в одном месте.
         </p>
 
-        <div class="premium-hero-actions home-motion">
-          <a href="/register" class="btn primary home-figma-primary-cta route-link" data-transition-direction="right" data-i18n="hero.cta1">
-            Build my roadmap
-          </a>
-          <a href="#opportunities" class="btn secondary home-figma-secondary-cta" data-i18n="hero.cta2">Explore opportunities</a>
+        <div class="premium-hero-actions ecosystem-hero-actions home-motion">
+          <a href="/register" class="btn primary home-figma-primary-cta route-link" data-transition-direction="right" data-i18n="hero.cta1">Создать Career Passport</a>
+          <a href="#opportunities" class="btn secondary home-figma-secondary-cta" data-i18n="hero.cta2">Посмотреть возможности</a>
         </div>
 
-        <div class="premium-hero-proof home-motion" aria-label="Показатели платформы">
-          <span><strong>100+</strong> <span data-i18n="hero.proof.opp">возможностей</span></span>
-          <span><strong>11</strong> <span data-i18n="hero.proof.countries">стран</span></span>
-          <span><strong>AI</strong> roadmap</span>
-        </div>
+        <p class="ecosystem-hero-note home-motion">Бесплатный старт · Настройка профиля за 5 минут</p>
       </div>
 
-      <div class="premium-hero-visual home-motion" aria-label="Career GPS preview">
-        <article class="career-gps-card">
-          <div class="career-gps-card-head">
-            <div>
-              <span class="dashboard-eyebrow" data-i18n="dash.eyebrow">AI Career GPS</span>
-              <strong data-i18n="dash.title">Career GPS</strong>
-            </div>
-            <span class="career-gps-chip" data-i18n="dash.status">Live</span>
+      <div class="ecosystem-preview-stage home-motion" aria-label="Превью личного кабинета KazYouthDiplomacy">
+        <span class="ecosystem-float-label ecosystem-float-label--passport">Career Passport</span>
+        <span class="ecosystem-float-label ecosystem-float-label--matches">12 новых совпадений</span>
+        <div class="ecosystem-preview-glow" aria-hidden="true"></div>
+
+        <article class="ecosystem-preview-window">
+          <div class="ecosystem-window-bar">
+            <div class="ecosystem-window-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+            <div class="ecosystem-window-address">app.kazyouthdiplomacy.com/dashboard</div>
+            <div class="ecosystem-window-secure" aria-hidden="true">●</div>
           </div>
 
-          <div id="interactiveRoadmapContainer" class="interactive-roadmap-container">
-            <!-- Will be dynamically populated via Javascript -->
+          <div class="ecosystem-app">
+            <aside class="ecosystem-app-sidebar">
+              <a href="/" class="ecosystem-app-brand" aria-label="KazYouthDiplomacy">
+                <img src="/logo.png" alt="" />
+                <span>KazYouth</span>
+              </a>
+              <nav aria-label="Превью навигации кабинета">
+                <span class="ecosystem-side-link is-active"><i>⌂</i> Обзор</span>
+                <span class="ecosystem-side-link"><i>◫</i> Career Passport</span>
+                <span class="ecosystem-side-link"><i>◇</i> Web CV</span>
+                <span class="ecosystem-side-link"><i>☆</i> Возможности</span>
+              </nav>
+              <div class="ecosystem-side-upgrade">
+                <span>Профиль заполнен</span>
+                <strong>78%</strong>
+                <div><i></i></div>
+              </div>
+              <div class="ecosystem-side-user">
+                <span>AS</span>
+                <div><strong>Алия Садыкова</strong><small>Студент</small></div>
+              </div>
+            </aside>
+
+            <div class="ecosystem-app-main">
+              <header class="ecosystem-app-header">
+                <div><span>Личный кабинет</span><strong>Добрый день, Алия 👋</strong></div>
+                <div class="ecosystem-header-actions"><button type="button" aria-label="Поиск">⌕</button><button type="button" aria-label="Уведомления">♢</button><span>AS</span></div>
+              </header>
+
+              <div class="ecosystem-dashboard">
+                <section class="ecosystem-readiness-card">
+                  <div class="ecosystem-card-title">
+                    <div><span>Career readiness</span><h3>Ваша карьерная готовность</h3></div>
+                    <small>Обновлено сегодня</small>
+                  </div>
+                  <div class="ecosystem-readiness-content">
+                    <div class="ecosystem-score-ring"><div><strong>72</strong><span>/100</span></div></div>
+                    <div class="ecosystem-score-copy">
+                      <strong>Хороший старт!</strong>
+                      <p>Заполните навыки и добавьте один проект, чтобы усилить профиль.</p>
+                      <a href="/register">Улучшить результат →</a>
+                    </div>
+                  </div>
+                  <div class="ecosystem-metrics">
+                    <div><span>Web CV</span><strong>85%</strong><i><b style="width:85%"></b></i></div>
+                    <div><span>Навыки</span><strong>64%</strong><i><b style="width:64%"></b></i></div>
+                    <div><span>Опыт</span><strong>58%</strong><i><b style="width:58%"></b></i></div>
+                  </div>
+                </section>
+
+                <section class="ecosystem-route-card">
+                  <div class="ecosystem-card-title">
+                    <div><span>План действий</span><h3>Что заполнить дальше</h3></div>
+                    <a href="/register">Все шаги</a>
+                  </div>
+                  <div class="ecosystem-route-list">
+                    <div class="is-done"><i>✓</i><span><strong>Создать Career Passport</strong><small>Готово</small></span></div>
+                    <div><i>2</i><span><strong>Добавить навыки</strong><small>10 минут</small></span></div>
+                    <div><i>3</i><span><strong>Сохранить 3 возможности</strong><small>На этой неделе</small></span></div>
+                  </div>
+                </section>
+
+                <section class="ecosystem-matches-card">
+                  <div class="ecosystem-card-title">
+                    <div><span>Для вас</span><h3>Подходящие возможности</h3></div>
+                    <span class="ecosystem-new-badge">12 новых</span>
+                  </div>
+                  <div class="ecosystem-match-list">
+                    <article><span class="ecosystem-match-logo is-blue">UN</span><div><strong>UNDP Youth Programme</strong><small>Алматы · Стажировка</small></div><b>94%</b></article>
+                    <article><span class="ecosystem-match-logo is-violet">Q</span><div><strong>Qazaqstan Digital Fellowship</strong><small>Астана · Проект</small></div><b>89%</b></article>
+                    <article><span class="ecosystem-match-logo is-teal">K</span><div><strong>Kazakhstan Future Leaders</strong><small>Онлайн · Программа</small></div><b>86%</b></article>
+                  </div>
+                </section>
+
+                <section class="ecosystem-passport-card">
+                  <div class="ecosystem-passport-head"><span>AS</span><div><strong>Алия Садыкова</strong><small>International Relations</small></div></div>
+                  <div class="ecosystem-passport-status"><span>Career Passport</span><strong>Профиль виден работодателям</strong></div>
+                  <div class="ecosystem-passport-tags"><span>Research</span><span>English C1</span><span>Leadership</span></div>
+                  <a href="/register">Открыть Web CV <span>↗</span></a>
+                </section>
+              </div>
+            </div>
           </div>
         </article>
       </div>
     </div>
   </section>
 
-  <section class="home-figma-section premium-feature-strip" id="features" data-scroll-reveal>
-    <div class="premium-strip-grid">
-      <article>
-        <span>01</span>
-        <strong data-i18n="ft.01.title">Подбор без шума</strong>
-        <p data-i18n="ft.01.desc">Возможности разложены по типу, срокам и уровню готовности.</p>
+  <section class="home-figma-section ecosystem-journey" id="features" data-scroll-reveal>
+    <header class="ecosystem-journey-head">
+      <span class="home-figma-kicker premium-kicker" data-i18n="journey.kicker">От профиля до первой заявки</span>
+      <h2 data-i18n="journey.title">Расскажите о себе.<br>Потом выбирайте, куда подаваться.</h2>
+      <p data-i18n="journey.lead">Заполните профиль один раз. Эти данные появятся в Web CV и помогут отобрать подходящие возможности.</p>
+    </header>
+
+    <div class="ecosystem-journey-flow">
+      <article class="journey-product journey-product--passport">
+        <div class="journey-product-copy">
+          <div class="journey-step-label"><span>01</span><i></i><b data-i18n="journey.passport.stage">Сначала — заполнить профиль</b></div>
+          <span class="journey-product-name">Career Passport</span>
+          <h3 data-i18n="journey.passport.title">Профиль, с которого удобно начать.</h3>
+          <p data-i18n="journey.passport.desc">Добавьте навыки, проекты и карьерную цель. Сразу увидите, какие разделы ещё стоит заполнить.</p>
+          <ul>
+            <li data-i18n="journey.passport.item1">Оценка заполненности профиля</li>
+            <li data-i18n="journey.passport.item2">Навыки, проекты и опыт в одной системе</li>
+            <li data-i18n="journey.passport.item3">Список того, что заполнить дальше</li>
+          </ul>
+          <a href="/register" class="journey-product-link route-link" data-transition-direction="right"><span data-i18n="journey.passport.cta">Создать Career Passport</span><i>↗</i></a>
+        </div>
+
+        <div class="journey-product-visual journey-passport-preview" aria-label="Превью Career Passport">
+          <div class="journey-browser-bar"><span><i></i><i></i><i></i></span><b>career-passport</b><em>•••</em></div>
+          <div class="journey-passport-profile">
+            <span class="journey-avatar">AS</span>
+            <div><strong>Алия Садыкова</strong><small>Business Analyst · Алматы</small></div>
+            <i>Внутренний профиль</i>
+          </div>
+          <div class="journey-passport-grid">
+            <section class="journey-readiness-mini">
+              <span>Career readiness</span>
+              <div class="journey-readiness-row">
+                <div class="journey-mini-ring"><strong>72</strong><small>/100</small></div>
+                <p><strong>Хороший старт</strong><span>Добавьте проект, чтобы усилить профиль</span></p>
+              </div>
+              <div class="journey-mini-bars"><span><b>Web CV</b><i><em style="width:85%"></em></i><strong>85%</strong></span><span><b>Skills</b><i><em style="width:64%"></em></i><strong>64%</strong></span><span><b>Experience</b><i><em style="width:58%"></em></i><strong>58%</strong></span></div>
+            </section>
+            <section class="journey-skills-mini">
+              <span>Skills</span>
+              <strong>Ваш профессиональный набор</strong>
+              <div><i>Research</i><i>Excel</i><i>English B2</i><i>Leadership</i></div>
+              <small>4 навыка добавлено</small>
+            </section>
+          </div>
+          <div class="journey-context-note"><span>✓</span><p><strong>Что заполнить дальше</strong><small>Добавьте проект с конкретным результатом</small></p><b>Раздел не заполнен</b></div>
+        </div>
       </article>
-      <article>
-        <span>02</span>
-        <strong data-i18n="ft.02.title">Roadmap вместо вкладок</strong>
-        <p data-i18n="ft.02.desc">AI Youth превращает интерес в понятную последовательность действий.</p>
+
+      <div class="journey-connector" aria-hidden="true"><span></span><i>По профилю проще отобрать подходящие варианты</i><span></span></div>
+
+      <article class="journey-product journey-product--internships">
+        <div class="journey-product-copy">
+          <div class="journey-step-label"><span>02</span><i></i><b data-i18n="journey.internships.stage">Затем — получить опыт</b></div>
+          <span class="journey-product-name" data-i18n="journey.internships.name">Стажировки и возможности</span>
+          <h3 data-i18n="journey.internships.title">Выбирайте из стажировок и программ.</h3>
+          <p data-i18n="journey.internships.desc">Смотрите условия, город и дедлайн. Сохраняйте интересные варианты и возвращайтесь к ним позже.</p>
+          <ul>
+            <li data-i18n="journey.internships.item1">Стажировки, программы и fellowships</li>
+            <li data-i18n="journey.internships.item2">Фильтры по направлению, городу и формату</li>
+            <li data-i18n="journey.internships.item3">Сохранения, статусы и контроль дедлайнов</li>
+          </ul>
+          <a href="#opportunities" class="journey-product-link"><span data-i18n="journey.internships.cta">Посмотреть возможности</span><i>↓</i></a>
+        </div>
+
+        <div class="journey-product-visual journey-internships-preview" aria-label="Превью подходящих стажировок">
+          <div class="journey-internships-top"><div><span>Подходящие возможности</span><strong>Ваш карьерный фокус</strong></div><b>12 новых</b></div>
+          <div class="journey-filter-row"><span class="is-active">Для вас</span><span>Стажировки</span><span>Программы</span><span>Онлайн</span></div>
+          <div class="journey-opportunity-list">
+            <article>
+              <span class="journey-company-logo is-un">UN</span>
+              <div><small>Стажировка · Алматы</small><strong>UNDP Youth Programme</strong><p>Research · Policy · English B2</p></div>
+              <aside><b>94%</b><small>совпадение</small><i>Сохранить</i></aside>
+            </article>
+            <article>
+              <span class="journey-company-logo is-qf">QF</span>
+              <div><small>Fellowship · Астана</small><strong>Qazaqstan Digital Fellowship</strong><p>Analytics · Technology · Hybrid</p></div>
+              <aside><b>89%</b><small>совпадение</small><i>Сохранить</i></aside>
+            </article>
+            <article>
+              <span class="journey-company-logo is-ey">EY</span>
+              <div><small>Internship · Hybrid</small><strong>Business Consulting Intern</strong><p>Excel · Research · Communication</p></div>
+              <aside><b>86%</b><small>совпадение</small><i>Сохранить</i></aside>
+            </article>
+          </div>
+          <div class="journey-match-explain"><span>Почему 94%?</span><div><i>Career Goal</i><i>English B2</i><i>Алматы</i><i>Research</i></div></div>
+        </div>
       </article>
-      <article>
-        <span>03</span>
-        <strong data-i18n="ft.03.title">Фокус на подаче</strong>
-        <p data-i18n="ft.03.desc">Сохраняйте варианты, отслеживайте дедлайны и двигайтесь к откликам.</p>
+
+      <div class="journey-connector" aria-hidden="true"><span></span><i>Добавленный опыт можно сразу показать в Web CV</i><span></span></div>
+
+      <article class="journey-product journey-product--webcv">
+        <div class="journey-product-copy">
+          <div class="journey-step-label"><span>03</span><i></i><b data-i18n="journey.webcv.stage">И наконец — показать себя</b></div>
+          <span class="journey-product-name">Web CV</span>
+          <h3 data-i18n="journey.webcv.title">Резюме, которое открывается по ссылке.</h3>
+          <p data-i18n="journey.webcv.desc">Выберите дизайн, отметьте публичные разделы и отправьте работодателю готовую страницу.</p>
+          <ul>
+            <li data-i18n="journey.webcv.item1">Несколько премиальных шаблонов</li>
+            <li data-i18n="journey.webcv.item2">Проекты и доказательства навыков</li>
+            <li data-i18n="journey.webcv.item3">Публичная ссылка с контролем приватности</li>
+          </ul>
+          <a href="/register" class="journey-product-link route-link" data-transition-direction="right"><span data-i18n="journey.webcv.cta">Создать свой Web CV</span><i>↗</i></a>
+        </div>
+
+        <div class="journey-product-visual journey-webcv-preview" aria-label="Превью публичного Web CV">
+          <div class="journey-webcv-nav"><strong>aliya<span>.</span></strong><div><i>About</i><i>Projects</i><i>Experience</i></div><b>Available for internship</b></div>
+          <div class="journey-webcv-hero">
+            <div><span>Hello, I’m</span><h4>Aliya<br>Sadykova.</h4><p>Future Business Analyst turning research into clear decisions and measurable outcomes.</p><a href="/register">View my work <i>↗</i></a></div>
+            <div class="journey-portrait"><span>AS</span><i>Almaty · KZ</i><b>Open to work</b></div>
+          </div>
+          <div class="journey-webcv-bottom"><article><span>01 / Featured project</span><strong>Youth Policy Research</strong><p>20 interviews · 3 recommendations implemented</p></article><article><span>Core skills</span><div><i>Research</i><i>Excel</i><i>Strategy</i></div></article></div>
+          <div class="journey-public-url"><span>● Public</span><strong>kazyouthdiplomacy.com/cv/aliya</strong><i>Копировать</i></div>
+        </div>
       </article>
+    </div>
+
+    <div class="ecosystem-journey-summary">
+      <span>Career Passport</span><i>→</i><span>Стажировки</span><i>→</i><span>Web CV</span>
+      <a href="/register" class="btn primary route-link" data-transition-direction="right" data-i18n="journey.final">Создать профиль</a>
     </div>
   </section>
 
-  <section class="home-figma-section home-figma-opportunities premium-section" id="opportunities" data-scroll-reveal>
-    <div class="home-figma-section-head premium-section-head">
-      <span class="home-figma-kicker premium-kicker" data-i18n="opp.kicker">Избранные возможности</span>
-      <h2 data-i18n="opp.h2">Возможности, которые легко сравнивать.</h2>
-    </div>
+  <section class="home-figma-section home-figma-opportunities premium-section opportunity-radar-section" id="opportunities" data-scroll-reveal>
+    <div class="opportunity-radar-layout">
+      <div class="opportunity-radar-copy">
+        <span class="opportunity-radar-index">02 / ВОЗМОЖНОСТИ</span>
+        <div class="home-figma-section-head premium-section-head">
+          <span class="home-figma-kicker premium-kicker" data-i18n="opp.kicker">Возможности в вашем фокусе</span>
+          <h2 data-i18n="opp.h2">Стажировки и программы — в одном списке.</h2>
+        </div>
+        <p class="opportunity-radar-lead" data-i18n="opp.lead">Смотрите формат, город и сроки. Сохраняйте варианты, к которым хотите вернуться.</p>
+        <div class="home-figma-opportunity-actions premium-section-actions">
+          <a data-home-opportunities-cta href="/register" class="btn primary route-link" data-transition-direction="right" data-i18n="opp.cta">Смотреть все возможности</a>
+        </div>
+      </div>
 
-    <div id="homeOpportunityPreviewGrid" class="home-figma-card-grid home-figma-card-grid-preview premium-opportunity-grid" aria-live="polite">
+      <div class="opportunity-radar-stage">
+        <div class="opportunity-radar-stage-head"><span><i></i><span data-i18n="opp.live">Каталог обновляется</span></span><b data-i18n="opp.swipe">Листайте подборку →</b></div>
+        <div id="homeOpportunityPreviewGrid" class="home-figma-card-grid home-figma-card-grid-preview premium-opportunity-grid" aria-live="polite">
       <article class="home-figma-info-card premium-opportunity-card">
         <div class="premium-opportunity-top">
           <span class="premium-opportunity-category" data-i18n="opp.c1.type">Стажировка</span>
@@ -160,7 +347,7 @@
         <div class="premium-opportunity-tags">
           <span data-i18n="opp.c1.t1">Политика</span>
           <span data-i18n="opp.c1.t2">Исследования</span>
-          <span data-i18n="opp.c1.t3">Plus подбор</span>
+          <span data-i18n="opp.c1.t3">Подходит профилю</span>
         </div>
         <a href="/register" class="premium-card-link route-link" data-transition-direction="right" data-i18n="opp.open">Открыть</a>
       </article>
@@ -193,214 +380,117 @@
         </div>
         <a href="/register" class="premium-card-link route-link" data-transition-direction="right" data-i18n="opp.open">Открыть</a>
       </article>
-    </div>
-    <p data-home-opportunities-empty class="internships-empty premium-empty" hidden data-i18n="opp.empty">Список возможностей появится чуть позже.</p>
-    <div class="home-figma-opportunity-actions premium-section-actions">
-      <a data-home-opportunities-cta href="/register" class="btn primary route-link" data-transition-direction="right" data-i18n="opp.cta">Смотреть все возможности</a>
-    </div>
-  </section>
-
-  <section class="home-figma-section home-figma-ai premium-ai-assistant" id="ai-youth" data-scroll-reveal>
-    <div class="home-figma-ai-shell premium-ai-shell">
-      <div class="home-figma-ai-copy premium-ai-copy">
-        <span class="home-figma-kicker premium-kicker" data-i18n="ai.kicker">AI Youth</span>
-        <h2 data-i18n="ai.h2">Your next step is always clear.</h2>
-        <p data-i18n="ai.lead">Ask about internships, grants, deadlines or your roadmap. AI Youth turns the next move into a short, practical answer.</p>
-        <div class="home-figma-ai-actions">
-          <a id="homeAiLoginCta" href="/login" class="btn secondary" data-i18n="ai.cta2">Log in and ask a question</a>
-          <a id="homeAiDashboardCta" href="/dashboard" class="btn secondary" hidden data-i18n="ai.cta3">Open my dashboard</a>
         </div>
+        <p data-home-opportunities-empty class="internships-empty premium-empty" hidden data-i18n="opp.empty">Список возможностей появится чуть позже.</p>
+        <div class="opportunity-radar-caption"><span>Career Passport</span><i></i><span data-i18n="opp.caption">Заполните профиль — список станет точнее</span></div>
       </div>
-
-      <article class="home-figma-ai-panel premium-ai-panel" aria-label="AI Youth assistant">
-        <div class="home-figma-ai-panel-head">
-          <div>
-            <span class="home-figma-ai-panel-kicker" data-i18n="ai.panel.kicker">Assistant</span>
-            <h3 data-i18n="ai.panel.h3">AI Youth</h3>
-            <p data-i18n="ai.panel.lead">Ask one focused question and get a clear next step.</p>
-          </div>
-          <span id="homeAiModeBadge" class="home-figma-ai-mode-badge" data-i18n="ai.panel.badge">Quick answers</span>
-        </div>
-
-        <div class="home-figma-ai-suggestions" aria-label="Quick questions">
-          <button class="home-figma-ai-suggestion" type="button"
-            data-home-ai-question="What first steps will help me find internships, grants or career opportunities faster?"
-            data-i18n="ai.s4"
-            data-i18n-ai-q="ai.s4.q">What steps matter?</button>
-          <button class="home-figma-ai-suggestion" type="button"
-            data-home-ai-question="What is the best first step for me on this platform right now?"
-            data-i18n="ai.s3"
-            data-i18n-ai-q="ai.s3.q">Where to start?</button>
-          <button class="home-figma-ai-suggestion" type="button"
-            data-home-ai-question="How will this site help me as a student or young professional?"
-            data-i18n="ai.s2"
-            data-i18n-ai-q="ai.s2.q">How can it help me?</button>
-        </div>
-
-        <div id="homeAiMessages" class="home-figma-ai-messages" aria-live="polite"></div>
-        <p id="homeAiStatus" class="home-figma-ai-status" data-i18n="ai.status">AI Youth is ready.</p>
-
-        <form id="homeAiForm" class="home-figma-ai-form">
-          <label class="sr-only" for="homeAiInput">Question for AI Youth</label>
-          <textarea id="homeAiInput" class="home-figma-ai-input" rows="3" data-i18n-ph="ai.ph" placeholder="Type a question for AI Youth..."></textarea>
-          <div class="home-figma-ai-form-actions">
-            <span id="homeAiHint" class="home-figma-ai-hint" data-i18n="ai.hint">Or choose a ready-made prompt.</span>
-            <button id="homeAiSubmit" class="btn primary" type="submit">Ask AI Youth</button>
-          </div>
-        </form>
-      </article>
     </div>
   </section>
 
   <section class="home-figma-section home-figma-cta premium-pricing-section" id="pricing" data-scroll-reveal>
     <div class="home-figma-section-head premium-section-head premium-pricing-head">
       <span class="home-figma-kicker premium-kicker" data-i18n="pr.kicker">Тарифы</span>
-      <h2 data-i18n="pr.h2">Выберите тариф.</h2>
+      <h2 data-i18n="pr.h2">Начните бесплатно. Подключайте больше, когда понадобится.</h2>
+      <p class="pricing-section-lead" data-i18n="pr.lead">Start — бесплатно. Career Plus и Career Boost оплачиваются помесячно.</p>
     </div>
 
     <div class="home-figma-pricing-grid premium-pricing-grid">
       <article class="home-figma-price-card premium-price-card">
-        <span class="home-figma-price-label" data-i18n="pr.free.label">Бесплатно</span>
+        <div class="price-card-index"><span>01</span><i></i></div>
+        <span class="home-figma-price-label" data-i18n="pr.free.label">Основа</span>
         <h3 data-i18n="pr.free.h3">Start</h3>
         <p class="home-figma-price-value" data-i18n="pr.free.price">0 ₸</p>
-        <p class="premium-price-note" data-i18n="pr.free.note">Для знакомства с продуктом</p>
+        <p class="premium-price-note" data-i18n="pr.free.note">Career Passport и базовый Web CV</p>
         <ul>
-          <li data-i18n="pr.free.l1">Ограниченный preview каталога</li>
-          <li data-i18n="pr.free.l2">Базовый доступ к материалам</li>
-          <li data-i18n="pr.free.l3">Понимание, подходит ли платформа под вашу цель</li>
+          <li data-i18n="pr.free.l1">Career Passport и оценка заполненности</li>
+          <li data-i18n="pr.free.l2">Список разделов, которые стоит заполнить</li>
+          <li data-i18n="pr.free.l3">Web CV с базовым шаблоном Nova</li>
         </ul>
         <a href="/register" class="btn secondary route-link" data-transition-direction="right" data-i18n="pr.free.cta">Начать бесплатно</a>
       </article>
 
       <article class="home-figma-price-card premium-price-card featured">
-        <span class="premium-recommended-badge" data-i18n="pr.gr.badge">Рекомендуется</span>
-        <span class="home-figma-price-label" data-i18n="pr.gr.label">Plus · 3 месяца</span>
-        <h3 data-i18n="pr.gr.h3">Growth</h3>
-        <p class="home-figma-price-value" data-i18n="pr.gr.price">2790 ₸</p>
-        <p class="premium-price-note" data-i18n="pr.gr.note">Лучший баланс для карьерного цикла</p>
+        <span class="premium-recommended-badge" data-i18n="pr.gr.badge">Для активного поиска</span>
+        <div class="price-card-index"><span>02</span><i></i></div>
+        <span class="home-figma-price-label" data-i18n="pr.gr.label">Возможности</span>
+        <h3 data-i18n="pr.gr.h3">Career Plus</h3>
+        <p class="home-figma-price-value"><span data-i18n="pr.gr.price">1 090 ₸</span><small data-i18n="pr.period">/ месяц</small></p>
+        <p class="premium-price-note" data-i18n="pr.gr.note">Для тех, кто уже ищет стажировки и программы</p>
         <ul>
-          <li data-i18n="pr.gr.l1">Полный каталог возможностей и стажировок</li>
-          <li data-i18n="pr.gr.l2">AI roadmap и персональные подборки</li>
-          <li data-i18n="pr.gr.l3">Сохранения, дедлайны и фокус на подаче</li>
+          <li data-i18n="pr.gr.l1">Всё из Start</li>
+          <li data-i18n="pr.gr.l2">Полный каталог и фильтры по профилю</li>
+          <li data-i18n="pr.gr.l3">Сохранения, статусы заявок и дедлайны</li>
+          <li class="feature-limited" data-i18n="pr.gr.l4">Web CV: базовый шаблон Nova</li>
         </ul>
-        <a href="/subscribe" class="btn primary route-link" data-transition-direction="right" data-i18n="pr.gr.cta">Выбрать Growth</a>
+        <a href="/subscribe?plan=career_plus" class="btn primary route-link" data-transition-direction="right" data-i18n="pr.gr.cta">Выбрать Career Plus</a>
       </article>
 
-      <article class="home-figma-price-card premium-price-card">
-        <span class="home-figma-price-label" data-i18n="pr.lr.label">Plus · 6 месяцев</span>
-        <h3 data-i18n="pr.lr.h3">Long Run</h3>
-        <p class="home-figma-price-value" data-i18n="pr.lr.price">5990 ₸</p>
-        <p class="premium-price-note" data-i18n="pr.lr.note">Для долгого международного трека</p>
+      <article class="home-figma-price-card premium-price-card price-card-boost">
+        <div class="price-card-index"><span>03</span><i></i></div>
+        <span class="home-figma-price-label" data-i18n="pr.lr.label">Полный доступ</span>
+        <h3 data-i18n="pr.lr.h3">Career Boost</h3>
+        <p class="home-figma-price-value"><span data-i18n="pr.lr.price">2 790 ₸</span><small data-i18n="pr.period">/ месяц</small></p>
+        <p class="premium-price-note" data-i18n="pr.lr.note">Все возможности платформы и шаблоны Web CV</p>
         <ul>
-          <li data-i18n="pr.lr.l1">Доступ на несколько волн дедлайнов</li>
-          <li data-i18n="pr.lr.l2">Меньше отвлечений на продление</li>
-          <li data-i18n="pr.lr.l3">Удобно для подготовки профиля и заявок</li>
+          <li data-i18n="pr.lr.l1">Всё из Career Plus</li>
+          <li data-i18n="pr.lr.l2">Все 6 premium-шаблонов Web CV</li>
+          <li data-i18n="pr.lr.l3">Все функции Career Passport</li>
+          <li data-i18n="pr.lr.l4">Проекты и достижения в Web CV</li>
         </ul>
-        <a href="/subscribe" class="btn secondary route-link" data-transition-direction="right" data-i18n="pr.lr.cta">Открыть тариф</a>
+        <a href="/subscribe?plan=career_boost" class="btn price-boost-button route-link" data-transition-direction="right" data-i18n="pr.lr.cta">Получить Career Boost</a>
       </article>
     </div>
 
     <div class="premium-trust-row" aria-label="Доверие и условия">
-      <span data-i18n="pr.t1">Защищённый аккаунт</span>
-      <span data-i18n="pr.t2">Ручная активация Plus</span>
-      <span data-i18n="pr.t3">Отмена в любой момент</span>
+      <span data-i18n="pr.t1">Start остаётся бесплатным</span>
+      <span data-i18n="pr.t2">Оплата помесячно</span>
+      <span data-i18n="pr.t3">Без длинного контракта</span>
     </div>
-  </section>
-
-  <section class="home-figma-section home-figma-reviews premium-reviews-section" id="reviews" data-scroll-reveal>
-    <div class="home-figma-section-head premium-section-head">
-      <span class="home-figma-kicker premium-kicker" data-i18n="rv.kicker">Отзывы</span>
-      <h2 data-i18n="rv.h2">Что говорят пользователи.</h2>
-    </div>
-
-    <div class="home-figma-review-grid premium-review-grid" id="homeReviewsGrid">
-      <article class="home-figma-review-card premium-review-card">
-        <div class="home-figma-review-top">
-          <span class="home-figma-review-tag" data-i18n="rv.tag">Отзыв</span>
-          <strong>Аружан, 19 лет</strong>
-          <span class="home-figma-review-meta">Алматы · 2 курс · цель: международная стажировка</span>
-          <span class="home-figma-review-headline">Поиск стал быстрее и спокойнее</span>
-        </div>
-        <p>"Здесь я быстро собрала релевантные варианты под свой профиль."</p>
-      </article>
-
-      <article class="home-figma-review-card premium-review-card">
-        <div class="home-figma-review-top">
-          <span class="home-figma-review-tag" data-i18n="rv.tag">Отзыв</span>
-          <strong>Нуржан, 22 года</strong>
-          <span class="home-figma-review-meta">Астана · выпускник · цель: первая работа</span>
-          <span class="home-figma-review-headline">Появился понятный маршрут действий</span>
-        </div>
-        <p>"Roadmap помог понять последовательность: что подтянуть, куда откликаться."</p>
-      </article>
-
-      <article class="home-figma-review-card premium-review-card">
-        <div class="home-figma-review-top">
-          <span class="home-figma-review-tag" data-i18n="rv.tag">Отзыв</span>
-          <strong>Диана, 20 лет</strong>
-          <span class="home-figma-review-meta">Шымкент · студентка · цель: гранты</span>
-          <span class="home-figma-review-headline">Нашлись именно мои возможности</span>
-        </div>
-        <p>"Намного быстрее поняла, на какие программы стоит обратить внимание."</p>
-      </article>
-    </div>
-
-    <div class="home-figma-review-cta premium-section-actions">
-      <a href="#review-form" class="btn primary" data-i18n="rv.cta">Оставить отзыв</a>
-    </div>
-
-    <article class="home-figma-review-form-card premium-review-form-card" id="review-form">
-      <div class="home-figma-review-form-copy">
-        <span class="home-figma-review-tag" data-i18n="rv.form.tag">Ваш отзыв</span>
-        <h3 data-i18n="rv.form.h3">Поделитесь результатом</h3>
-        <p id="homeReviewFormLead" data-i18n="rv.form.lead">Расскажите, что изменилось после платформы.</p>
-      </div>
-
-      <div id="homeReviewGuestState" class="home-figma-review-guest" hidden>
-        <p data-i18n="rv.form.guest">Войдите, чтобы оставить отзыв.</p>
-        <a href="/login" class="btn secondary" data-i18n="rv.form.gcta">Войти и оставить отзыв</a>
-      </div>
-
-      <form id="homeReviewForm" class="home-figma-review-form" hidden>
-        <label class="home-figma-review-field">
-          <span data-i18n="rv.form.city">Город</span>
-          <input id="homeReviewCity" name="city" type="text" maxlength="80"
-            data-i18n-ph="rv.form.city.ph"
-            placeholder="Например, Алматы" required />
-        </label>
-
-        <label class="home-figma-review-field">
-          <span data-i18n="rv.form.hl">Короткий заголовок</span>
-          <input id="homeReviewHeadline" name="headline" type="text" maxlength="120"
-            data-i18n-ph="rv.form.hl.ph"
-            placeholder="Например, поиск стал быстрее" required />
-        </label>
-
-        <label class="home-figma-review-field">
-          <span data-i18n="rv.form.res">Что изменилось после платформы</span>
-          <input id="homeReviewResult" name="result_summary" type="text" maxlength="180"
-            data-i18n-ph="rv.form.res.ph"
-            placeholder="Например, собрал 6 программ и начал подаваться" required />
-        </label>
-
-        <label class="home-figma-review-field">
-          <span data-i18n="rv.form.body">Ваш отзыв</span>
-          <textarea id="homeReviewBody" name="body" rows="5" maxlength="1200"
-            data-i18n-ph="rv.form.body.ph"
-            placeholder="Расскажите, что было до платформы, что стало проще и какой результат вы увидели." required></textarea>
-        </label>
-
-        <div id="homeReviewStatus" class="home-figma-review-status" hidden></div>
-        <button id="homeReviewSubmit" class="btn primary" type="submit" data-i18n="rv.form.submit">Опубликовать отзыв</button>
-      </form>
-    </article>
   </section>
 
   <section class="home-figma-section premium-final-cta" data-scroll-reveal>
-    <div class="home-figma-cta-box premium-final-box">
-      <span class="home-figma-kicker premium-kicker" data-i18n="cta.kicker">Начать</span>
-      <h2 data-i18n="cta.h2">Начните с Career GPS.</h2>
-      <a href="/register" class="btn primary route-link" data-transition-direction="right" data-i18n="cta.btn">Начать сейчас</a>
+    <div class="career-document">
+      <header class="career-document-head">
+        <span data-i18n="cta.kicker">Career Passport</span>
+        <span>01 / PROFILE</span>
+      </header>
+
+      <div class="career-document-grid">
+        <div class="career-document-copy">
+          <span class="career-document-state" data-i18n="cta.state">Профиль ещё не создан</span>
+          <h2 data-i18n="cta.h2">Первая страница вашей карьеры.</h2>
+          <p data-i18n="cta.lead">Соберите навыки, проекты и опыт в одном профиле. Вы сами решаете, что показывать работодателю.</p>
+          <div class="career-document-action">
+            <a href="/register" class="btn primary route-link" data-transition-direction="right">
+              <span data-i18n="cta.btn">Заполнить первую страницу</span><i aria-hidden="true">→</i>
+            </a>
+            <small data-i18n="cta.note">Бесплатно · около 5 минут</small>
+          </div>
+        </div>
+
+        <div class="career-document-sheet" aria-label="Незаполненный Career Passport">
+          <div class="career-document-field">
+            <span data-i18n="cta.field.name">Имя</span>
+            <i></i>
+            <small data-i18n="cta.empty">Не заполнено</small>
+          </div>
+          <div class="career-document-field">
+            <span data-i18n="cta.field.goal">Карьерная цель</span>
+            <i></i>
+            <small data-i18n="cta.empty">Не заполнено</small>
+          </div>
+          <div class="career-document-field">
+            <span data-i18n="cta.field.skill">Главный навык</span>
+            <i></i>
+            <small data-i18n="cta.empty">Не заполнено</small>
+          </div>
+
+          <footer class="career-document-sheet-footer">
+            <p><span>Status</span><strong data-i18n="cta.status">Not created</strong></p>
+            <div class="career-document-stamp" aria-hidden="true"><span>KYD</span><small>CAREER</small></div>
+          </footer>
+        </div>
+      </div>
     </div>
   </section>
 </main>
@@ -409,12 +499,11 @@
   <div class="home-figma-footer-shell">
     <div>
       <strong>KazYouthDiplomacy</strong>
-      <p data-i18n="ft.tagline">AI Career GPS для молодых специалистов.</p>
+      <p data-i18n="ft.tagline">Карьерные возможности и инструменты для студентов.</p>
     </div>
 
     <div class="home-figma-footer-links">
       <a href="#opportunities" data-i18n="nav.opportunities">Возможности</a>
-      <a href="/youth">AI Youth</a>
       <a href="/subscribe" class="route-link" data-transition-direction="right" data-i18n="nav.pricing">Тарифы</a>
       <a href="https://t.me/perlll1" target="_blank" rel="noreferrer" data-i18n="ft.contact">Написать нам</a>
     </div>
@@ -424,8 +513,8 @@
 <script src="/card-nav.js" defer></script>
 <script src="/access-control.js" defer></script>
 <script src="/vendor/gsap.min.js" defer></script>
-<script src="/i18n.js?v=hero-i18n-1" defer></script>
-<script src="/web.js?v=smart-rec-widget-v5" defer></script>
+<script src="/i18n.js?v=career-document-v1" defer></script>
+<script src="/web.js?v=career-document-v1" defer></script>
 <script src="/page-transitions.js" defer></script>
 </body>
 </html>

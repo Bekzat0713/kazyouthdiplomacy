@@ -366,6 +366,20 @@
     scoreStrong.textContent = strongCount;
     scoreImprove.textContent = improveCount;
 
+    fetch('/api/interview-attempts', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        score: pct,
+        program: state.programName || state.program,
+        strong_answers: strongCount,
+        total_questions: TOTAL_Q,
+      }),
+    }).catch(function () {
+      /* The interview result remains usable even if progress sync is unavailable. */
+    });
+
     analysisContent.hidden = false;
 
     /* draw certificate */

@@ -3787,6 +3787,345 @@ body.subscribe-page.inner-premium-page {
 }
 
 /* ================================================================
+   SUBSCRIPTIONS — product tiers, not duration bundles
+================================================================= */
+body.subscribe-page.inner-premium-page {
+  background:
+    radial-gradient(circle at 82% 4%, rgba(98, 80, 216, .10), transparent 28%),
+    #f2f4f8 !important;
+}
+
+body.subscribe-page .subscribe-outer-container {
+  max-width: 1180px !important;
+  margin: 44px auto 72px !important;
+  padding: 72px !important;
+  border: 1px solid #e2e5ed !important;
+  border-radius: 32px !important;
+  background: rgba(255,255,255,.92) !important;
+  box-shadow: 0 30px 90px rgba(29, 35, 55, .07) !important;
+}
+
+body.subscribe-page .subscribe-header-section {
+  max-width: 760px !important;
+  margin: 0 auto 48px !important;
+}
+
+body.subscribe-page .status-badge {
+  padding: 7px 13px !important;
+  border: 1px solid #dfdcff !important;
+  background: #f2f0ff !important;
+  color: #5d4bd3 !important;
+  letter-spacing: .13em !important;
+}
+
+body.subscribe-page .subscribe-header-section h1 {
+  color: #101525 !important;
+  font-size: clamp(40px, 5vw, 64px) !important;
+  line-height: .98 !important;
+  letter-spacing: -.055em !important;
+}
+
+body.subscribe-page .subscribe-header-section .subtitle-desc {
+  max-width: 680px !important;
+  margin-top: 20px !important;
+  color: #747b8e !important;
+  font-size: 16px !important;
+}
+
+body.subscribe-page .subscribe-start-strip {
+  display: grid !important;
+  grid-template-columns: 42px minmax(0, 1fr) auto auto !important;
+  align-items: center !important;
+  gap: 22px !important;
+  margin: 0 auto 16px !important;
+  padding: 23px 25px !important;
+  border: 1px solid #e4e6ed !important;
+  border-radius: 20px !important;
+  background: #f8f9fc !important;
+}
+
+body.subscribe-page .start-strip-mark {
+  display: grid !important;
+  width: 40px !important;
+  height: 40px !important;
+  place-items: center !important;
+  border-radius: 12px !important;
+  background: #fff !important;
+  color: #7d8393 !important;
+  box-shadow: inset 0 0 0 1px #e3e5ec !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+}
+
+body.subscribe-page .start-strip-copy span {
+  color: #777e90 !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: .12em !important;
+  text-transform: uppercase !important;
+}
+
+body.subscribe-page .start-strip-copy h2 {
+  margin: 2px 0 3px !important;
+  color: #111627 !important;
+  font-size: 23px !important;
+  letter-spacing: -.03em !important;
+}
+
+body.subscribe-page .start-strip-copy p {
+  margin: 0 !important;
+  color: #7a8192 !important;
+  font-size: 13px !important;
+}
+
+body.subscribe-page .subscribe-start-strip > strong {
+  color: #111627 !important;
+  font-size: 26px !important;
+  letter-spacing: -.04em !important;
+}
+
+body.subscribe-page .start-strip-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  min-height: 42px !important;
+  padding: 0 17px !important;
+  border: 1px solid #daddE7 !important;
+  border-radius: 999px !important;
+  color: #242a3a !important;
+  background: #fff !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+}
+
+body.subscribe-page .plans-grid-wrapper {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+  max-width: none !important;
+  margin-bottom: 26px !important;
+}
+
+body.subscribe-page .plan-card,
+body.subscribe-page .plan-card.featured {
+  min-height: 590px !important;
+  overflow: hidden !important;
+  border: 1px solid #dde1e9 !important;
+  border-radius: 25px !important;
+  background: #fff !important;
+  box-shadow: 0 22px 60px rgba(28, 35, 57, .07) !important;
+  transform: none !important;
+}
+
+body.subscribe-page .plan-card:hover,
+body.subscribe-page .plan-card.featured:hover {
+  transform: translateY(-4px) !important;
+}
+
+body.subscribe-page .plan-card.plan-card-requested {
+  box-shadow: 0 0 0 3px rgba(101, 82, 220, .16), 0 28px 72px rgba(50, 40, 115, .15) !important;
+}
+
+body.subscribe-page .plan-card .plan-card-top {
+  display: flex !important;
+  flex: 1 !important;
+  flex-direction: column !important;
+  padding: 34px !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+body.subscribe-page .plan-card-header {
+  margin-bottom: 26px !important;
+}
+
+body.subscribe-page .plan-label {
+  color: #777e90 !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: .09em !important;
+  text-transform: uppercase !important;
+}
+
+body.subscribe-page .plan-orbit-dot {
+  width: 10px !important;
+  height: 10px !important;
+  border: 3px solid #d8d4ff !important;
+  border-radius: 50% !important;
+  background: #6652dc !important;
+  box-shadow: 0 0 0 6px #f1efff !important;
+}
+
+body.subscribe-page .plan-title-text {
+  margin-bottom: 11px !important;
+  color: #111627 !important;
+  font-size: 38px !important;
+  letter-spacing: -.045em !important;
+}
+
+body.subscribe-page .plan-subtitle-desc {
+  min-height: 44px !important;
+  margin-bottom: 28px !important;
+  color: #747b8d !important;
+  font-size: 14px !important;
+  line-height: 1.55 !important;
+}
+
+body.subscribe-page .price-stack {
+  align-items: flex-start !important;
+  margin-bottom: 28px !important;
+  text-align: left !important;
+}
+
+body.subscribe-page .price-val {
+  color: #111627 !important;
+  font-size: 38px !important;
+  letter-spacing: -.045em !important;
+}
+
+body.subscribe-page .price-period {
+  margin-top: 8px !important;
+  color: #9096a6 !important;
+  font-size: 11px !important;
+}
+
+body.subscribe-page .plan-features-list {
+  flex: 1 !important;
+  gap: 13px !important;
+  margin-bottom: 28px !important;
+  padding-top: 24px !important;
+  border-top: 1px solid #eceef3 !important;
+}
+
+body.subscribe-page .plan-features-list li {
+  color: #62697b !important;
+  font-size: 13px !important;
+}
+
+body.subscribe-page .plan-features-list li::before {
+  display: grid !important;
+  width: 17px !important;
+  height: 17px !important;
+  place-items: center !important;
+  border-radius: 50% !important;
+  background: #eeecff !important;
+  color: #5e4bd4 !important;
+  font-size: 10px !important;
+}
+
+body.subscribe-page .plan-feature-basic::before {
+  content: "1" !important;
+}
+
+body.subscribe-page .btn.plan-btn {
+  width: 100% !important;
+  height: 50px !important;
+  border-radius: 14px !important;
+}
+
+body.subscribe-page .plan-card-boost {
+  border-color: #101525 !important;
+  background:
+    radial-gradient(circle at 88% 6%, rgba(116, 94, 242, .32), transparent 30%),
+    #101525 !important;
+  box-shadow: 0 28px 72px rgba(13, 17, 31, .22) !important;
+}
+
+body.subscribe-page .plan-card-boost .plan-label,
+body.subscribe-page .plan-card-boost .plan-subtitle-desc,
+body.subscribe-page .plan-card-boost .price-period,
+body.subscribe-page .plan-card-boost .plan-features-list li {
+  color: #aeb5c9 !important;
+}
+
+body.subscribe-page .plan-card-boost .plan-title-text,
+body.subscribe-page .plan-card-boost .price-val {
+  color: #fff !important;
+}
+
+body.subscribe-page .plan-card-boost .plan-features-list {
+  border-color: rgba(255,255,255,.12) !important;
+}
+
+body.subscribe-page .plan-card-boost .plan-features-list li::before {
+  background: #705ce8 !important;
+  color: #fff !important;
+}
+
+body.subscribe-page .featured-badge {
+  position: static !important;
+  transform: none !important;
+  padding: 6px 11px !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  border-radius: 999px !important;
+  background: rgba(255,255,255,.08) !important;
+  color: #fff !important;
+  box-shadow: none !important;
+  letter-spacing: .07em !important;
+}
+
+body.subscribe-page .btn-boost-solid {
+  border: 0 !important;
+  background: #fff !important;
+  color: #101525 !important;
+}
+
+body.subscribe-page .btn-boost-solid:hover {
+  background: #ebe8ff !important;
+}
+
+body.subscribe-page .plan-card-boost .plan-payment-info.ready {
+  border-color: rgba(255,255,255,.16) !important;
+  background: rgba(255,255,255,.08) !important;
+  color: #e3e5ef !important;
+}
+
+body.subscribe-page .sustainability-footer {
+  margin-top: 30px !important;
+}
+
+@media (max-width: 900px) {
+  body.subscribe-page .subscribe-outer-container {
+    padding: 44px 26px !important;
+  }
+
+  body.subscribe-page .subscribe-start-strip {
+    grid-template-columns: 42px 1fr auto !important;
+  }
+
+  body.subscribe-page .start-strip-link {
+    grid-column: 2 / -1 !important;
+    justify-self: start !important;
+  }
+
+  body.subscribe-page .plans-grid-wrapper {
+    grid-template-columns: 1fr !important;
+    max-width: 620px !important;
+  }
+}
+
+@media (max-width: 560px) {
+  body.subscribe-page .subscribe-outer-container {
+    margin: 16px 8px 40px !important;
+    padding: 34px 14px !important;
+  }
+
+  body.subscribe-page .subscribe-start-strip {
+    grid-template-columns: 40px 1fr !important;
+    gap: 14px !important;
+  }
+
+  body.subscribe-page .subscribe-start-strip > strong,
+  body.subscribe-page .start-strip-link {
+    grid-column: 2 !important;
+  }
+
+  body.subscribe-page .plan-card .plan-card-top {
+    padding: 25px !important;
+  }
+}
+
+/* ================================================================
    HIDDEN ATTRIBUTE OVERRIDE — must be last
 ================================================================= */
 html .inner-premium-page [hidden] {

@@ -55,10 +55,30 @@ const repeaterConfigs = {
       { key: "url", label: "URL", type: "url", placeholder: "https://..." },
     ],
   },
+  skill_proofs: {
+    containerId: "careerSkillProofsList",
+    emptyText: "Добавьте хотя бы одно доказательство: навык, конкретное действие и измеримый результат.",
+    fields: [
+      { key: "skill", label: "Навык", type: "text", placeholder: "Leadership" },
+      { key: "evidence", label: "Чем подтверждается", type: "textarea", placeholder: "Координировал команду волонтёров на молодёжном форуме" },
+      { key: "result", label: "Конкретный результат", type: "text", placeholder: "12 волонтёров · 250 участников" },
+      { key: "link_url", label: "Ссылка на проект или подтверждение", type: "url", placeholder: "https://..." },
+    ],
+  },
 };
 
 const MAX_IMAGE_SIZE_BYTES = 4 * 1024 * 1024;
 let careerProfilePayload = null;
+let careerAutoSaveTimer = null;
+
+const careerTemplateLabels = {
+  professional: "Nova",
+  portfolio: "Aura",
+  editorial: "Atelier",
+  midnight: "Noir",
+  orbit: "Orbit",
+  mono: "Mono",
+};
 
 function escapeHtml(value) {
   return String(value || "")
@@ -204,6 +224,7 @@ function getRepeaterItems(sectionKey) {
 
 function collectProfileFromForm() {
   const profile = careerProfilePayload && careerProfilePayload.profile ? careerProfilePayload.profile : {};
+  const selectedTemplate = document.querySelector('input[name="careerTemplate"]:checked');
 
   Object.keys(repeaterConfigs).forEach(function (sectionKey) {
     profile[sectionKey] = getRepeaterItems(sectionKey);
@@ -216,6 +237,7 @@ function collectProfileFromForm() {
   profile.photo_url = document.getElementById("careerPhotoUrl").value.trim();
   profile.about = document.getElementById("careerAbout").value.trim();
   profile.skills = parseSkills(document.getElementById("careerSkills").value);
+  profile.template_key = selectedTemplate ? selectedTemplate.value : "professional";
 
   return profile;
 }
@@ -324,7 +346,7 @@ function renderSummary(payload) {
   document.getElementById("careerSummaryProjects").textContent = String(summary.projects_count || 0);
   document.getElementById("careerSummarySkills").textContent = String(summary.skills_count || 0);
   document.getElementById("careerSummaryLinks").textContent = String(summary.links_count || 0);
-  document.getElementById("careerSummaryCertificates").textContent = String(summary.certificates_count || 0);
+  document.getElementById("careerSummaryProofs").textContent = String(summary.skill_proofs_count || 0);
   document.getElementById("careerSummaryText").textContent = isPublic
     ? "Публичная страница включена. QR уже может вести HR на вашу карьерную визитку."
     : "Пока это черновик. Включите публичный режим, когда страница будет готова.";
@@ -345,6 +367,37 @@ function renderSummary(payload) {
 function renderForm(payload) {
   careerProfilePayload = payload;
   const profile = payload && payload.profile ? payload.profile : {};
+  const templateAccess = payload && payload.template_access ? payload.template_access : {};
+  const allowedTemplates = Array.isArray(templateAccess.allowed_keys) && templateAccess.allowed_keys.length
+    ? templateAccess.allowed_keys
+    : ["professional"];
+  const requestedTemplate = careerTemplateLabels[profile.template_key] ? profile.template_key : "professional";
+  const templateKey = allowedTemplates.includes(requestedTemplate) ? requestedTemplate : "professional";
+  const templateInput = document.querySelector(`input[name="careerTemplate"][value="${templateKey}"]`);
+
+  document.querySelectorAll("[data-template-card]").forEach(function (card) {
+    const key = card.getAttribute("data-template-card");
+    const isLocked = !allowedTemplates.includes(key);
+    card.classList.toggle("is-locked", isLocked);
+    const input = card.querySelector('input[name="careerTemplate"]');
+    if (input) input.disabled = isLocked;
+  });
+
+  const accessNote = document.getElementById("careerTemplateAccessNote");
+  if (accessNote) {
+    if (templateAccess.tier === "boost") {
+      accessNote.hidden = true;
+      accessNote.textContent = "";
+    } else {
+      accessNote.hidden = false;
+      accessNote.innerHTML = 'Nova доступен в Start и Career Plus. <a href="/subscribe">Открыть все 6 дизайнов с Career Boost</a>.';
+    }
+  }
+
+  if (templateInput) {
+    templateInput.checked = true;
+  }
+  updateTemplateSelection(templateKey);
 
   document.getElementById("careerPublicEnabled").checked = payload && payload.public_enabled === true;
   document.getElementById("careerFullName").value = profile.full_name || "";
@@ -379,6 +432,7 @@ function buildLocalPayload() {
       completion_percent: calculateCompletion(draftProfile, persistedPublicEnabled),
       projects_count: Array.isArray(draftProfile.projects) ? draftProfile.projects.length : 0,
       skills_count: Array.isArray(draftProfile.skills) ? draftProfile.skills.length : 0,
+      skill_proofs_count: Array.isArray(draftProfile.skill_proofs) ? draftProfile.skill_proofs.length : 0,
       links_count: Array.isArray(draftProfile.links) ? draftProfile.links.length : 0,
       certificates_count: Array.isArray(draftProfile.certificates) ? draftProfile.certificates.length : 0,
       top_skills: Array.isArray(draftProfile.skills) ? draftProfile.skills.slice(0, 5) : [],
@@ -393,6 +447,17 @@ function buildLocalPayload() {
     _previous_completion: currentSummary.completion_percent || 0,
     _pending_public_enabled: draftPublicEnabled !== persistedPublicEnabled ? draftPublicEnabled : null,
   };
+}
+
+function updateTemplateSelection(templateKey) {
+  document.querySelectorAll("[data-template-card]").forEach(function (card) {
+    card.classList.toggle("is-selected", card.getAttribute("data-template-card") === templateKey);
+  });
+
+  const badge = document.getElementById("careerTemplateBadge");
+  if (badge) {
+    badge.textContent = careerTemplateLabels[templateKey] || careerTemplateLabels.professional;
+  }
 }
 
 function refreshDraftSummary() {
@@ -447,8 +512,15 @@ async function loadCareerProfile() {
   }
 }
 
-async function saveCareerProfile(event) {
-  event.preventDefault();
+async function saveCareerProfile(event, isAutoSave) {
+  if (event && typeof event.preventDefault === "function") {
+    event.preventDefault();
+  }
+
+  if (careerAutoSaveTimer) {
+    window.clearTimeout(careerAutoSaveTimer);
+    careerAutoSaveTimer = null;
+  }
 
   if (!careerProfilePayload) {
     return;
@@ -461,7 +533,7 @@ async function saveCareerProfile(event) {
   };
 
   saveButton.disabled = true;
-  setSaveStatus("Сохраняем профиль...", "pending");
+  setSaveStatus(isAutoSave ? "Автосохраняем изменения..." : "Сохраняем профиль...", "pending");
 
   try {
     const response = await fetch("/api/career-profile", {
@@ -485,7 +557,7 @@ async function saveCareerProfile(event) {
     }
 
     renderForm(payload);
-    setSaveStatus("Профиль сохранён.", "success");
+    setSaveStatus(isAutoSave ? "Изменения сохранены автоматически." : "Профиль сохранён.", "success");
   } catch (error) {
     console.error(error);
     setSaveStatus(error && error.message ? error.message : "Failed to save profile", "error");
@@ -494,9 +566,20 @@ async function saveCareerProfile(event) {
   }
 }
 
-function markDirty() {
+function scheduleCareerAutoSave() {
+  if (!careerProfilePayload) return;
+  if (careerAutoSaveTimer) window.clearTimeout(careerAutoSaveTimer);
+  careerAutoSaveTimer = window.setTimeout(function () {
+    void saveCareerProfile(null, true);
+  }, 700);
+}
+
+function markDirty(event) {
   refreshDraftSummary();
   setSaveStatus("Есть несохранённые изменения.", "pending");
+  if (!event || event.type === "change") {
+    scheduleCareerAutoSave();
+  }
 }
 
 function handleRepeaterAction(event) {
@@ -624,6 +707,11 @@ document.addEventListener("DOMContentLoaded", function () {
   form.addEventListener("submit", saveCareerProfile);
   form.addEventListener("input", markDirty);
   form.addEventListener("change", markDirty);
+  form.addEventListener("change", function (event) {
+    if (event.target && event.target.name === "careerTemplate") {
+      updateTemplateSelection(event.target.value);
+    }
+  });
   copyButton.addEventListener("click", copyPublicLink);
 
   loadCareerProfile();

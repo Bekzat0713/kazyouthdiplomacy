@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
     '<nav class="sidebar-nav">' +
       '<a href="/dashboard" class="sidebar-nav-item" data-sidebar-link="dashboard">' +
         '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>' +
-        '<span>Кабинет</span>' +
+        '<span>Обзор</span>' +
       '</a>' +
       '<a href="/internships" class="sidebar-nav-item" data-sidebar-link="internships">' +
         '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>' +
@@ -30,21 +30,13 @@ document.addEventListener("DOMContentLoaded", function () {
         '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>' +
         '<span>Возможности</span>' +
       '</a>' +
-      '<a href="/resources" class="sidebar-nav-item" data-sidebar-link="resources">' +
-        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>' +
-        '<span>Материалы</span>' +
+      '<a href="/career-passport" class="sidebar-nav-item" data-sidebar-link="career-passport">' +
+        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M5 21v-2a7 7 0 0 1 14 0v2"></path><path d="M18 4l1 1 2-2"></path></svg>' +
+        '<span>Career Passport</span>' +
       '</a>' +
       '<a href="/career-profile" class="sidebar-nav-item" data-sidebar-link="career-profile">' +
         '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>' +
-        '<span>Career Profile</span>' +
-      '</a>' +
-      '<a href="/interview" class="sidebar-nav-item" data-sidebar-link="interview">' +
-        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>' +
-        '<span>AI Интервью</span>' +
-      '</a>' +
-      '<a href="/insight-packs" class="sidebar-nav-item" data-sidebar-link="insight-packs">' +
-        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>' +
-        '<span>Insight Packs</span>' +
+        '<span>Web CV</span>' +
       '</a>' +
       '<a href="/subscribe" class="sidebar-nav-item" data-sidebar-link="subscribe">' +
         '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>' +
@@ -55,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
     '<nav class="sidebar-nav account-nav">' +
       '<a href="/profile" class="sidebar-nav-item" data-sidebar-link="profile">' +
         '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>' +
-        '<span>Профиль</span>' +
+        '<span>Настройки</span>' +
       '</a>' +
     '</nav>' +
     '<div class="sidebar-user-footer" id="sidebarUserFooter">' +

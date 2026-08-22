@@ -209,9 +209,9 @@ function initPremiumHomeMotion(prefersReducedMotion) {
     }
   );
 
-  gsap.to(".career-gps-card", {
-    y: -7,
-    duration: 4.6,
+  gsap.to(".ecosystem-preview-window", {
+    y: -5,
+    duration: 5.2,
     repeat: -1,
     yoyo: true,
     ease: "sine.inOut",
@@ -227,64 +227,11 @@ function initPremiumHomeMotion(prefersReducedMotion) {
   });
 }
 
-function createReviewCard(review) {
-  const card = document.createElement("article");
-  card.className = "home-figma-review-card";
-
-  const top = document.createElement("div");
-  top.className = "home-figma-review-top";
-
-  const tag = document.createElement("span");
-  tag.className = "home-figma-review-tag";
-  tag.textContent = "Отзыв участника";
-
-  const name = document.createElement("strong");
-  name.textContent = review.display_name + (review.age ? `, ${review.age} лет` : "");
-
-  const meta = document.createElement("span");
-  meta.className = "home-figma-review-meta";
-  meta.textContent = [review.city, review.role_label, review.goal_label ? `цель: ${review.goal_label}` : ""]
-    .filter(Boolean)
-    .join(" • ");
-
-  const headline = document.createElement("span");
-  headline.className = "home-figma-review-headline";
-  headline.textContent = review.headline || "Отзыв участника";
-
-  const body = document.createElement("p");
-  body.textContent = `“${review.body}”`;
-
-  const result = document.createElement("span");
-  result.className = "home-figma-review-note";
-  result.textContent = `Результат: ${review.result_summary}`;
-
-  top.appendChild(tag);
-  top.appendChild(name);
-  top.appendChild(meta);
-  top.appendChild(headline);
-  card.appendChild(top);
-  card.appendChild(body);
-  card.appendChild(result);
-
-  return card;
-}
-
-function renderReviewStatus(message, tone) {
-  const status = document.getElementById("homeReviewStatus");
-  if (!status) {
-    return;
-  }
-
-  status.hidden = !message;
-  status.textContent = message || "";
-  status.dataset.tone = tone || "";
-}
-
 const HOME_AI_STORAGE_KEY = "kyd_home_ai_history_v1";
 const HOME_AI_MAX_MESSAGES = 8;
 const HOME_AI_GUEST_ANSWERS = {
   "Что это за сайт и кому он подходит?":
-    "KazYouthDiplomacy - это Career GPS для студентов и молодых специалистов. Платформа помогает не искать возможности хаотично по разным каналам, а быстрее понять свой маршрут: какие стажировки, гранты, материалы и следующие шаги реально подходят именно вам.",
+    "KazYouthDiplomacy — это карьерная экосистема для студентов и молодых специалистов. Она объединяет Web CV, Career Passport, персональный маршрут и подходящие возможности в одном пространстве.",
   "Чем этот сайт поможет именно мне как студенту или молодому специалисту?":
     "Сайт помогает сократить хаос и быстрее перейти к действиям. Здесь можно увидеть карьерные возможности, пройти короткий опрос, получить более персональный маршрут, сохранить интересные варианты и понять, что делать дальше, а не просто читать длинные списки ссылок.",
   "С чего мне лучше начать прямо сейчас на платформе?":
@@ -295,7 +242,7 @@ const HOME_AI_GUEST_ANSWERS = {
 
 const HOME_AI_DIRECT_ANSWERS = {
   "что это за сайт и кому он подходит":
-    "KazYouthDiplomacy - это career GPS для студентов и молодых специалистов. Здесь собраны стажировки, гранты, материалы и personal roadmap, чтобы вы не искали все хаотично по разным каналам.",
+    "KazYouthDiplomacy — это карьерная экосистема для студентов и молодых специалистов. Здесь можно создать Career Passport, оформить Web CV, получить персональный маршрут и находить подходящие возможности.",
   "чем этот сайт поможет именно мне как студенту или молодому специалисту":
     "Сайт помогает быстрее перейти от интереса к действиям: понять цель, открыть подходящие возможности, сохранить нужные варианты и подготовиться к подаче.",
   "с чего мне лучше начать прямо сейчас на платформе":
@@ -333,7 +280,7 @@ function getHomeAiLocalAnswer(rawPrompt, state = {}) {
     return {
       answer: HOME_AI_DIRECT_ANSWERS[normalized],
       status: isAuthenticated
-        ? "Если хотите, могу продолжить глубже: roadmap, подача, стажировки, материалы."
+        ? "Если хотите, могу продолжить глубже: Career Passport, персональный маршрут, стажировки и отклики."
         : "Для персональных рекомендаций войдите в аккаунт и продолжите диалог.",
       tone: "",
     };
@@ -345,7 +292,7 @@ function getHomeAiLocalAnswer(rawPrompt, state = {}) {
         ? "Привет. Я AI Youth. Могу помочь с навигацией по платформе, personal roadmap, поиском возможностей, материалами по подаче и следующим шагом."
         : "Привет. Я AI Youth. Уже здесь могу объяснить, что это за сайт, чем он полезен, с чего начать и как двигаться к стажировкам, грантам и первым откликам.",
       status: isAuthenticated
-        ? "Можно спросить про roadmap, стажировки, гранты, материалы, подписку и подачу."
+        ? "Можно спросить про Career Passport, Web CV, карьерный маршрут, возможности и подписку."
         : "Для персонального разбора под ваш профиль потом войдите в аккаунт.",
       tone: "",
     };
@@ -358,7 +305,7 @@ function getHomeAiLocalAnswer(rawPrompt, state = {}) {
     normalized.includes("для кого сайт")
   ) {
     return {
-      answer: "KazYouthDiplomacy - это платформа для студентов и молодых специалистов, где собраны стажировки, гранты, карьерные материалы и personal roadmap. Она помогает быстрее понять, куда двигаться и что делать дальше.",
+      answer: "KazYouthDiplomacy — это карьерная экосистема для студентов и молодых специалистов: Web CV, Career Passport, персональный маршрут и подходящие возможности в одном кабинете.",
       status: "Если хотите, следующим сообщением могу подсказать, с какого раздела лучше начать именно вам.",
       tone: "",
     };
@@ -371,7 +318,7 @@ function getHomeAiLocalAnswer(rawPrompt, state = {}) {
     normalized.includes("что мне даст")
   ) {
     return {
-      answer: "Платформа помогает в трех вещах: найти подходящие возможности, не потерять дедлайны и перейти от просмотра к реальной подаче. Здесь можно выбрать направление, собрать shortlist и открыть материалы по CV, мотивационному письму и интервью.",
+      answer: "Платформа помогает определить карьерное направление, собрать сильный цифровой профиль, найти подходящие возможности и перейти от просмотра к реальному отклику.",
       status: "Если напишете цель, AI Youth может сузить рекомендации до конкретных шагов.",
       tone: "",
     };
@@ -439,10 +386,10 @@ function getHomeAiLocalAnswer(rawPrompt, state = {}) {
     normalized.includes("мотивацион")
   ) {
     return {
-      answer: "Логика подачи обычно такая: прочитать требования, проверить дедлайн, адаптировать CV под конкретную программу, подготовить мотивационное письмо, собрать документы и только после этого отправлять заявку. На платформе для этого как раз есть материалы по карьерному старту, CV, интервью и подготовке к подаче.",
+      answer: "Логика подачи обычно такая: прочитать требования, проверить дедлайн, адаптировать Web CV под конкретную программу, подготовить мотивационное письмо, собрать документы и только после этого отправлять заявку.",
       status: isAuthenticated
         ? "Можно написать `помоги подготовиться к подаче` или `что улучшить перед откликом`, и я продолжу."
-        : "Для более точной помощи с подачей войдите в аккаунт и откройте материалы платформы.",
+        : "Для более точной помощи с подачей войдите в аккаунт и заполните Career Passport.",
       tone: "",
     };
   }
@@ -462,7 +409,7 @@ function getHomeAiLocalAnswer(rawPrompt, state = {}) {
 
   return {
     answer: isAuthenticated
-      ? "Я могу помочь с базовой навигацией: roadmap, первые шаги, стажировки, гранты, материалы, подача и доступ. Попробуйте задать вопрос чуть конкретнее."
+      ? "Я могу помочь с Career Passport, Web CV, карьерным маршрутом, стажировками, грантами и доступом. Попробуйте задать вопрос чуть конкретнее."
       : "Я уже могу помочь с вопросами про сайт, старт, roadmap, возможности и подачу. Для личного разбора под ваш профиль войдите в аккаунт и продолжите диалог там.",
     status: isAuthenticated
       ? "Попробуйте уточнить запрос: например `дай roadmap`, `как податься`, `что делать сначала`, `какие стажировки искать`."
@@ -741,7 +688,7 @@ function initHomeAssistantExperience(options = {}) {
 
   if (state.isAuthenticated) {
     modeBadge.textContent = "Живой диалог";
-    hint.textContent = "Можно спросить про сайт, карьерный путь, roadmap, стажировки, гранты, материалы, подписку и подачу.";
+    hint.textContent = "Можно спросить про Career Passport, Web CV, карьерный маршрут, возможности, подписку и подачу.";
     setHomeAiStatus(state, "Проверяю доступность AI Youth...", "");
     void fetchHomeAiAvailability(state);
   } else {
@@ -1024,98 +971,92 @@ function renderHomeOpportunityPreview(items, isAuthenticated = false) {
   emptyState.hidden = true;
   currentOpportunityIndex = 0;
 
-  // Single card showcase container
-  const showcaseContainer = document.createElement("div");
-  showcaseContainer.className = "premium-single-card-showcase";
+  const radar = document.createElement("div");
+  radar.className = "premium-opportunity-radar";
+  grid.appendChild(radar);
+  renderOpportunityRadarCards(radar, isAuthenticated);
 
-  // Card slot wrapper
-  const cardWrapper = document.createElement("div");
-  cardWrapper.className = "premium-single-card-wrapper";
-  
-  const card = createHomeOpportunityPreviewCard(opportunityItems[currentOpportunityIndex], isAuthenticated);
-  cardWrapper.appendChild(card);
-  showcaseContainer.appendChild(cardWrapper);
-
-  // Pagination navigation dots
-  const dotsContainer = document.createElement("div");
-  dotsContainer.className = "premium-single-card-dots";
-  opportunityItems.forEach((_, idx) => {
-    const dot = document.createElement("button");
-    dot.className = `premium-card-dot ${idx === 0 ? "active" : ""}`;
-    dot.setAttribute("aria-label", `Карточка ${idx + 1}`);
-    dot.addEventListener("click", () => {
-      if (idx !== currentOpportunityIndex) {
-        switchOpportunityCard(idx, isAuthenticated);
-      }
-    });
-    dotsContainer.appendChild(dot);
-  });
-  showcaseContainer.appendChild(dotsContainer);
-
-  grid.appendChild(showcaseContainer);
-
-  // Start the 30-second interval timer
   startOpportunityTimer(isAuthenticated);
 
-  // Pause timer on hover, resume on leave
-  showcaseContainer.addEventListener("mouseenter", stopOpportunityTimer);
-  showcaseContainer.addEventListener("mouseleave", () => startOpportunityTimer(isAuthenticated));
+  radar.addEventListener("mouseenter", stopOpportunityTimer);
+  radar.addEventListener("mouseleave", () => startOpportunityTimer(isAuthenticated));
+}
+
+function renderOpportunityRadarCards(radar, isAuthenticated) {
+  if (!radar || !opportunityItems.length) return;
+  radar.innerHTML = "";
+
+  const deck = document.createElement("div");
+  deck.className = "opportunity-radar-deck";
+
+  const featuredWrap = document.createElement("div");
+  featuredWrap.className = "opportunity-radar-featured";
+  const featuredCard = createHomeOpportunityPreviewCard(opportunityItems[currentOpportunityIndex], isAuthenticated);
+  featuredCard.classList.add("is-featured");
+  featuredWrap.appendChild(featuredCard);
+
+  const queue = document.createElement("div");
+  queue.className = "opportunity-radar-queue";
+  const compactCount = Math.min(2, Math.max(0, opportunityItems.length - 1));
+  for (let offset = 1; offset <= compactCount; offset += 1) {
+    const itemIndex = (currentOpportunityIndex + offset) % opportunityItems.length;
+    const compactCard = createHomeOpportunityPreviewCard(opportunityItems[itemIndex], isAuthenticated);
+    compactCard.classList.add("is-compact");
+    queue.appendChild(compactCard);
+  }
+
+  deck.appendChild(featuredWrap);
+  if (queue.childNodes.length) deck.appendChild(queue);
+  else deck.classList.add("is-single");
+  radar.appendChild(deck);
+
+  const controls = document.createElement("div");
+  controls.className = "opportunity-radar-controls";
+  const progress = document.createElement("div");
+  progress.className = "opportunity-radar-progress";
+  opportunityItems.forEach((_, index) => {
+    const segment = document.createElement("i");
+    segment.classList.toggle("is-active", index === currentOpportunityIndex);
+    progress.appendChild(segment);
+  });
+
+  const count = document.createElement("span");
+  count.innerHTML = `<strong>${String(currentOpportunityIndex + 1).padStart(2, "0")}</strong> / ${String(opportunityItems.length).padStart(2, "0")}`;
+
+  const buttons = document.createElement("div");
+  const previousButton = document.createElement("button");
+  previousButton.type = "button";
+  previousButton.setAttribute("aria-label", "Предыдущая возможность");
+  previousButton.textContent = "←";
+  previousButton.addEventListener("click", () => {
+    stopOpportunityTimer();
+    switchOpportunityCard((currentOpportunityIndex - 1 + opportunityItems.length) % opportunityItems.length, isAuthenticated);
+  });
+  const nextButton = document.createElement("button");
+  nextButton.type = "button";
+  nextButton.setAttribute("aria-label", "Следующая возможность");
+  nextButton.textContent = "→";
+  nextButton.addEventListener("click", () => {
+    stopOpportunityTimer();
+    switchOpportunityCard((currentOpportunityIndex + 1) % opportunityItems.length, isAuthenticated);
+  });
+  buttons.appendChild(previousButton);
+  buttons.appendChild(nextButton);
+  controls.appendChild(count);
+  controls.appendChild(progress);
+  controls.appendChild(buttons);
+  radar.appendChild(controls);
 }
 
 function switchOpportunityCard(newIndex, isAuthenticated) {
-  const cardWrapper = document.querySelector(".premium-single-card-wrapper");
-  const dots = document.querySelectorAll(".premium-card-dot");
-  if (!cardWrapper || !opportunityItems.length) return;
-
-  const currentCard = cardWrapper.querySelector(".premium-opportunity-card");
-  if (!currentCard) return;
-
+  const radar = document.querySelector(".premium-opportunity-radar");
+  if (!radar || !opportunityItems.length || newIndex === currentOpportunityIndex) return;
   currentOpportunityIndex = newIndex;
-
-  // Sync pagination dots
-  dots.forEach((dot, idx) => {
-    dot.classList.toggle("active", idx === newIndex);
-  });
-
-  const gsap = window.gsap;
-  if (gsap) {
-    // 3D Flip Out
-    gsap.to(currentCard, {
-      rotateY: 90,
-      opacity: 0,
-      scale: 0.9,
-      duration: 0.45,
-      ease: "power2.in",
-      onComplete: () => {
-        cardWrapper.innerHTML = "";
-        const newCard = createHomeOpportunityPreviewCard(opportunityItems[newIndex], isAuthenticated);
-        
-        // Initial state for 3D Flip In
-        gsap.set(newCard, {
-          rotateY: -90,
-          opacity: 0,
-          scale: 0.9
-        });
-        
-        cardWrapper.appendChild(newCard);
-        
-        // 3D Flip In
-        gsap.to(newCard, {
-          rotateY: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 0.55,
-          ease: "back.out(1.15)",
-          clearProps: "transform"
-        });
-      }
-    });
-  } else {
-    // Fallback if GSAP is unavailable
-    cardWrapper.innerHTML = "";
-    const newCard = createHomeOpportunityPreviewCard(opportunityItems[newIndex], isAuthenticated);
-    cardWrapper.appendChild(newCard);
-  }
+  radar.classList.add("is-switching");
+  window.setTimeout(() => {
+    renderOpportunityRadarCards(radar, isAuthenticated);
+    radar.classList.remove("is-switching");
+  }, 180);
 }
 
 function startOpportunityTimer(isAuthenticated) {
@@ -1123,7 +1064,7 @@ function startOpportunityTimer(isAuthenticated) {
   opportunityTimer = setInterval(() => {
     const nextIndex = (currentOpportunityIndex + 1) % opportunityItems.length;
     switchOpportunityCard(nextIndex, isAuthenticated);
-  }, 10000); // 10 seconds
+  }, 8000);
 }
 
 function stopOpportunityTimer() {
@@ -1157,19 +1098,10 @@ async function initHomePageExperience() {
   const navLogin = document.getElementById("homeNavLogin");
   const navDashboard = document.getElementById("homeNavDashboard");
   const navLogoutForm = document.getElementById("homeNavLogoutForm");
-  const reviewGuestState = document.getElementById("homeReviewGuestState");
-  const reviewForm = document.getElementById("homeReviewForm");
-  const reviewLead = document.getElementById("homeReviewFormLead");
-  const reviewSubmit = document.getElementById("homeReviewSubmit");
-  const reviewsGrid = document.getElementById("homeReviewsGrid");
 
   try {
-    const [homeStateResponse, reviewsResponse, previewResponse] = await Promise.all([
+    const [homeStateResponse, previewResponse] = await Promise.all([
       fetch("/api/home-state", {
-        credentials: "include",
-        headers: { Accept: "application/json" },
-      }),
-      fetch("/api/reviews", {
         credentials: "include",
         headers: { Accept: "application/json" },
       }),
@@ -1179,11 +1111,9 @@ async function initHomePageExperience() {
     ]);
 
     const homeState = await homeStateResponse.json().catch(() => ({}));
-    const reviewsPayload = await reviewsResponse.json().catch(() => ({}));
     const previewPayload = await previewResponse.json().catch(() => ({}));
     const isAuthenticated = Boolean(homeState && homeState.is_authenticated);
     const currentUser = homeState && homeState.user ? homeState.user : null;
-    const publicReviews = Array.isArray(reviewsPayload.reviews) ? reviewsPayload.reviews : [];
     const previewItems = Array.isArray(previewPayload.items) ? previewPayload.items : [];
 
     syncHomeOpportunitiesCta(isAuthenticated);
@@ -1202,43 +1132,11 @@ async function initHomePageExperience() {
       navLogoutForm.hidden = !isAuthenticated;
     }
 
-    if (reviewGuestState) {
-      reviewGuestState.hidden = isAuthenticated;
-    }
-
-    if (reviewForm) {
-      reviewForm.hidden = !isAuthenticated;
-    }
-
-    if (reviewLead && isAuthenticated && currentUser) {
-      reviewLead.textContent = currentUser.has_review
-        ? "Ваш отзыв уже можно обновить. Расскажите, что изменилось сейчас и какой результат вы видите после использования платформы."
-        : "Поделитесь, что изменилось после платформы: стало легче искать возможности, появился маршрут или удалось быстрее перейти к откликам.";
-    }
-
-    if (reviewSubmit && isAuthenticated) {
-      reviewSubmit.textContent = currentUser && currentUser.has_review
-        ? "Обновить отзыв"
-        : "Опубликовать отзыв";
-    }
-
-    if (reviewsGrid && publicReviews.length) {
-      reviewsGrid.innerHTML = "";
-      publicReviews.forEach((review) => {
-        reviewsGrid.appendChild(createReviewCard(review));
-      });
-    }
-
     initHomeAssistantExperience({
       isAuthenticated,
       currentUser,
     });
 
-    showSmartRecommendationWidget({
-      isAuthenticated,
-      currentUser,
-      homeState,
-    });
   } catch (error) {
     console.error("Home page state error:", error);
 
@@ -1257,96 +1155,13 @@ async function initHomePageExperience() {
       navLogoutForm.hidden = true;
     }
 
-    if (reviewGuestState) {
-      reviewGuestState.hidden = false;
-    }
-
-    if (reviewForm) {
-      reviewForm.hidden = true;
-    }
-
     initHomeAssistantExperience({
       isAuthenticated: false,
       currentUser: null,
     });
 
-    showSmartRecommendationWidget({
-      isAuthenticated: false,
-      currentUser: null,
-      homeState: null,
-    });
   }
 
-  if (!reviewForm) {
-    return;
-  }
-
-  reviewForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const submitButton = document.getElementById("homeReviewSubmit");
-    const cityInput = document.getElementById("homeReviewCity");
-    const headlineInput = document.getElementById("homeReviewHeadline");
-    const resultInput = document.getElementById("homeReviewResult");
-    const bodyInput = document.getElementById("homeReviewBody");
-    const reviewsGridNode = document.getElementById("homeReviewsGrid");
-
-    if (!submitButton || !cityInput || !headlineInput || !resultInput || !bodyInput || !reviewsGridNode) {
-      return;
-    }
-
-    submitButton.disabled = true;
-    renderReviewStatus("Сохраняем отзыв...", "");
-
-    try {
-      const response = await fetch("/api/reviews", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          city: cityInput.value,
-          headline: headlineInput.value,
-          result_summary: resultInput.value,
-          body: bodyInput.value,
-        }),
-      });
-
-      const payload = await response.json().catch(() => ({}));
-
-      if (response.status === 401) {
-        window.location.assign("/login");
-        return;
-      }
-
-      if (!response.ok || !payload.review) {
-        throw new Error(payload.error || "Не удалось сохранить отзыв.");
-      }
-
-      const currentCards = Array.from(reviewsGridNode.querySelectorAll(".home-figma-review-card"));
-      reviewsGridNode.innerHTML = "";
-      reviewsGridNode.appendChild(createReviewCard(payload.review));
-
-      currentCards.forEach((card) => {
-        const existingHeadline = card.querySelector(".home-figma-review-headline");
-        if (existingHeadline && payload.review && existingHeadline.textContent === payload.review.headline) {
-          return;
-        }
-        if (reviewsGridNode.children.length < 6) {
-          reviewsGridNode.appendChild(card);
-        }
-      });
-
-      renderReviewStatus("Отзыв сохранён. Спасибо, это усиливает доверие к платформе.", "success");
-      submitButton.textContent = "Обновить отзыв";
-    } catch (error) {
-      renderReviewStatus(error.message || "Не удалось сохранить отзыв.", "error");
-    } finally {
-      submitButton.disabled = false;
-    }
-  });
 }
 
 function showSmartRecommendationWidget({ isAuthenticated, currentUser, homeState }) {
@@ -1366,13 +1181,6 @@ function showSmartRecommendationWidget({ isAuthenticated, currentUser, homeState
         ctaLink: "/register"
       },
       {
-        icon: "🎙️",
-        title: "AI Mock Interview",
-        text: "Хей! Хотите проверить свои силы перед настоящим интервью? Пройдите пробное интервью с нашим ИИ.",
-        ctaText: "Пройти AI Mock Interview →",
-        ctaLink: "/login"
-      },
-      {
         icon: "📝",
         title: "Сделайте веб-резюме!",
         text: "Создайте стильное онлайн-резюме через наш Career Profile и делитесь им с работодателями.",
@@ -1384,13 +1192,6 @@ function showSmartRecommendationWidget({ isAuthenticated, currentUser, homeState
         title: "Скрытый рынок вакансий",
         text: "Сотни проверенных зарубежных и локальных стажировок уже ждут вас на платформе.",
         ctaText: "Смотреть стажировки →",
-        ctaLink: "/register"
-      },
-      {
-        icon: "📚",
-        title: "Полезные гайды и шаблоны",
-        text: "Получите доступ к закрытой базе материалов по составлению CV и сопроводительных писем.",
-        ctaText: "Изучить материалы →",
         ctaLink: "/register"
       }
     );
@@ -1409,14 +1210,6 @@ function showSmartRecommendationWidget({ isAuthenticated, currentUser, homeState
         ctaLink: "/career-profile"
       });
     }
-
-    suggestions.push({
-      icon: "🎙️",
-      title: "Пройдите Mock Interview!",
-      text: "Попробуйте наше AI-интервью! ИИ задаст вопросы по вашей специальности и даст подробный фидбек.",
-      ctaText: "Начать AI-интервью →",
-      ctaLink: "/interview"
-    });
 
     if (!hasPlusAccess) {
       suggestions.push({
@@ -1444,13 +1237,6 @@ function showSmartRecommendationWidget({ isAuthenticated, currentUser, homeState
       ctaLink: "/dashboard"
     });
 
-    suggestions.push({
-      icon: "📖",
-      title: "Прокачайте сопроводительное!",
-      text: "Загляните в раздел 'Материалы', там лежат успешные шаблоны писем в топовые компании.",
-      ctaText: "Читать материалы →",
-      ctaLink: "/resources"
-    });
   }
 
   if (suggestions.length === 0) {
@@ -1578,12 +1364,12 @@ function initHeroRoadmapGenerator() {
       itSteps: [
         "Оформить резюме и собрать 2-3 учебных проекта на GitHub",
         "Найти оплачиваемые стажировки в локальных IT-компаниях и банках",
-        "Пройти тренировку технического и поведенческого интервью с ИИ"
+        "Добавить к проектам измеримые результаты и ссылки на работу"
       ],
       bizSteps: [
         "Описать кейсы участия в кейс-чемпионатах или студенческих проектах",
         "Отобрать вакансии начального уровня (Junior/Intern) в маркетинге или продажах",
-        "Пройти симуляцию собеседования по компетенциям и кейс-интервью с ИИ"
+        "Подготовить короткое портфолио из 2–3 сильных кейсов"
       ],
       sciSteps: [
         "Оформить резюме исследователя, выделив курсовые работы и публикации",
@@ -1606,17 +1392,17 @@ function initHeroRoadmapGenerator() {
       itSteps: [
         "Build a clean resume and host 2-3 active projects on GitHub",
         "Find paid internships in local tech companies, startups, or banks",
-        "Practice coding, system design, or tech Q&A with our AI mentor"
+        "Add measurable outcomes and working links to your strongest projects"
       ],
       bizSteps: [
         "Highlight case-championship experience and format your CV",
         "Select entry-level positions (Intern/Junior) in marketing, analytics, or sales",
-        "Practice competency-based questions and case solving with AI"
+        "Build a short portfolio around 2–3 strong business cases"
       ],
       sciSteps: [
         "Format academic CV and structure your research papers",
         "Find research laboratories, assistantships, or grants",
-        "Draft motivation letters and prep for interviews using AI"
+        "Draft a focused motivation letter for the selected programme"
       ]
     },
     kk: {
@@ -1634,12 +1420,12 @@ function initHeroRoadmapGenerator() {
       itSteps: [
         "Сапалы түйіндеме жасау және GitHub-та 2-3 оқу жобасын жинақтау",
         "Жергілікті IT-компаниялар мен технологиялық банктерден ақылы тағылымдамаларды табу",
-        "ИИ-ментормен техникалық және мінез-құлық сұхбатынан өтуді жаттықтыру"
+        "Үздік жобаларға өлшенетін нәтижелер мен жұмыс сілтемелерін қосу"
       ],
       bizSteps: [
         "Кейс-чемпионаттарға немесе студенттік жобаларға қатысу тәжірибесін сипаттау",
         "Маркетинг, талдау немесе сату салаларындағы бастапқы деңгейдегі (Intern/Junior) бос орындарды іріктеу",
-        "ИИ көмегімен құзыреттілік сұхбатына және кейс шешуге дайындалу"
+        "2–3 мықты бизнес-кейстен қысқа портфолио жинау"
       ],
       sciSteps: [
         "Курстық жұмыстар мен ғылыми жарияланымдарды атап өтіп, зерттеуші резюмесін рәсімдеу",

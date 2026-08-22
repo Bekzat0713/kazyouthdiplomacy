@@ -11,6 +11,12 @@ const bcrypt = require("bcrypt");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const nodemailer = require("nodemailer");
+const {
+  calculateReadiness,
+  normalizePassport,
+  normalizePrivacy,
+  passportToCareerProfile,
+} = require("./lib/career-passport");
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -160,23 +166,45 @@ if (isProduction) {
 }
 
 const SUBSCRIPTION_PLANS = {
-  monthly: {
-    id: "monthly",
-    label: "Старт",
+  career_plus: {
+    id: "career_plus",
+    label: "Career Plus",
     amount: 1090,
     access_days: 30,
+    public: true,
+  },
+  career_boost: {
+    id: "career_boost",
+    label: "Career Boost",
+    amount: 2790,
+    access_days: 30,
+    public: true,
+  },
+  // Legacy plans remain valid for existing and pending subscriptions, but are
+  // no longer offered in the public catalog.
+  monthly: {
+    id: "monthly",
+    label: "Plus · 1 месяц (старый тариф)",
+    amount: 1090,
+    access_days: 30,
+    public: false,
+    legacy: true,
   },
   quarterly: {
     id: "quarterly",
-    label: "Оптимальный",
+    label: "Plus · 3 месяца (старый тариф)",
     amount: 2790,
     access_days: 90,
+    public: false,
+    legacy: true,
   },
   halfyear: {
     id: "halfyear",
-    label: "Максимум",
+    label: "Plus · 6 месяцев (старый тариф)",
     amount: 5990,
     access_days: 180,
+    public: false,
+    legacy: true,
   },
 };
 
@@ -248,6 +276,7 @@ const careerProfileSectionLabels = {
   basic_info: "Основная информация",
   about: "Обо мне",
   skills: "Навыки",
+  skill_proofs: "Доказательства навыков",
   education: "Образование",
   experience: "Опыт",
   projects: "Проекты",
@@ -365,6 +394,10 @@ function applyNoStoreHeaders(res) {
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} ${req.method} ${redactUrlForLogs(req.originalUrl)}`);
   next();
+});
+
+app.get(["/interview", "/interview.html"], requireAuth, (_req, res) => {
+  res.redirect("/career-passport");
 });
 
 app.use(express.static(path.join(__dirname, "public")));
@@ -601,6 +634,32 @@ async function initDB() {
       CREATE UNIQUE INDEX IF NOT EXISTS career_profiles_public_slug_unique
       ON career_profiles (public_slug)
       WHERE public_slug IS NOT NULL
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS career_passports (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        passport_data JSONB NOT NULL DEFAULT '{}'::jsonb,
+        privacy_settings JSONB NOT NULL DEFAULT '{}'::jsonb,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS interview_attempts (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        score INTEGER,
+        attempt_data JSONB NOT NULL DEFAULT '{}'::jsonb,
+        completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS interview_attempts_user_id_idx
+      ON interview_attempts (user_id, completed_at DESC)
     `);
 
     await pool.query(`
@@ -971,11 +1030,11 @@ function normalizePostAuthRedirect(value, fallback = "/dashboard") {
   const allowedPaths = new Set([
     "/dashboard",
     "/profile",
+    "/career-passport",
     "/career-profile",
     "/internships",
     "/opportunities",
     "/resources",
-    "/interview",
     "/insight-packs",
     "/subscribe",
     "/register-survey",
@@ -1180,6 +1239,7 @@ function buildDefaultCareerProfileSlug(userId) {
 
 function buildEmptyCareerProfileData(userRow = {}) {
   return {
+    template_key: "professional",
     full_name: buildDisplayNameFromUser(userRow),
     photo_url: "",
     city: "",
@@ -1187,6 +1247,7 @@ function buildEmptyCareerProfileData(userRow = {}) {
     university: normalizeCareerProfileText(userRow.university, 160),
     about: normalizeCareerProfileLongText(userRow.bio, 1200),
     skills: [],
+    skill_proofs: [],
     education: [],
     experience: [],
     projects: [],
@@ -1199,8 +1260,11 @@ function buildEmptyCareerProfileData(userRow = {}) {
 function normalizeCareerProfileData(input, userRow = {}) {
   const source = input && typeof input === "object" ? input : {};
   const base = buildEmptyCareerProfileData(userRow);
+  const allowedTemplateKeys = new Set(["professional", "portfolio", "editorial", "midnight", "orbit", "mono"]);
+  const requestedTemplateKey = normalizeCareerProfileText(source.template_key, 40).toLowerCase();
 
   return {
+    template_key: allowedTemplateKeys.has(requestedTemplateKey) ? requestedTemplateKey : base.template_key,
     full_name: normalizeCareerProfileText(source.full_name || base.full_name, 140),
     photo_url: normalizeCareerProfileImage(source.photo_url),
     city: normalizeCareerProfileText(source.city, 80),
@@ -1210,6 +1274,17 @@ function normalizeCareerProfileData(input, userRow = {}) {
     skills: normalizeCareerProfileArray(source.skills, 16, (item) => {
       const label = normalizeCareerProfileText(item, 40);
       return label || null;
+    }),
+    skill_proofs: normalizeCareerProfileArray(source.skill_proofs, 10, (item) => {
+      const entry = item && typeof item === "object" ? item : {};
+      const skill = normalizeCareerProfileText(entry.skill, 60);
+      const evidence = normalizeCareerProfileLongText(entry.evidence, 360);
+      const result = normalizeCareerProfileText(entry.result, 180);
+      const link_url = normalizeCareerProfileUrl(entry.link_url);
+      if (!skill && !evidence && !result && !link_url) {
+        return null;
+      }
+      return { skill, evidence, result, link_url };
     }),
     education: normalizeCareerProfileArray(source.education, 6, (item) => {
       const entry = item && typeof item === "object" ? item : {};
@@ -1287,6 +1362,8 @@ function careerProfileSectionHasContent(profileData, sectionKey) {
       return Boolean(profile.about);
     case "skills":
       return Array.isArray(profile.skills) && profile.skills.length > 0;
+    case "skill_proofs":
+      return Array.isArray(profile.skill_proofs) && profile.skill_proofs.length > 0;
     case "education":
       return Array.isArray(profile.education) && profile.education.length > 0;
     case "experience":
@@ -1363,7 +1440,7 @@ function buildCareerProfileGuidance(survey, profileData) {
 
 function buildCareerProfileUrls(slug) {
   const normalizedSlug = normalizeCareerProfileText(slug, 80) || "";
-  const publicPath = `/career/${encodeURIComponent(normalizedSlug)}`;
+  const publicPath = `/cv/${encodeURIComponent(normalizedSlug)}`;
   const publicUrl = buildAppUrl(publicPath);
   return {
     public_path: publicPath,
@@ -1373,7 +1450,7 @@ function buildCareerProfileUrls(slug) {
   };
 }
 
-function buildCareerProfileResponse(row, userRow, survey) {
+function buildCareerProfileResponse(row, userRow, survey, options = {}) {
   const safeRow = row || {};
   const profileData = normalizeCareerProfileData(safeRow.profile_data || {}, userRow);
   const publicSlug = normalizeCareerProfileText(
@@ -1389,12 +1466,20 @@ function buildCareerProfileResponse(row, userRow, survey) {
     public_slug: publicSlug,
     updated_at: safeRow.updated_at || null,
     profile: profileData,
+    template_access: {
+      tier: options.premiumTemplates ? "boost" : "basic",
+      allowed_keys: options.premiumTemplates
+        ? ["professional", "portfolio", "editorial", "midnight", "orbit", "mono"]
+        : ["professional"],
+      upgrade_href: "/subscribe",
+    },
     guidance,
     summary: {
       completion_percent: completionPercent,
       is_public: publicEnabled,
       projects_count: profileData.projects.length,
       skills_count: profileData.skills.length,
+      skill_proofs_count: profileData.skill_proofs.length,
       links_count: profileData.links.length,
       certificates_count: profileData.certificates.length,
       top_skills: profileData.skills.slice(0, 5),
@@ -1609,6 +1694,114 @@ async function getCareerProfileBySlug(publicSlug) {
   );
 
   return result.rows[0] || null;
+}
+
+async function getCareerPassportRowForUser(userId) {
+  if (!userId) return null;
+  const result = await pool.query(
+    `
+    SELECT id, user_id, passport_data, privacy_settings, created_at, updated_at
+    FROM career_passports
+    WHERE user_id = $1
+    LIMIT 1
+    `,
+    [userId]
+  );
+  return result.rows[0] || null;
+}
+
+async function getCareerPassportContext(userId, survey, careerProfile) {
+  const savedResult = await pool.query(
+    `
+    SELECT
+      COUNT(*) FILTER (WHERE saved_status = 'saved')::INT AS saved_count,
+      COUNT(*) FILTER (WHERE saved_status IN ('want_to_apply', 'applied'))::INT AS active_count,
+      COUNT(*) FILTER (WHERE saved_status = 'applied')::INT AS applied_count
+    FROM saved_items
+    WHERE user_id = $1
+    `,
+    [userId]
+  );
+  const saved = savedResult.rows[0] || {};
+  return {
+    webCvExists: Boolean(careerProfile),
+    webCvPublic: Boolean(careerProfile && careerProfile.public_enabled),
+    diagnosticsComplete: Boolean(survey && survey.submitted_at),
+    savedCount: Number(saved.saved_count || 0) + Number(saved.active_count || 0),
+    appliedCount: Number(saved.applied_count || 0),
+  };
+}
+
+function buildCareerPassportResponse(row, user, survey, context) {
+  const passport = normalizePassport(row && row.passport_data, user, survey || {});
+  const privacy = normalizePrivacy(row && row.privacy_settings);
+  return {
+    passport,
+    privacy,
+    readiness: calculateReadiness(passport, context),
+    activity: {
+      saved_count: context.savedCount,
+      applied_count: context.appliedCount,
+    },
+    web_cv: {
+      exists: context.webCvExists,
+      public: context.webCvPublic,
+    },
+    updated_at: row && row.updated_at || null,
+  };
+}
+
+function buildCareerPassportMatch(row, entityType, passport) {
+  const goal = passport.career_goal || {};
+  const identity = passport.identity || {};
+  const skills = passport.skills || {};
+  const title = String(row.title || "");
+  const organization = String(row.organization || "");
+  const description = String(row.description || row.summary || "");
+  const location = String(row.location || row.country || "");
+  const haystack = `${title} ${organization} ${description} ${row.sector || ""}`.toLowerCase();
+  const interests = [goal.profession, ...(goal.industries || []), ...(goal.directions || [])]
+    .map((value) => String(value || "").trim().toLowerCase())
+    .filter(Boolean);
+  const skillNames = [...(skills.hard || []), ...(skills.soft || [])]
+    .map((item) => String(item.name || "").trim().toLowerCase())
+    .filter(Boolean);
+  const interestHits = interests.filter((value) => haystack.includes(value)).length;
+  const skillHits = skillNames.filter((value) => haystack.includes(value)).length;
+  let score = 35;
+  score += Math.min(30, interestHits * 15);
+  score += Math.min(30, skillHits * 10);
+  const preferredCity = String(goal.city || identity.city || "").trim().toLowerCase();
+  if (preferredCity && location.toLowerCase().includes(preferredCity)) score += 15;
+  if ((skills.languages || []).some((item) => /english|англий/i.test(item.name || ""))) score += 10;
+  if (identity.university || identity.specialty) score += 10;
+  return {
+    id: row.id,
+    entity_type: entityType,
+    title,
+    organization,
+    location,
+    match_percent: Math.min(98, score),
+    href: entityType === "internship" ? "/internships" : "/opportunities",
+  };
+}
+
+async function getCareerPassportMatches(passport) {
+  const result = await pool.query(`
+    SELECT id, 'internship'::TEXT AS entity_type, title, organization,
+      description, location, sector, created_at
+    FROM internships
+    UNION ALL
+    SELECT id, 'opportunity'::TEXT AS entity_type, title, organization,
+      summary AS description, country AS location, content_type AS sector, created_at
+    FROM opportunities
+    ORDER BY created_at DESC
+    LIMIT 40
+  `);
+  return result.rows
+    .map((row) => buildCareerPassportMatch(row, row.entity_type, passport))
+    .sort((left, right) => right.match_percent - left.match_percent)
+    .slice(0, 3);
 }
 
 async function getUserReviewForUser(userId) {
@@ -2351,7 +2544,13 @@ function getSubscriptionPlanConfig(planId) {
 }
 
 function serializeSubscriptionPlanCatalog() {
-  return Object.values(SUBSCRIPTION_PLANS);
+  return Object.values(SUBSCRIPTION_PLANS).filter((plan) => plan.public !== false);
+}
+
+function hasPremiumWebCvAccess(subscription) {
+  if (!isSubscriptionActiveRecord(subscription)) return false;
+  const plan = String(subscription.plan || "").trim();
+  return plan === "career_boost" || ["monthly", "quarterly", "halfyear"].includes(plan);
 }
 
 function addDays(date, days) {
@@ -3070,18 +3269,20 @@ function deriveUserEntitlements(options = {}) {
 
 function buildAccessPolicy(hasPlusAccess, subscription) {
   const normalizedStatus = String(subscription?.status || "").trim().toLowerCase();
+  const planConfig = getSubscriptionPlanConfig(subscription?.plan);
+  const paidLabel = planConfig ? planConfig.label : "Career Plus";
 
   if (hasPlusAccess) {
     return {
-      stage: "plus_active",
-      access_label: "Plus",
-      access_message: "Plus активен: открыт полный каталог, персональный roadmap, рекомендации и сохранения.",
+      stage: subscription?.plan === "career_boost" ? "boost_active" : "plus_active",
+      access_label: paidLabel,
+      access_message: `${paidLabel} активен: открыт полный каталог, персональный roadmap, рекомендации и сохранения.`,
       restrictions_message: "Ограничения Free сейчас не действуют.",
       pending_review: false,
       keeps_free_access: false,
       requires_admin_confirmation: false,
       preview_limits: null,
-      upgrade_cta_label: "Plus уже активен",
+      upgrade_cta_label: `${paidLabel} уже активен`,
       upgrade_cta_href: "/dashboard",
     };
   }
@@ -3182,7 +3383,9 @@ function buildAccessState(hasPaidPlusAccess, subscription = null, options = {}) 
   };
 
   return {
-    access_tier: hasPaidPlusAccess ? "plus" : "free",
+    access_tier: hasPaidPlusAccess
+      ? (subscription?.plan === "career_boost" ? "boost" : "plus")
+      : "free",
     has_plus_access: Boolean(hasPaidPlusAccess),
     has_manager_access: Boolean(options.hasManagerAccess),
     feature_access: featureAccess,
@@ -4276,6 +4479,8 @@ async function getAdminAnalyticsSnapshot() {
         (SELECT COUNT(*)::INT FROM subscriptions WHERE active IS TRUE AND status = 'active' AND plan = 'monthly') AS active_monthly_users,
         (SELECT COUNT(*)::INT FROM subscriptions WHERE active IS TRUE AND status = 'active' AND plan = 'quarterly') AS active_quarterly_users,
         (SELECT COUNT(*)::INT FROM subscriptions WHERE active IS TRUE AND status = 'active' AND plan = 'halfyear') AS active_halfyear_users,
+        (SELECT COUNT(*)::INT FROM subscriptions WHERE active IS TRUE AND status = 'active' AND plan = 'career_plus') AS active_career_plus_users,
+        (SELECT COUNT(*)::INT FROM subscriptions WHERE active IS TRUE AND status = 'active' AND plan = 'career_boost') AS active_career_boost_users,
         (SELECT COUNT(DISTINCT user_id)::INT FROM saved_items) AS users_with_saved_items,
         (SELECT COUNT(*)::INT FROM saved_items) AS saved_items_total
     `),
@@ -4358,6 +4563,8 @@ async function getAdminAnalyticsSnapshot() {
       active_monthly_users: Number(overview.active_monthly_users || 0),
       active_quarterly_users: Number(overview.active_quarterly_users || 0),
       active_halfyear_users: Number(overview.active_halfyear_users || 0),
+      active_career_plus_users: Number(overview.active_career_plus_users || 0),
+      active_career_boost_users: Number(overview.active_career_boost_users || 0),
       users_with_saved_items: Number(overview.users_with_saved_items || 0),
       saved_items_total: Number(overview.saved_items_total || 0),
       verification_rate: usersTotal ? Math.round((verifiedUsers / usersTotal) * 100) : 0,
@@ -5762,6 +5969,18 @@ app.get("/career/:slug", (req, res) =>
   res.sendFile(path.join(__dirname, "public", "career-public.html"))
 );
 
+app.get("/cv/:slug", (req, res) =>
+  res.sendFile(path.join(__dirname, "public", "career-public.html"))
+);
+
+app.get("/career-passport", requireAuth, (req, res) =>
+  res.sendFile(path.join(__dirname, "public", "career-passport.html"))
+);
+
+app.get("/career-passport.html", requireAuth, (req, res) =>
+  res.redirect("/career-passport")
+);
+
 app.get("/career-profile", requireAuth, (req, res) =>
   res.sendFile(path.join(__dirname, "public", "career-profile.html"))
 );
@@ -5769,6 +5988,118 @@ app.get("/career-profile", requireAuth, (req, res) =>
 app.get("/career-profile.html", requireAuth, (req, res) =>
   res.redirect("/career-profile")
 );
+
+app.get("/api/career-passport", requireAuth, async (req, res) => {
+  try {
+    const userResult = await pool.query(
+      `SELECT id, first_name, last_name, university, bio, email FROM users WHERE id = $1 LIMIT 1`,
+      [req.session.userId]
+    );
+    if (userResult.rows.length === 0) return res.status(404).json({ error: "User not found" });
+    const [row, survey, careerProfile] = await Promise.all([
+      getCareerPassportRowForUser(req.session.userId),
+      getRegistrationSurveyForUser(req.session.userId),
+      getCareerProfileRowForUser(req.session.userId),
+    ]);
+    const user = userResult.rows[0];
+    const passport = normalizePassport(row && row.passport_data, user, survey || {});
+    const [context, matches] = await Promise.all([
+      getCareerPassportContext(req.session.userId, survey, careerProfile),
+      getCareerPassportMatches(passport),
+    ]);
+    return res.json({ ...buildCareerPassportResponse(row, user, survey, context), matches });
+  } catch (err) {
+    console.error("Fetch career passport error:", err);
+    return res.status(500).json({ error: "Failed to fetch career passport" });
+  }
+});
+
+app.put("/api/career-passport", requireAuth, async (req, res) => {
+  try {
+    const userResult = await pool.query(
+      `SELECT id, first_name, last_name, university, bio, email FROM users WHERE id = $1 LIMIT 1`,
+      [req.session.userId]
+    );
+    if (userResult.rows.length === 0) return res.status(404).json({ error: "User not found" });
+    const [survey, careerProfile] = await Promise.all([
+      getRegistrationSurveyForUser(req.session.userId),
+      getCareerProfileRowForUser(req.session.userId),
+    ]);
+    const user = userResult.rows[0];
+    const passport = normalizePassport(req.body && req.body.passport, user, survey || {});
+    const privacy = normalizePrivacy(req.body && req.body.privacy);
+    const saved = await pool.query(
+      `
+      INSERT INTO career_passports (user_id, passport_data, privacy_settings, created_at, updated_at)
+      VALUES ($1, $2::jsonb, $3::jsonb, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      ON CONFLICT (user_id) DO UPDATE SET
+        passport_data = EXCLUDED.passport_data,
+        privacy_settings = EXCLUDED.privacy_settings,
+        updated_at = CURRENT_TIMESTAMP
+      RETURNING id, user_id, passport_data, privacy_settings, created_at, updated_at
+      `,
+      [req.session.userId, JSON.stringify(passport), JSON.stringify(privacy)]
+    );
+    const context = await getCareerPassportContext(req.session.userId, survey, careerProfile);
+    const matches = await getCareerPassportMatches(passport);
+    return res.json({ ...buildCareerPassportResponse(saved.rows[0], user, survey, context), matches });
+  } catch (err) {
+    console.error("Save career passport error:", err);
+    return res.status(500).json({ error: "Failed to save career passport" });
+  }
+});
+
+app.post("/api/career-passport/sync-web-cv", requireAuth, async (req, res) => {
+  try {
+    const [passportRow, careerProfileRow, userResult, survey, subscription] = await Promise.all([
+      getCareerPassportRowForUser(req.session.userId),
+      getCareerProfileRowForUser(req.session.userId),
+      pool.query(`SELECT id, first_name, last_name, university, bio, email FROM users WHERE id = $1 LIMIT 1`, [req.session.userId]),
+      getRegistrationSurveyForUser(req.session.userId),
+      getCurrentSubscriptionForUser(req.session.userId),
+    ]);
+    if (!passportRow) return res.status(400).json({ error: "Save Career Passport first" });
+    if (userResult.rows.length === 0) return res.status(404).json({ error: "User not found" });
+    const user = userResult.rows[0];
+    const passport = normalizePassport(passportRow.passport_data, user, survey || {});
+    const privacy = normalizePrivacy(passportRow.privacy_settings);
+    const existingProfile = normalizeCareerProfileData(careerProfileRow && careerProfileRow.profile_data, user);
+    const nextProfile = normalizeCareerProfileData(
+      passportToCareerProfile(passport, privacy, existingProfile),
+      user
+    );
+    const premiumTemplates = hasPremiumWebCvAccess(subscription);
+    if (!premiumTemplates) nextProfile.template_key = "professional";
+    const shouldPublish = privacy.public_profile && privacy.sections.identity === "public";
+    const publicSlug = normalizeCareerProfileText(
+      careerProfileRow && careerProfileRow.public_slug || buildDefaultCareerProfileSlug(req.session.userId),
+      80
+    );
+    const saved = await pool.query(
+      `
+      INSERT INTO career_profiles (user_id, public_slug, public_enabled, profile_data, created_at, updated_at)
+      VALUES ($1, $2, $3, $4::jsonb, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      ON CONFLICT (user_id) DO UPDATE SET
+        public_slug = EXCLUDED.public_slug,
+        public_enabled = EXCLUDED.public_enabled,
+        profile_data = EXCLUDED.profile_data,
+        updated_at = CURRENT_TIMESTAMP
+      RETURNING id, user_id, public_slug, public_enabled, profile_data, created_at, updated_at
+      `,
+      [req.session.userId, publicSlug, shouldPublish, JSON.stringify(nextProfile)]
+    );
+    return res.json({
+      ok: true,
+      web_cv: buildCareerProfileResponse(saved.rows[0], user, survey, { premiumTemplates }),
+      message: shouldPublish
+        ? "Web CV synchronized and published"
+        : "Web CV synchronized as a private draft",
+    });
+  } catch (err) {
+    console.error("Sync career passport to Web CV error:", err);
+    return res.status(500).json({ error: "Failed to sync Web CV" });
+  }
+});
 
 app.get("/dashboard", requireAuth, (req, res) =>
   res.sendFile(path.join(__dirname, "public", "dashboard.html"))
@@ -5784,14 +6115,6 @@ app.get("/internships", requireAuth, (req, res) =>
 
 app.get("/internships.html", requireAuth, (req, res) =>
   res.redirect("/internships")
-);
-
-app.get("/interview", requireAuth, (req, res) =>
-  res.sendFile(path.join(__dirname, "public", "interview.html"))
-);
-
-app.get("/interview.html", requireAuth, (req, res) =>
-  res.redirect("/interview")
 );
 
 app.get("/insight-packs", requireAuth, (req, res) =>
@@ -5824,12 +6147,15 @@ app.get("/api/career-profile", requireAuth, async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const [survey, careerProfileRow] = await Promise.all([
+    const [survey, careerProfileRow, subscription] = await Promise.all([
       getRegistrationSurveyForUser(req.session.userId),
       getCareerProfileRowForUser(req.session.userId),
+      getCurrentSubscriptionForUser(req.session.userId),
     ]);
 
-    return res.json(buildCareerProfileResponse(careerProfileRow, userResult.rows[0], survey));
+    return res.json(buildCareerProfileResponse(careerProfileRow, userResult.rows[0], survey, {
+      premiumTemplates: hasPremiumWebCvAccess(subscription),
+    }));
   } catch (err) {
     console.error("Fetch career profile error:", err);
     return res.status(500).json({ error: "Failed to fetch career profile" });
@@ -5859,12 +6185,15 @@ app.put("/api/career-profile", requireAuth, async (req, res) => {
     }
 
     const user = userResult.rows[0];
-    const [survey, existingProfileRow] = await Promise.all([
+    const [survey, existingProfileRow, subscription] = await Promise.all([
       getRegistrationSurveyForUser(req.session.userId),
       getCareerProfileRowForUser(req.session.userId),
+      getCurrentSubscriptionForUser(req.session.userId),
     ]);
 
     const normalizedProfile = normalizeCareerProfileData(req.body && req.body.profile, user);
+    const premiumTemplates = hasPremiumWebCvAccess(subscription);
+    if (!premiumTemplates) normalizedProfile.template_key = "professional";
     const publicEnabled = req.body && req.body.public_enabled === true;
     const publicSlug = normalizeCareerProfileText(
       existingProfileRow && existingProfileRow.public_slug
@@ -5907,7 +6236,7 @@ app.put("/api/career-profile", requireAuth, async (req, res) => {
       ]
     );
 
-    return res.json(buildCareerProfileResponse(savedResult.rows[0], user, survey));
+    return res.json(buildCareerProfileResponse(savedResult.rows[0], user, survey, { premiumTemplates }));
   } catch (err) {
     console.error("Save career profile error:", err);
     return res.status(500).json({ error: "Failed to save career profile" });
@@ -6877,7 +7206,7 @@ app.get("/api/subscription", requireAuth, async (req, res) => {
 app.post("/api/subscription/prepare", requireAuth, async (req, res) => {
   const plan = String(req.body.plan || "").trim();
   const planConfig = getSubscriptionPlanConfig(plan);
-  if (!planConfig) {
+  if (!planConfig || planConfig.public === false) {
     return res.status(400).json({ error: "Unknown subscription plan" });
   }
 
@@ -7347,13 +7676,13 @@ app.get("/api/admin/users", requireAuth, requireAdminAnalytics, async (req, res)
 
 app.get("/api/admin/subscribers", requireAuth, requireAdminAnalytics, async (req, res) => {
   try {
-    const plan = String(req.query.plan || "").trim(); // monthly | quarterly | halfyear | '' (all)
+    const plan = String(req.query.plan || "").trim();
     const q = String(req.query.q || "").trim();
     const statusFilter = String(req.query.status || "active").trim(); // active | expired | all
     const limit = Number.parseInt(req.query.limit, 10) || 50;
     const offset = Number.parseInt(req.query.offset, 10) || 0;
 
-    const validPlans = ["monthly", "quarterly", "halfyear"];
+    const validPlans = ["career_plus", "career_boost", "monthly", "quarterly", "halfyear"];
     const conditions = [];
     const params = [];
 

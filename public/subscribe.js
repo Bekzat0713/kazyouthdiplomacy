@@ -15,15 +15,22 @@ const pageHomeArrow = document.querySelector(".page-home-arrow");
 const runtime = window.KYD_RUNTIME;
 
 const FALLBACK_KASPI_QR_URL = (runtime ? runtime.getKaspiQrUrl() : "") || "https://pay.kaspi.kz/pay/7tul3afi";
-const DEFAULT_PLAN_HINT = "Нажмите «Оплатить Plus», и мы сразу подготовим точную сумму, переведём вас на Kaspi QR и отправим заявку на проверку.";
-const DEFAULT_SUBSCRIBE_STATUS = "Выберите Plus, оплатите точную сумму по Kaspi QR и дождитесь подтверждения доступа.";
-const DEFAULT_SUBSCRIBE_NOTE = "Сразу после оплаты заявка попадёт в очередь проверки, а Plus включится после подтверждения.";
-const DEFAULT_PREPARE_LABEL = "Оплатить Plus";
+const PLAN_LABELS = {
+  career_plus: "Career Plus",
+  career_boost: "Career Boost",
+  monthly: "Plus · 1 месяц (старый тариф)",
+  quarterly: "Plus · 3 месяца (старый тариф)",
+  halfyear: "Plus · 6 месяцев (старый тариф)",
+};
+const PLAN_BUTTON_LABELS = { career_plus: "Выбрать Career Plus", career_boost: "Получить Career Boost" };
+const DEFAULT_PLAN_HINT = "После выбора мы подготовим точную сумму, откроем Kaspi QR и отправим заявку на проверку.";
+const DEFAULT_SUBSCRIBE_STATUS = "Выберите подходящий уровень и оплатите точную сумму через Kaspi QR.";
+const DEFAULT_SUBSCRIBE_NOTE = "Доступ включится после подтверждения платежа. Start при этом всегда остаётся бесплатным.";
 const OPEN_QR_LABEL = "Открыть Kaspi QR";
 const GUEST_PREPARE_LABEL = "Создать аккаунт и продолжить";
-const GUEST_SUBSCRIBE_STATUS = "Тарифы и цены открыты без входа. Чтобы оплатить Plus и включить полный доступ, сначала создайте аккаунт.";
+const GUEST_SUBSCRIBE_STATUS = "Тарифы и цены открыты без входа. Для подключения Plus или Boost сначала создайте аккаунт.";
 const GUEST_SUBSCRIBE_NOTE = "После короткого опроса и регистрации вы вернётесь к выбору тарифа и сможете сразу перейти к оплате через Kaspi QR.";
-const GUEST_PLAN_HINT = "Сначала создайте аккаунт, а затем вернитесь к выбранному тарифу и оплатите Plus через Kaspi QR.";
+const GUEST_PLAN_HINT = "Сначала создайте аккаунт, затем вернитесь к выбранному уровню и оплатите его через Kaspi QR.";
 
 let subscriptionRefreshTimer = null;
 
@@ -79,8 +86,9 @@ function resolveKaspiUrl(url) {
 
 function resetPrepareButtons() {
   prepareButtons.forEach((button) => {
+    const plan = button.getAttribute("data-prepare-plan");
     button.disabled = false;
-    button.textContent = DEFAULT_PREPARE_LABEL;
+    button.textContent = PLAN_BUTTON_LABELS[plan] || "Выбрать тариф";
     button.dataset.actionMode = "prepare";
     button.dataset.kaspiUrl = "";
     button.dataset.amount = "";
@@ -94,9 +102,10 @@ function setPreparedPlanButton(plan, options = {}) {
   const paymentCode = options.paymentCode != null ? String(options.paymentCode) : "";
 
   prepareButtons.forEach((button) => {
-    const isActivePlan = button.getAttribute("data-prepare-plan") === plan;
+    const buttonPlan = button.getAttribute("data-prepare-plan");
+    const isActivePlan = buttonPlan === plan;
     button.disabled = false;
-    button.textContent = isActivePlan ? OPEN_QR_LABEL : DEFAULT_PREPARE_LABEL;
+    button.textContent = isActivePlan ? OPEN_QR_LABEL : (PLAN_BUTTON_LABELS[buttonPlan] || "Выбрать тариф");
     button.dataset.actionMode = isActivePlan ? "open_qr" : "prepare";
     button.dataset.kaspiUrl = isActivePlan ? kaspiUrl : "";
     button.dataset.amount = isActivePlan ? amount : "";
@@ -259,10 +268,14 @@ function renderSubscriptionState(payload) {
   }
 
   if (subscription.active) {
-    setStatus(`Сейчас у вас Plus до ${formatDate(subscription.expires_at)}.`);
+    const activePlanLabel = PLAN_LABELS[subscription.plan] || "активный доступ";
+    const isLegacyPlan = ["monthly", "quarterly", "halfyear"].includes(subscription.plan);
+    setStatus(`Сейчас у вас ${activePlanLabel} до ${formatDate(subscription.expires_at)}.`);
     setPrepareButtonsDisabled(true);
     setPlanActionsVisibility(null, false);
-    setNote("Полный каталог, roadmap, рекомендации и сохранения уже открыты. Когда срок закончится, здесь можно будет продлить доступ.");
+    setNote(isLegacyPlan
+      ? "Ваш старый тариф и полный доступ сохранены до первоначальной даты окончания. Переоформлять подписку не нужно."
+      : "Ваши инструменты уже открыты. Когда срок закончится, здесь можно будет продлить или сменить уровень.");
     return;
   }
 
@@ -420,6 +433,13 @@ document.addEventListener("DOMContentLoaded", () => {
       navigateToKaspi(link.href);
     });
   });
+
+  const requestedPlan = new URLSearchParams(window.location.search).get("plan");
+  const requestedCard = requestedPlan ? planCardMap.get(requestedPlan) : null;
+  if (requestedCard) {
+    requestedCard.classList.add("plan-card-requested");
+    window.setTimeout(() => requestedCard.scrollIntoView({ behavior: "smooth", block: "center" }), 250);
+  }
 
   void refreshSubscriptionStatus();
 });

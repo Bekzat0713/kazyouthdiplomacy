@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Career Passport — KazYouthDiplomacy</title>
+  <link rel="icon" type="image/png" href="/logo.png">
+  <link rel="stylesheet" href="/web.css">
+  <link rel="stylesheet" href="/card-nav.css">
+  <link rel="stylesheet" href="/inner-premium.css?v=v1.1">
+  <link rel="stylesheet" href="/career-passport.css?v=1">
+  <script src="/sidebar.js?v=passport-1" defer></script>
+  <script src="/career-passport.js?v=1" defer></script>
+</head>
+<body class="inner-premium-page career-passport-page" data-assistant-page="career-passport">
+  <header class="header home-figma-header premium-nav" id="siteHeader">
+    <a href="/" class="logo-wrap premium-brand" aria-label="KazYouthDiplomacy">
+      <img src="/logo.png" alt="KazYouthDiplomacy logo">
+      <span>KazYouthDiplomacy</span>
+    </a>
+    <nav class="home-figma-nav premium-nav-menu" aria-label="Основная навигация">
+      <div class="card-nav-links premium-nav-links">
+        <a href="/dashboard">Обзор</a>
+        <a href="/career-passport" aria-current="page">Career Passport</a>
+        <a href="/career-profile">Web CV</a>
+      </div>
+      <div class="card-nav-actions premium-nav-actions">
+        <span class="cp-save-state" id="saveState">Все изменения сохранены</span>
+      </div>
+    </nav>
+  </header>
+
+  <section class="dashboard-page cp-page-layout">
+    <aside class="dashboard-left-sidebar"></aside>
+    <main class="dashboard-main-wrapper cp-main">
+      <div class="cp-loading" id="pageLoading">
+        <span></span><span></span><span></span>
+        <p>Собираем ваш Career Passport</p>
+      </div>
+
+      <div class="cp-container" id="passportApp" hidden>
+        <header class="cp-page-head">
+          <div>
+            <p class="cp-kicker">CAREER PASSPORT</p>
+            <h1>Ваш карьерный профиль</h1>
+            <p>Не просто резюме, а живая карта готовности к рынку труда.</p>
+          </div>
+          <div class="cp-head-actions">
+            <button class="cp-btn cp-btn-secondary" type="button" data-open-dialog="privacyDialog">Настроить приватность</button>
+            <button class="cp-btn cp-btn-primary" type="button" id="syncWebCvButton">Создать Web CV <span>↗</span></button>
+          </div>
+        </header>
+
+        <section class="cp-identity-card" id="profile">
+          <div class="cp-avatar" id="profileInitials">CP</div>
+          <div class="cp-identity-copy">
+            <div class="cp-inline-title">
+              <h2 id="profileName">Ваше имя</h2>
+              <span class="cp-status-dot">Внутренний профиль</span>
+            </div>
+            <p class="cp-headline" id="profileHeadline">Добавьте карьерное направление</p>
+            <div class="cp-meta" id="profileMeta"></div>
+          </div>
+          <button class="cp-icon-btn" type="button" data-open-dialog="profileDialog" aria-label="Редактировать профиль">✎</button>
+        </section>
+
+        <div class="cp-dashboard-grid">
+          <section class="cp-score-card">
+            <div class="cp-section-heading">
+              <div><span class="cp-label">CAREER READINESS</span><h2>Готовность к рынку</h2></div>
+              <button class="cp-info" type="button" title="Оценка строится по понятным правилам, без AI">i</button>
+            </div>
+            <div class="cp-score-body">
+              <div class="cp-score-ring" id="scoreRing" style="--score:0">
+                <div><strong id="scoreValue">0</strong><span>/ 100</span></div>
+              </div>
+              <div class="cp-score-message">
+                <strong id="scoreTitle">Начните заполнять паспорт</strong>
+                <p id="scoreMessage">Каждый подтверждённый блок делает ваш профиль сильнее.</p>
+              </div>
+            </div>
+            <div class="cp-score-breakdown" id="scoreBreakdown"></div>
+          </section>
+
+          <section class="cp-goal-card" id="career-goal">
+            <div class="cp-section-heading">
+              <div><span class="cp-label">НАПРАВЛЕНИЕ</span><h2>Career Goal</h2></div>
+              <button class="cp-icon-btn" type="button" data-open-dialog="goalDialog" aria-label="Редактировать цель">✎</button>
+            </div>
+            <div class="cp-goal-main">
+              <span>Я иду к роли</span>
+              <strong id="goalProfession">Пока не выбрана</strong>
+            </div>
+            <div class="cp-chip-list" id="goalIndustries"></div>
+            <dl class="cp-goal-facts" id="goalFacts"></dl>
+          </section>
+        </div>
+
+        <div class="cp-content-grid">
+          <div class="cp-content-main">
+            <section class="cp-panel" id="skills">
+              <div class="cp-section-heading">
+                <div><span class="cp-label">ВАШ ИНСТРУМЕНТАРИЙ</span><h2>Skills</h2><p>Добавьте навык, выберите уровень — он сразу появится в профиле.</p></div>
+              </div>
+              <div class="cp-skill-columns">
+                <article class="cp-skill-group">
+                  <div class="cp-group-title"><span class="cp-group-icon">H</span><h3>Hard Skills</h3></div>
+                  <div class="cp-add-row">
+                    <input id="hardSkillInput" type="text" placeholder="Например, Excel">
+                    <select id="hardSkillLevel"><option>Beginner</option><option selected>Intermediate</option><option>Advanced</option><option>Expert</option></select>
+                    <button type="button" data-add-skill="hard">+</button>
+                  </div>
+                  <div class="cp-skill-list" id="hardSkills"></div>
+                </article>
+                <article class="cp-skill-group">
+                  <div class="cp-group-title"><span class="cp-group-icon soft">S</span><h3>Soft Skills</h3></div>
+                  <div class="cp-add-row">
+                    <input id="softSkillInput" type="text" placeholder="Например, Leadership">
+                    <select id="softSkillLevel"><option>Developing</option><option selected>Strong</option><option>Advanced</option></select>
+                    <button type="button" data-add-skill="soft">+</button>
+                  </div>
+                  <div class="cp-skill-list" id="softSkills"></div>
+                </article>
+                <article class="cp-skill-group cp-language-group">
+                  <div class="cp-group-title"><span class="cp-group-icon language">文</span><h3>Languages</h3></div>
+                  <div class="cp-add-row">
+                    <input id="languageInput" type="text" placeholder="Например, English">
+                    <select id="languageLevel"><option>A1</option><option>A2</option><option>B1</option><option selected>B2</option><option>C1</option><option>C2</option><option>Native</option></select>
+                    <button type="button" data-add-language>+</button>
+                  </div>
+                  <div class="cp-skill-list" id="languages"></div>
+                </article>
+              </div>
+            </section>
+
+            <section class="cp-panel" id="projects">
+              <div class="cp-section-heading">
+                <div><span class="cp-label">ДОКАЗАТЕЛЬСТВА ПОТЕНЦИАЛА</span><h2>Projects</h2><p>Для студента сильный проект часто важнее формального места работы.</p></div>
+                <button class="cp-btn cp-btn-small" type="button" data-open-dialog="projectDialog">+ Добавить проект</button>
+              </div>
+              <div class="cp-card-list" id="projectList"></div>
+              <button class="cp-empty-action" id="projectEmpty" type="button" data-open-dialog="projectDialog">Добавьте первый проект и покажите, что вы уже умеете создавать <span>→</span></button>
+            </section>
+
+            <section class="cp-panel" id="experience">
+              <div class="cp-section-heading">
+                <div><span class="cp-label">ПРАКТИЧЕСКИЙ ОПЫТ</span><h2>Experience</h2><p>Работа, стажировка, волонтёрство или freelance — всё имеет значение.</p></div>
+                <button class="cp-btn cp-btn-small" type="button" data-open-dialog="experienceDialog">+ Добавить опыт</button>
+              </div>
+              <div class="cp-timeline" id="experienceList"></div>
+              <button class="cp-empty-action" id="experienceEmpty" type="button" data-open-dialog="experienceDialog">Добавить первую запись об опыте <span>→</span></button>
+            </section>
+          </div>
+
+          <aside class="cp-content-aside">
+            <section class="cp-side-panel cp-roadmap" id="roadmap">
+              <div class="cp-section-heading"><div><span class="cp-label">ПЕРСОНАЛЬНЫЙ МАРШРУТ</span><h2>Что делать дальше</h2></div></div>
+              <div class="cp-roadmap-progress"><span id="roadmapCount">0 из 6</span><div><i id="roadmapBar"></i></div></div>
+              <div class="cp-step-list" id="nextSteps"></div>
+            </section>
+
+            <section class="cp-side-panel">
+              <div class="cp-section-heading"><div><span class="cp-label">MATCHING</span><h2>Подходящие возможности</h2></div><a href="/opportunities">Все</a></div>
+              <div class="cp-match-list" id="matchList"></div>
+            </section>
+
+            <section class="cp-side-panel cp-webcv-card">
+              <span class="cp-orbit-mark">CV</span>
+              <span class="cp-label">ПУБЛИЧНАЯ ВЕРСИЯ</span>
+              <h2>Превратите Passport в сильный Web CV</h2>
+              <p>Вы сами решаете, какие разделы увидит работодатель.</p>
+              <div class="cp-public-state" id="publicState"><i></i><span>Публичный профиль выключен</span></div>
+              <button class="cp-btn cp-btn-dark" type="button" id="syncWebCvButtonAside">Настроить Web CV <span>↗</span></button>
+            </section>
+          </aside>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <div class="cp-toast" id="toast" role="status" aria-live="polite"></div>
+
+  <dialog class="cp-dialog" id="profileDialog">
+    <form method="dialog" data-form="profile">
+      <div class="cp-dialog-head"><div><span class="cp-label">ОСНОВА ПРОФИЛЯ</span><h2>Кто вы как специалист?</h2></div><button value="cancel" aria-label="Закрыть">×</button></div>
+      <div class="cp-form-grid">
+        <label class="wide"><span>Имя и фамилия</span><input name="full_name" required></label>
+        <label><span>Университет</span><input name="university"></label>
+        <label><span>Специальность</span><input name="specialty"></label>
+        <label><span>Курс</span><input name="course" placeholder="4 курс"></label>
+        <label><span>Город</span><input name="city" placeholder="Алматы"></label>
+        <label class="wide"><span>Профессиональный заголовок</span><input name="headline" placeholder="Junior Business Analyst · Research & Strategy"></label>
+        <label class="wide"><span>Обо мне</span><textarea name="about" rows="5" placeholder="Коротко: что вас драйвит, что уже умеете и какую ценность хотите создавать."></textarea><small>Не биография. 3–4 предложения о вашей профессиональной ценности.</small></label>
+      </div>
+      <div class="cp-dialog-actions"><button value="cancel" class="cp-btn cp-btn-secondary">Отмена</button><button value="default" class="cp-btn cp-btn-primary" data-submit-form="profile">Сохранить</button></div>
+    </form>
+  </dialog>
+
+  <dialog class="cp-dialog" id="goalDialog">
+    <form method="dialog" data-form="goal">
+      <div class="cp-dialog-head"><div><span class="cp-label">CAREER GOAL</span><h2>Куда вы хотите прийти?</h2></div><button value="cancel" aria-label="Закрыть">×</button></div>
+      <div class="cp-form-grid">
+        <label class="wide"><span>Желаемая профессия</span><input name="profession" placeholder="Business Analyst"></label>
+        <label class="wide"><span>Индустрии через запятую</span><input name="industries" placeholder="Consulting, Finance, Technology"></label>
+        <label class="wide"><span>Интересующие направления</span><input name="directions" placeholder="Strategy, Data, International projects"></label>
+        <label><span>Формат работы</span><select name="work_format"><option value="">Не выбран</option><option value="office">Офис</option><option value="hybrid">Гибрид</option><option value="remote">Удалённо</option></select></label>
+        <label><span>Город</span><input name="city" placeholder="Алматы"></label>
+        <label class="cp-check wide"><input type="checkbox" name="internship_ready"><span><strong>Готов(а) к стажировке</strong><small>Учитывать internships в подборке возможностей</small></span></label>
+      </div>
+      <div class="cp-dialog-actions"><button value="cancel" class="cp-btn cp-btn-secondary">Отмена</button><button value="default" class="cp-btn cp-btn-primary" data-submit-form="goal">Сохранить</button></div>
+    </form>
+  </dialog>
+
+  <dialog class="cp-dialog" id="projectDialog">
+    <form method="dialog" data-form="project">
+      <div class="cp-dialog-head"><div><span class="cp-label">НОВЫЙ ПРОЕКТ</span><h2>Покажите результат</h2></div><button value="cancel" aria-label="Закрыть">×</button></div>
+      <div class="cp-form-grid">
+        <label><span>Название проекта</span><input name="title" required></label>
+        <label><span>Ваша роль</span><input name="role" placeholder="Project Lead"></label>
+        <label class="wide"><span>Описание</span><textarea name="description" rows="3"></textarea></label>
+        <label><span>Команда</span><input name="team" placeholder="4 человека"></label>
+        <label><span>Дата</span><input type="month" name="date"></label>
+        <label class="wide"><span>Результат</span><textarea name="result" rows="3" placeholder="Что изменилось в цифрах или фактах?"></textarea></label>
+        <label><span>Навыки через запятую</span><input name="skills"></label>
+        <label><span>Ссылка</span><input type="url" name="link" placeholder="https://"></label>
+      </div>
+      <div class="cp-dialog-actions"><button value="cancel" class="cp-btn cp-btn-secondary">Отмена</button><button value="default" class="cp-btn cp-btn-primary" data-submit-form="project">Добавить проект</button></div>
+    </form>
+  </dialog>
+
+  <dialog class="cp-dialog" id="experienceDialog">
+    <form method="dialog" data-form="experience">
+      <div class="cp-dialog-head"><div><span class="cp-label">НОВЫЙ ОПЫТ</span><h2>Добавьте практику</h2></div><button value="cancel" aria-label="Закрыть">×</button></div>
+      <div class="cp-form-grid">
+        <label><span>Тип</span><select name="type"><option value="internship">Стажировка</option><option value="work">Работа</option><option value="volunteer">Волонтёрство</option><option value="freelance">Freelance</option></select></label>
+        <label><span>Организация</span><input name="organization" required></label>
+        <label class="wide"><span>Позиция</span><input name="position" required></label>
+        <label><span>Начало</span><input type="month" name="start_date"></label>
+        <label><span>Окончание</span><input type="month" name="end_date"></label>
+        <label class="wide"><span>Что вы делали</span><textarea name="description" rows="4"></textarea></label>
+        <label class="wide"><span>Полученные навыки через запятую</span><input name="skills"></label>
+      </div>
+      <div class="cp-dialog-actions"><button value="cancel" class="cp-btn cp-btn-secondary">Отмена</button><button value="default" class="cp-btn cp-btn-primary" data-submit-form="experience">Добавить опыт</button></div>
+    </form>
+  </dialog>
+
+  <dialog class="cp-dialog cp-privacy-dialog" id="privacyDialog">
+    <form method="dialog" data-form="privacy">
+      <div class="cp-dialog-head"><div><span class="cp-label">PRIVACY BY DESIGN</span><h2>Кто видит ваши данные</h2><p>По умолчанию всё доступно только вам. Email и телефон никогда не публикуются из Passport.</p></div><button value="cancel" aria-label="Закрыть">×</button></div>
+      <label class="cp-public-toggle"><span><strong>Public profile</strong><small>Разрешить публикацию Web CV после синхронизации</small></span><input type="checkbox" name="public_profile"><i></i></label>
+      <div class="cp-privacy-list" id="privacyFields"></div>
+      <div class="cp-privacy-note">Для публикации имя должно иметь уровень «Публично». Остальные разделы можно скрыть независимо.</div>
+      <div class="cp-dialog-actions"><button value="cancel" class="cp-btn cp-btn-secondary">Отмена</button><button value="default" class="cp-btn cp-btn-primary" data-submit-form="privacy">Сохранить настройки</button></div>
+    </form>
+  </dialog>
+</body>
+</html>

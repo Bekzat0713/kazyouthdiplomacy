@@ -91,8 +91,8 @@ function renderOverview(overview) {
     },
     {
       label: "Активные тарифы",
-      value: `${overview.active_monthly_users}/${overview.active_quarterly_users}/${overview.active_halfyear_users}`,
-      detail: "1 мес / 3 мес / 6 мес",
+      value: `${overview.active_career_plus_users || 0}/${overview.active_career_boost_users || 0}`,
+      detail: `Career Plus / Career Boost · старые 3/6 мес: ${overview.active_quarterly_users || 0}/${overview.active_halfyear_users || 0}`,
     },
   ];
 
@@ -234,9 +234,10 @@ function updateSubscriptionChart(overview) {
   const canvas = document.getElementById("subscriptionPlansChart");
   if (!canvas || typeof Chart === "undefined") return;
 
-  const labels = ["1 месяц", "3 месяца", "6 месяцев"];
+  const labels = ["Career Plus", "Career Boost", "Старый 3 мес", "Старый 6 мес"];
   const dataPoints = [
-    overview.active_monthly_users || 0,
+    overview.active_career_plus_users || 0,
+    overview.active_career_boost_users || 0,
     overview.active_quarterly_users || 0,
     overview.active_halfyear_users || 0,
   ];
@@ -255,7 +256,7 @@ function updateSubscriptionChart(overview) {
       datasets: [
         {
           data: dataPoints,
-          backgroundColor: ["#3b82f6", "#10b981", "#8b5cf6"],
+          backgroundColor: ["#6652d8", "#111827", "#10b981", "#8b5cf6"],
           borderWidth: 0,
           borderRadius: 8,
         },
@@ -530,6 +531,8 @@ const subsLimit = 20;
 let subscribersTabLoaded = false;
 
 const PLAN_LABELS = {
+  career_plus: "Career Plus",
+  career_boost: "Career Boost",
   monthly: "Месяц",
   quarterly: "3 Месяца",
   halfyear: "Полгода",
