@@ -6261,3 +6261,173 @@ body.home-figma-page .career-document-action .btn span {
     font-size: 14px;
   }
 }
+
+/* ================================================================
+   Mobile homepage viewport guard
+   Keep this block last: the product-preview polish above contains
+   desktop dimensions that must not win the cascade on narrow screens.
+================================================================= */
+@media (max-width: 640px) {
+  body.home-figma-page,
+  body.home-figma-page .premium-home-main,
+  body.home-figma-page .home-figma-hero.premium-hero,
+  body.home-figma-page .ecosystem-hero-shell,
+  body.home-figma-page .ecosystem-hero-copy,
+  body.home-figma-page .ecosystem-preview-stage,
+  body.home-figma-page .ecosystem-preview-window,
+  body.home-figma-page .ecosystem-app,
+  body.home-figma-page .ecosystem-app-main,
+  body.home-figma-page .ecosystem-dashboard {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  body.home-figma-page {
+    overflow-x: hidden;
+  }
+
+  body.home-figma-page .premium-home-main {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  body.home-figma-page .home-figma-hero.premium-hero {
+    width: 100%;
+    min-height: 0;
+    padding: 48px 12px 0;
+    overflow: hidden;
+  }
+
+  body.home-figma-page .ecosystem-hero-shell {
+    width: 100%;
+  }
+
+  body.home-figma-page .ecosystem-hero-copy {
+    width: 100%;
+    padding-inline: 2px;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+
+  body.home-figma-page .ecosystem-hero-copy h1 {
+    width: 100%;
+    max-width: 100%;
+    font-size: clamp(34px, 10.5vw, 42px);
+    line-height: 1.02;
+    overflow-wrap: anywhere;
+  }
+
+  body.home-figma-page .ecosystem-hero-copy .premium-hero-lead,
+  body.home-figma-page .ecosystem-hero-note {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  body.home-figma-page .ecosystem-preview-stage {
+    width: 100%;
+    margin: 34px 0 0;
+    padding-bottom: 18px;
+    perspective: none;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+
+  body.home-figma-page .ecosystem-preview-stage::before {
+    inset: 18% 5% 0;
+    filter: blur(38px);
+  }
+
+  body.home-figma-page .ecosystem-preview-window {
+    width: 100%;
+    border-width: 5px;
+    border-radius: 19px;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  body.home-figma-page .ecosystem-window-bar {
+    grid-template-columns: 44px minmax(0, 1fr) 18px;
+    min-height: 34px;
+    padding-inline: 7px;
+  }
+
+  body.home-figma-page .ecosystem-window-address {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    padding: 4px 6px;
+    overflow: hidden;
+    font-size: 6px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  body.home-figma-page .ecosystem-app {
+    display: block;
+    width: 100%;
+    min-height: 0;
+    grid-template-columns: none;
+  }
+
+  body.home-figma-page .ecosystem-app-sidebar {
+    display: none !important;
+  }
+
+  body.home-figma-page .ecosystem-app-header {
+    min-height: 58px;
+    padding-inline: 12px;
+  }
+
+  body.home-figma-page .ecosystem-app-header > div:first-child strong {
+    font-size: 11px;
+  }
+
+  body.home-figma-page .ecosystem-header-actions button {
+    display: none;
+  }
+
+  body.home-figma-page .ecosystem-dashboard {
+    display: grid;
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 9px;
+    padding: 9px;
+  }
+
+  body.home-figma-page .ecosystem-dashboard > section {
+    min-width: 0;
+    padding: 12px;
+  }
+
+  body.home-figma-page .ecosystem-route-card,
+  body.home-figma-page .ecosystem-passport-card {
+    display: none;
+  }
+
+  body.home-figma-page .ecosystem-readiness-content {
+    gap: 12px;
+  }
+
+  body.home-figma-page .ecosystem-score-ring {
+    width: 76px;
+    height: 76px;
+    flex-basis: 76px;
+  }
+
+  body.home-figma-page .ecosystem-score-ring strong {
+    font-size: 22px;
+  }
+
+  body.home-figma-page .ecosystem-match-list article {
+    grid-template-columns: 32px minmax(0, 1fr) auto;
+  }
+
+  body.home-figma-page .ecosystem-match-list article > div,
+  body.home-figma-page .ecosystem-match-list strong,
+  body.home-figma-page .ecosystem-match-list small {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+}

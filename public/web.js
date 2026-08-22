@@ -8,41 +8,49 @@ document.addEventListener("DOMContentLoaded", () => {
   // 0) Intro splash on home page (2-3s), then reveal website.
   const splash = document.getElementById("site-splash");
   if (document.body.classList.contains("home-page") && splash) {
-    const TRANSITION_KEY = "kyd_route_transition_v1";
-    const TRANSITION_TTL_MS = 4500;
-    const shouldSkipSplash = new URLSearchParams(window.location.search).has("nosplash");
-    let hasFreshRouteTransition = false;
-
-    try {
-      const raw = sessionStorage.getItem(TRANSITION_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        hasFreshRouteTransition = Boolean(
-          parsed &&
-          parsed.ts &&
-          Date.now() - Number(parsed.ts) <= TRANSITION_TTL_MS
-        );
-      }
-    } catch (_error) {
-      hasFreshRouteTransition = false;
-    }
-
-    if (hasFreshRouteTransition || shouldSkipSplash) {
+    // The current homepage intentionally disables the splash in CSS. Do not
+    // leave the page hidden for the old splash timeout when it cannot render.
+    if (window.getComputedStyle(splash).display === "none") {
       splash.remove();
+      document.body.classList.remove("splash-active");
       document.body.classList.add("splash-finished");
     } else {
-      const splashDuration = prefersReducedMotion ? 700 : 2850;
+      const TRANSITION_KEY = "kyd_route_transition_v1";
+      const TRANSITION_TTL_MS = 4500;
+      const shouldSkipSplash = new URLSearchParams(window.location.search).has("nosplash");
+      let hasFreshRouteTransition = false;
 
-      document.body.classList.add("splash-active");
+      try {
+        const raw = sessionStorage.getItem(TRANSITION_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          hasFreshRouteTransition = Boolean(
+            parsed &&
+            parsed.ts &&
+            Date.now() - Number(parsed.ts) <= TRANSITION_TTL_MS
+          );
+        }
+      } catch (_error) {
+        hasFreshRouteTransition = false;
+      }
 
-      window.setTimeout(() => {
-        document.body.classList.remove("splash-active");
+      if (hasFreshRouteTransition || shouldSkipSplash) {
+        splash.remove();
         document.body.classList.add("splash-finished");
+      } else {
+        const splashDuration = prefersReducedMotion ? 700 : 2850;
+
+        document.body.classList.add("splash-active");
 
         window.setTimeout(() => {
-          splash.remove();
-        }, 900);
-      }, splashDuration);
+          document.body.classList.remove("splash-active");
+          document.body.classList.add("splash-finished");
+
+          window.setTimeout(() => {
+            splash.remove();
+          }, 900);
+        }, splashDuration);
+      }
     }
   }
 
