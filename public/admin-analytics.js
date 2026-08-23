@@ -4,6 +4,9 @@ const analyticsOverview = document.getElementById("adminAnalyticsOverview");
 const analyticsGoals = document.getElementById("adminAnalyticsGoals");
 const analyticsCurrentStatuses = document.getElementById("adminAnalyticsCurrentStatuses");
 const analyticsSubscriptions = document.getElementById("adminAnalyticsSubscriptions");
+const roleAnalyticsMetrics = document.getElementById("roleAnalyticsMetrics");
+const roleAnalyticsFunnel = document.getElementById("roleAnalyticsFunnel");
+const roleAnalyticsRecent = document.getElementById("roleAnalyticsRecent");
 
 let dynamicsChart = null;
 let subscriptionChart = null;
@@ -109,6 +112,100 @@ function renderOverview(overview) {
   });
 
   analyticsOverview.appendChild(fragment);
+}
+
+function renderRoleExperienceAnalytics(data) {
+  const overview = data && data.overview || {};
+  const metrics = [
+    {
+      label: "Увидели каталог",
+      value: overview.catalog_users || 0,
+      detail: `${overview.catalog_views || 0} просмотров всего`,
+    },
+    {
+      label: "Нажали на роль",
+      value: overview.clicked_users || 0,
+      detail: `${overview.experience_clicks || 0} кликов всего`,
+    },
+    {
+      label: "Начали выполнять",
+      value: overview.started_users || 0,
+      detail: `${overview.open_to_start_rate || 0}% от открывших`,
+    },
+    {
+      label: "Завершили",
+      value: overview.completed_users || 0,
+      detail: `${overview.completions_last_30d || 0} за последние 30 дней`,
+    },
+    {
+      label: "Конверсия в результат",
+      value: `${overview.completion_rate || 0}%`,
+      detail: `${overview.in_progress_users || 0} сейчас в процессе`,
+    },
+    {
+      label: "Среднее прохождение",
+      value: `${overview.average_completion_minutes || 0} мин`,
+      detail: `${overview.passport_opened_users || 0} перешли в Career Passport`,
+    },
+  ];
+
+  if (roleAnalyticsMetrics) {
+    roleAnalyticsMetrics.innerHTML = "";
+    const fragment = document.createDocumentFragment();
+    metrics.forEach((metric) => {
+      const card = document.createElement("article");
+      card.className = "role-analytics-metric";
+      card.appendChild(createTextElement("span", "", metric.label));
+      card.appendChild(createTextElement("strong", "", String(metric.value)));
+      card.appendChild(createTextElement("small", "", metric.detail));
+      fragment.appendChild(card);
+    });
+    roleAnalyticsMetrics.appendChild(fragment);
+  }
+
+  if (roleAnalyticsFunnel) {
+    const funnel = Array.isArray(data && data.funnel) ? data.funnel : [];
+    const maximum = Math.max(1, ...funnel.map((item) => Number(item.total || 0)));
+    roleAnalyticsFunnel.innerHTML = "";
+    if (!funnel.length) {
+      roleAnalyticsFunnel.appendChild(createTextElement("p", "admin-analytics-empty", "Пока нет данных."));
+    } else {
+      const fragment = document.createDocumentFragment();
+      funnel.forEach((item) => {
+        const total = Number(item.total || 0);
+        const row = document.createElement("div");
+        const track = document.createElement("div");
+        const bar = document.createElement("i");
+        row.className = "role-funnel-row";
+        track.className = "role-funnel-track";
+        bar.style.width = `${Math.round((total / maximum) * 100)}%`;
+        track.appendChild(bar);
+        row.appendChild(createTextElement("span", "", item.label || item.key || "Шаг"));
+        row.appendChild(track);
+        row.appendChild(createTextElement("strong", "", String(total)));
+        fragment.appendChild(row);
+      });
+      roleAnalyticsFunnel.appendChild(fragment);
+    }
+  }
+
+  if (roleAnalyticsRecent) {
+    const recent = Array.isArray(data && data.recent_completions) ? data.recent_completions : [];
+    roleAnalyticsRecent.innerHTML = "";
+    if (!recent.length) {
+      roleAnalyticsRecent.appendChild(createTextElement("p", "admin-analytics-empty", "Пока никто не завершил симуляцию."));
+    } else {
+      const fragment = document.createDocumentFragment();
+      recent.forEach((item) => {
+        const card = document.createElement("article");
+        card.className = "role-recent-item";
+        card.appendChild(createTextElement("strong", "", item.name || item.email || "Пользователь"));
+        card.appendChild(createTextElement("span", "", `${item.experience_title || "Role Experience"} · ${formatDateTime(item.completed_at)}`));
+        fragment.appendChild(card);
+      });
+      roleAnalyticsRecent.appendChild(fragment);
+    }
+  }
 }
 
 function renderBreakdown(container, items) {
@@ -795,6 +892,7 @@ async function loadAdminAnalytics() {
     }
 
     renderOverview(payload.overview || {});
+    renderRoleExperienceAnalytics(payload.role_experience || {});
     renderBreakdown(analyticsGoals, Array.isArray(payload.goal_breakdown) ? payload.goal_breakdown : []);
     renderBreakdown(analyticsCurrentStatuses, Array.isArray(payload.current_status_breakdown) ? payload.current_status_breakdown : []);
     renderSubscriptionBreakdown(Array.isArray(payload.subscription_breakdown) ? payload.subscription_breakdown : []);

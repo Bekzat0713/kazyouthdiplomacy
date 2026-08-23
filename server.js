@@ -674,6 +674,32 @@ async function initDB() {
     `);
 
     await pool.query(`
+      CREATE TABLE IF NOT EXISTS role_experience_events (
+        id BIGSERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        experience_slug TEXT,
+        event_type TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        CHECK (event_type IN (
+          'catalog_view',
+          'experience_click',
+          'experience_view',
+          'passport_open'
+        ))
+      )
+    `);
+
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS role_experience_events_funnel_idx
+      ON role_experience_events (event_type, experience_slug, created_at DESC)
+    `);
+
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS role_experience_events_user_idx
+      ON role_experience_events (user_id, created_at DESC)
+    `);
+
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS interview_attempts (
         id SERIAL PRIMARY KEY,
         user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -1844,6 +1870,33 @@ async function getRoleExperienceProgressRow(userId, slug, client = pool) {
     [userId, slug]
   );
   return result.rows[0] || null;
+}
+
+const ROLE_EXPERIENCE_TRACKABLE_EVENTS = new Set([
+  "catalog_view",
+  "experience_click",
+  "experience_view",
+  "passport_open",
+]);
+
+async function trackRoleExperienceEvent(userId, eventType, experienceSlug = null) {
+  if (!ROLE_EXPERIENCE_TRACKABLE_EVENTS.has(eventType)) return false;
+  const experience = experienceSlug ? getRoleExperience(experienceSlug) : null;
+  if (experienceSlug && !experience) return false;
+
+  try {
+    await pool.query(
+      `
+      INSERT INTO role_experience_events (user_id, experience_slug, event_type, created_at)
+      VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
+      `,
+      [userId, experience ? experience.slug : null, eventType]
+    );
+    return true;
+  } catch (err) {
+    console.error("Track role experience event error:", err);
+    return false;
+  }
 }
 
 function buildCareerPassportMatch(row, entityType, passport) {
@@ -4558,7 +4611,16 @@ async function requireAdminAnalytics(req, res, next) {
 }
 
 async function getAdminAnalyticsSnapshot() {
-  const [overviewResult, goalBreakdownResult, currentStatusBreakdownResult, subscriptionStatusResult, recentUsersResult, registrationDynamicsResult] = await Promise.all([
+  const [
+    overviewResult,
+    goalBreakdownResult,
+    currentStatusBreakdownResult,
+    subscriptionStatusResult,
+    recentUsersResult,
+    registrationDynamicsResult,
+    roleExperienceAnalyticsResult,
+    roleExperienceRecentResult,
+  ] = await Promise.all([
     pool.query(`
       SELECT
         (SELECT COUNT(*)::INT FROM users) AS users_total,
@@ -4634,6 +4696,43 @@ async function getAdminAnalyticsSnapshot() {
       GROUP BY TO_CHAR(created_at, 'YYYY-MM-DD')
       ORDER BY date_str ASC
     `),
+    pool.query(`
+      SELECT
+        (SELECT COUNT(*)::INT FROM role_experience_events WHERE event_type = 'catalog_view') AS catalog_views,
+        (SELECT COUNT(DISTINCT user_id)::INT FROM role_experience_events WHERE event_type = 'catalog_view') AS catalog_users,
+        (SELECT COUNT(*)::INT FROM role_experience_events WHERE event_type = 'experience_click') AS experience_clicks,
+        (SELECT COUNT(DISTINCT user_id)::INT FROM role_experience_events WHERE event_type = 'experience_click') AS clicked_users,
+        (SELECT COUNT(*)::INT FROM role_experience_events WHERE event_type = 'experience_view') AS experience_views,
+        (SELECT COUNT(DISTINCT user_id)::INT FROM role_experience_events WHERE event_type = 'experience_view') AS opened_users,
+        (SELECT COUNT(DISTINCT user_id)::INT FROM role_experience_events WHERE event_type = 'passport_open') AS passport_opened_users,
+        (SELECT COUNT(DISTINCT user_id)::INT FROM role_experience_progress) AS started_users,
+        (SELECT COUNT(DISTINCT user_id)::INT FROM role_experience_progress WHERE status = 'in_progress') AS in_progress_users,
+        (SELECT COUNT(DISTINCT user_id)::INT FROM role_experience_progress WHERE cardinality(completed_tasks) >= 1) AS task_one_users,
+        (SELECT COUNT(DISTINCT user_id)::INT FROM role_experience_progress WHERE cardinality(completed_tasks) >= 2) AS task_two_users,
+        (SELECT COUNT(DISTINCT user_id)::INT FROM role_experience_progress WHERE cardinality(completed_tasks) >= 3) AS task_three_users,
+        (SELECT COUNT(DISTINCT user_id)::INT FROM role_experience_progress WHERE status = 'completed') AS completed_users,
+        (SELECT COUNT(DISTINCT user_id)::INT FROM role_experience_progress WHERE started_at >= NOW() - INTERVAL '30 days') AS starts_last_30d,
+        (SELECT COUNT(DISTINCT user_id)::INT FROM role_experience_progress WHERE completed_at >= NOW() - INTERVAL '30 days') AS completions_last_30d,
+        COALESCE((
+          SELECT ROUND(AVG(EXTRACT(EPOCH FROM (completed_at - started_at)) / 60))::INT
+          FROM role_experience_progress
+          WHERE status = 'completed' AND completed_at IS NOT NULL
+        ), 0) AS average_completion_minutes
+    `),
+    pool.query(`
+      SELECT
+        p.experience_slug,
+        p.completed_at,
+        u.id AS user_id,
+        u.first_name,
+        u.last_name,
+        u.email
+      FROM role_experience_progress p
+      JOIN users u ON u.id = p.user_id
+      WHERE p.status = 'completed'
+      ORDER BY p.completed_at DESC NULLS LAST, p.id DESC
+      LIMIT 8
+    `),
   ]);
 
   const overview = overviewResult.rows[0] || {};
@@ -4641,6 +4740,10 @@ async function getAdminAnalyticsSnapshot() {
   const activePlusUsers = Number(overview.active_plus_users || 0);
   const surveyCompletedUsers = Number(overview.survey_completed_users || 0);
   const verifiedUsers = Number(overview.verified_users || 0);
+  const roleExperience = roleExperienceAnalyticsResult.rows[0] || {};
+  const roleStartedUsers = Number(roleExperience.started_users || 0);
+  const roleCompletedUsers = Number(roleExperience.completed_users || 0);
+  const roleOpenedUsers = Number(roleExperience.opened_users || 0);
 
   return {
     overview: {
@@ -4708,6 +4811,47 @@ async function getAdminAnalyticsSnapshot() {
       date_str: row.date_str,
       total: Number(row.total || 0),
     })),
+    role_experience: {
+      overview: {
+        catalog_views: Number(roleExperience.catalog_views || 0),
+        catalog_users: Number(roleExperience.catalog_users || 0),
+        experience_clicks: Number(roleExperience.experience_clicks || 0),
+        clicked_users: Number(roleExperience.clicked_users || 0),
+        experience_views: Number(roleExperience.experience_views || 0),
+        opened_users: roleOpenedUsers,
+        started_users: roleStartedUsers,
+        in_progress_users: Number(roleExperience.in_progress_users || 0),
+        completed_users: roleCompletedUsers,
+        passport_opened_users: Number(roleExperience.passport_opened_users || 0),
+        starts_last_30d: Number(roleExperience.starts_last_30d || 0),
+        completions_last_30d: Number(roleExperience.completions_last_30d || 0),
+        average_completion_minutes: Number(roleExperience.average_completion_minutes || 0),
+        open_to_start_rate: roleOpenedUsers ? Math.min(100, Math.round((roleStartedUsers / roleOpenedUsers) * 100)) : 0,
+        completion_rate: roleStartedUsers ? Math.round((roleCompletedUsers / roleStartedUsers) * 100) : 0,
+      },
+      funnel: [
+        { key: "catalog", label: "Увидели каталог", total: Number(roleExperience.catalog_users || 0) },
+        { key: "clicked", label: "Нажали на роль", total: Number(roleExperience.clicked_users || 0) },
+        { key: "opened", label: "Открыли симуляцию", total: roleOpenedUsers },
+        { key: "started", label: "Начали выполнять", total: roleStartedUsers },
+        { key: "task_one", label: "Выполнили 1 задание", total: Number(roleExperience.task_one_users || 0) },
+        { key: "task_two", label: "Выполнили 2 задания", total: Number(roleExperience.task_two_users || 0) },
+        { key: "task_three", label: "Выполнили все 3 задания", total: Number(roleExperience.task_three_users || 0) },
+        { key: "completed", label: "Завершили Role Experience", total: roleCompletedUsers },
+        { key: "passport", label: "Перешли в Career Passport", total: Number(roleExperience.passport_opened_users || 0) },
+      ],
+      recent_completions: roleExperienceRecentResult.rows.map((row) => {
+        const experience = getRoleExperience(row.experience_slug);
+        return {
+          user_id: Number(row.user_id),
+          name: [normalizeProfileText(row.first_name), normalizeProfileText(row.last_name)].filter(Boolean).join(" ") || normalizeEmail(row.email),
+          email: normalizeEmail(row.email),
+          experience_slug: row.experience_slug,
+          experience_title: experience ? experience.title : row.experience_slug,
+          completed_at: row.completed_at,
+        };
+      }),
+    },
   };
 }
 
@@ -6107,6 +6251,7 @@ app.get("/api/role-experiences", requireAuth, async (req, res) => {
         },
       };
     });
+    await trackRoleExperienceEvent(req.session.userId, "catalog_view");
     return res.json({ experiences });
   } catch (err) {
     console.error("Fetch role experiences error:", err);
@@ -6120,11 +6265,23 @@ app.get("/api/role-experiences/:slug", requireAuth, async (req, res) => {
     if (!experience) return res.status(404).json({ error: "Role Experience not found" });
     const row = await getRoleExperienceProgressRow(req.session.userId, experience.slug);
     const progress = buildRoleExperienceProgress(row, experience);
+    await trackRoleExperienceEvent(req.session.userId, "experience_view", experience.slug);
     return res.json({ experience: buildRoleExperienceDetail(experience, progress), progress });
   } catch (err) {
     console.error("Fetch role experience error:", err);
     return res.status(500).json({ error: "Failed to fetch role experience" });
   }
+});
+
+app.post("/api/role-experiences/:slug/track", requireAuth, async (req, res) => {
+  const experience = getRoleExperience(req.params.slug);
+  if (!experience) return res.status(404).json({ error: "Role Experience not found" });
+  const eventType = String(req.body && req.body.event_type || "").trim();
+  if (!new Set(["experience_click", "passport_open"]).has(eventType)) {
+    return res.status(400).json({ error: "Unknown analytics event" });
+  }
+  const tracked = await trackRoleExperienceEvent(req.session.userId, eventType, experience.slug);
+  return res.status(tracked ? 201 : 202).json({ ok: tracked });
 });
 
 app.put("/api/role-experiences/:slug/progress", requireAuth, async (req, res) => {

@@ -29,6 +29,17 @@
     return payload;
   }
 
+  function trackEvent(eventType, slug) {
+    if (!slug) return;
+    fetch("/api/role-experiences/" + encodeURIComponent(slug) + "/track", {
+      method: "POST",
+      credentials: "include",
+      keepalive: true,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ event_type: eventType }),
+    }).catch(function () {});
+  }
+
   function showApp() {
     if (loading) loading.hidden = true;
     if (app) app.hidden = false;
@@ -56,7 +67,10 @@
 
     return "" +
       '<article class="rx-experience-card">' +
-        '<div class="rx-card-art"><span>01<small>ROLE<br>EXPERIENCE</small></span></div>' +
+        '<div class="rx-card-art">' +
+          '<img src="/roleexperience-card.jpg" alt="Проектный координатор в рабочей симуляции" loading="lazy">' +
+          '<span><b>01</b><small>ROLE EXPERIENCE</small></span>' +
+        '</div>' +
         '<div class="rx-card-copy">' +
           '<span>' + escapeHtml(item.eyebrow) + '</span>' +
           '<h3>' + escapeHtml(item.title) + '</h3>' +
@@ -73,7 +87,7 @@
             '</div>' +
             '<div class="rx-card-progress"><div><span>' + statusText + '</span><strong>' + percent + '%</strong></div><i><b style="width:' + percent + '%"></b></i></div>' +
           '</div>' +
-          '<a class="rx-btn rx-btn-primary" href="/role-experience/' + encodeURIComponent(item.slug) + '">' + action + ' <span>→</span></a>' +
+          '<a class="rx-btn rx-btn-primary" data-role-experience-slug="' + escapeHtml(item.slug) + '" href="/role-experience/' + encodeURIComponent(item.slug) + '">' + action + ' <span>→</span></a>' +
         '</div>' +
       '</article>';
   }
@@ -85,6 +99,11 @@
     list.innerHTML = experiences.length
       ? experiences.map(renderCatalogCard).join("")
       : '<div class="rx-partner-note"><div><h2>Новые роли готовятся</h2><p>Скоро здесь появятся первые рабочие симуляции.</p></div></div>';
+    list.querySelectorAll("[data-role-experience-slug]").forEach(function (link) {
+      link.addEventListener("click", function () {
+        trackEvent("experience_click", link.dataset.roleExperienceSlug);
+      });
+    });
     catalog.hidden = false;
     showApp();
   }
@@ -283,6 +302,9 @@
       }
     });
     document.getElementById("completeExperienceButton").addEventListener("click", completeExperience);
+    document.getElementById("experiencePassportLink").addEventListener("click", function () {
+      if (experience) trackEvent("passport_open", experience.slug);
+    });
 
     (slug ? initRunner(slug) : initCatalog()).catch(function (error) {
       showFatal(error.message);

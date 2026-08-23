@@ -139,12 +139,182 @@
       background: #fecaca;
       border-color: #f87171;
     }
+    .role-analytics-card {
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 28px;
+      background:
+        radial-gradient(circle at 100% 0, rgba(101, 82, 232, 0.12), transparent 30%),
+        linear-gradient(145deg, #ffffff, #fbfaff) !important;
+    }
+    .role-analytics-card::after {
+      content: "RX";
+      position: absolute;
+      right: 28px;
+      top: 16px;
+      color: rgba(101, 82, 232, 0.05);
+      font-size: 92px;
+      font-weight: 900;
+      line-height: 1;
+      pointer-events: none;
+    }
+    .role-analytics-card > * {
+      position: relative;
+      z-index: 1;
+    }
+    .role-analytics-card-head {
+      align-items: flex-start;
+    }
+    .role-analytics-card-head h3 {
+      margin-bottom: 7px;
+    }
+    .role-analytics-card-head p:last-child {
+      max-width: 650px;
+      margin: 0;
+      color: #64748b;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .role-analytics-live {
+      padding: 7px 10px;
+      border: 1px solid rgba(20, 155, 120, 0.18);
+      border-radius: 999px;
+      color: #0f8a6b;
+      background: rgba(20, 155, 120, 0.08);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+    .role-analytics-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin: 24px 0;
+    }
+    .role-analytics-metric {
+      padding: 17px;
+      border: 1px solid rgba(222, 219, 235, 0.85);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.78);
+    }
+    .role-analytics-metric span {
+      display: block;
+      color: #7b7890;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .role-analytics-metric strong {
+      display: block;
+      margin: 7px 0 4px;
+      color: #161827;
+      font-size: 27px;
+      line-height: 1;
+    }
+    .role-analytics-metric small {
+      color: #9895a5;
+      font-size: 9px;
+    }
+    .role-analytics-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.65fr);
+      gap: 20px;
+    }
+    .role-analytics-panel {
+      padding: 20px;
+      border: 1px solid rgba(222, 219, 235, 0.75);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.66);
+    }
+    .role-analytics-panel h4 {
+      margin: 0 0 17px;
+      color: #242332;
+      font-size: 14px;
+    }
+    .role-funnel-list {
+      display: grid;
+      gap: 12px;
+    }
+    .role-funnel-row {
+      display: grid;
+      grid-template-columns: minmax(145px, 0.65fr) minmax(100px, 1fr) 42px;
+      align-items: center;
+      gap: 12px;
+    }
+    .role-funnel-row span {
+      color: #555269;
+      font-size: 11px;
+      font-weight: 650;
+    }
+    .role-funnel-track {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #ebe9f2;
+    }
+    .role-funnel-track i {
+      display: block;
+      height: 100%;
+      min-width: 3px;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #6552e8, #3977ed 65%, #27ad91);
+    }
+    .role-funnel-row strong {
+      color: #29263a;
+      font-size: 13px;
+      text-align: right;
+    }
+    .role-recent-list {
+      display: grid;
+      gap: 9px;
+    }
+    .role-recent-item {
+      padding: 11px 12px;
+      border-radius: 12px;
+      background: #f7f6fb;
+    }
+    .role-recent-item strong,
+    .role-recent-item span {
+      display: block;
+    }
+    .role-recent-item strong {
+      color: #33303f;
+      font-size: 11px;
+    }
+    .role-recent-item span {
+      margin-top: 4px;
+      color: #8a8797;
+      font-size: 9px;
+    }
+    .role-analytics-note {
+      margin: 16px 0 0;
+      color: #9995a7;
+      font-size: 9px;
+      line-height: 1.5;
+    }
     @media (max-width: 900px) {
       .admin-analytics-charts-grid {
         grid-template-columns: 1fr;
       }
       .chart-card.full-width {
         grid-column: span 1;
+      }
+      .role-analytics-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .role-analytics-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 520px) {
+      .role-analytics-metrics {
+        grid-template-columns: 1fr;
+      }
+      .role-funnel-row {
+        grid-template-columns: 1fr 42px;
+      }
+      .role-funnel-track {
+        grid-column: 1 / -1;
+        grid-row: 2;
       }
     }
 
@@ -423,6 +593,32 @@
 
     <!-- Tab: Analytics (existing content) -->
     <div id="tabAnalytics" class="admin-tab-content active">
+      <section class="dashboard-card role-analytics-card">
+        <div class="admin-analytics-card-head role-analytics-card-head">
+          <div>
+            <p class="dashboard-kicker">Role Experience</p>
+            <h3>Воронка прохождения</h3>
+            <p>От первого просмотра до завершённого проекта в Career Passport.</p>
+          </div>
+          <span class="role-analytics-live">LIVE DATA</span>
+        </div>
+
+        <div id="roleAnalyticsMetrics" class="role-analytics-metrics"></div>
+
+        <div class="role-analytics-layout">
+          <div class="role-analytics-panel">
+            <h4>Как пользователи проходят путь</h4>
+            <div id="roleAnalyticsFunnel" class="role-funnel-list"></div>
+          </div>
+          <div class="role-analytics-panel">
+            <h4>Последние завершения</h4>
+            <div id="roleAnalyticsRecent" class="role-recent-list"></div>
+          </div>
+        </div>
+
+        <p class="role-analytics-note">Просмотры и клики считаются с момента включения аналитики. Прогресс и завершения берутся из сохранённых результатов пользователей.</p>
+      </section>
+
       <!-- Блок с интерактивными графиками -->
       <div class="admin-analytics-charts-grid">
         <section class="dashboard-card chart-card full-width">
