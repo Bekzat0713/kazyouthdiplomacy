@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Role Experience — KazYouthDiplomacy</title>
+  <meta name="description" content="Попробуйте настоящие рабочие задачи и добавьте результат в Career Passport.">
+  <link rel="icon" type="image/png" href="/logo.png">
+  <link rel="stylesheet" href="/web.css">
+  <link rel="stylesheet" href="/card-nav.css">
+  <link rel="stylesheet" href="/inner-premium.css?v=v1.1">
+  <link rel="stylesheet" href="/role-experience.css?v=1">
+  <script src="/pwa.js" defer></script>
+  <script src="/sidebar.js?v=role-experience-1" defer></script>
+</head>
+<body class="inner-premium-page role-experience-page" data-assistant-page="role-experience">
+  <header class="header home-figma-header premium-nav" id="siteHeader">
+    <a href="/" class="logo-wrap premium-brand" aria-label="KazYouthDiplomacy">
+      <img src="/logo.png" alt="KazYouthDiplomacy logo">
+      <span>KazYouthDiplomacy</span>
+    </a>
+    <nav class="home-figma-nav premium-nav-menu" aria-label="Основная навигация">
+      <div class="card-nav-links premium-nav-links">
+        <a href="/dashboard">Обзор</a>
+        <a href="/role-experience" aria-current="page">Role Experience</a>
+        <a href="/career-passport">Career Passport</a>
+        <a href="/career-profile">Web CV</a>
+      </div>
+      <div class="card-nav-actions premium-nav-actions">
+        <form method="POST" action="/logout">
+          <button class="nav-btn" type="submit">Выйти</button>
+        </form>
+      </div>
+    </nav>
+  </header>
+
+  <section class="dashboard-page rx-page-layout">
+    <aside class="dashboard-left-sidebar"></aside>
+
+    <main class="dashboard-main-wrapper rx-main">
+      <div class="rx-loading" id="roleExperienceLoading" aria-live="polite">
+        <span></span><span></span><span></span>
+        <p>Готовим рабочую ситуацию</p>
+      </div>
+
+      <div class="rx-app" id="roleExperienceApp" hidden>
+        <section class="rx-catalog" id="roleExperienceCatalog" hidden>
+          <header class="rx-hero">
+            <div class="rx-hero-copy">
+              <span class="rx-kicker"><i></i> ROLE EXPERIENCE · BETA</span>
+              <h1>Попробуйте профессию<br>до первой заявки.</h1>
+              <p>Не курс и не тест. Вы получаете рабочую ситуацию, выполняете реальные задачи и сохраняете результат как проект в Career Passport.</p>
+            </div>
+
+            <div class="rx-hero-proof" aria-label="Как работает Role Experience">
+              <div><strong>01</strong><span>Получите роль<br>и контекст</span></div>
+              <i></i>
+              <div><strong>02</strong><span>Выполните<br>рабочие задачи</span></div>
+              <i></i>
+              <div><strong>03</strong><span>Добавьте проект<br>в Career Passport</span></div>
+            </div>
+          </header>
+
+          <div class="rx-catalog-head">
+            <div>
+              <span>ДОСТУПНО СЕЙЧАС</span>
+              <h2>Выберите рабочую роль</h2>
+            </div>
+            <p>Первая симуляция открыта бесплатно для всех пользователей.</p>
+          </div>
+
+          <div class="rx-card-list" id="roleExperienceList"></div>
+
+          <section class="rx-partner-note">
+            <span class="rx-partner-mark">KYD<br>LAB</span>
+            <div>
+              <span>ДЛЯ КОМПАНИЙ</span>
+              <h2>Покажите студентам, как выглядит работа у вас.</h2>
+              <p>Мы разработаем брендированную симуляцию роли на основе реальных, обезличенных задач вашей команды.</p>
+            </div>
+            <a href="https://t.me/perlll1" target="_blank" rel="noreferrer">Обсудить партнёрство <b>↗</b></a>
+          </section>
+        </section>
+
+        <section class="rx-experience" id="roleExperienceRunner" hidden>
+          <a class="rx-back-link" href="/role-experience">← Все роли</a>
+
+          <header class="rx-experience-head">
+            <div>
+              <span class="rx-kicker" id="experienceEyebrow">ROLE EXPERIENCE</span>
+              <h1 id="experienceTitle">Рабочая симуляция</h1>
+              <p id="experienceSummary"></p>
+            </div>
+            <div class="rx-head-progress">
+              <span id="experienceProgressLabel">0 из 3 заданий</span>
+              <strong id="experienceProgressValue">0%</strong>
+              <i><b id="experienceProgressBar"></b></i>
+            </div>
+          </header>
+
+          <div class="rx-runner-grid">
+            <aside class="rx-task-rail">
+              <div class="rx-role-card">
+                <span>ВАША РОЛЬ</span>
+                <strong id="experienceRole"></strong>
+                <small id="experienceOrganization"></small>
+              </div>
+              <nav id="experienceTaskNav" aria-label="Задания симуляции"></nav>
+              <div class="rx-rail-note">
+                <span>Результат</span>
+                <p>После завершения проект появится в Career Passport. Публичность вы настроите самостоятельно.</p>
+              </div>
+            </aside>
+
+            <article class="rx-task-panel" id="experienceTaskPanel">
+              <header class="rx-task-head">
+                <div>
+                  <span id="taskNumber">ЗАДАНИЕ 01</span>
+                  <h2 id="taskTitle"></h2>
+                </div>
+                <small id="taskDuration"></small>
+              </header>
+
+              <section class="rx-brief-card">
+                <span>РАБОЧАЯ СИТУАЦИЯ</span>
+                <p id="taskContext"></p>
+              </section>
+
+              <section class="rx-assignment">
+                <span>ЧТО НУЖНО СДЕЛАТЬ</span>
+                <h3 id="taskAssignment"></h3>
+                <div class="rx-deliverable"><b>Результат</b><p id="taskDeliverable"></p></div>
+              </section>
+
+              <details class="rx-hints">
+                <summary>Подсказки для сильного ответа</summary>
+                <ul id="taskHints"></ul>
+              </details>
+
+              <label class="rx-answer-field">
+                <span>Ваш рабочий материал</span>
+                <textarea id="taskAnswer" rows="11" placeholder="Пишите так, как если бы отправляли результат руководителю..."></textarea>
+                <small><span id="taskCharacterCount">0</span> символов · минимум <span id="taskCharacterMinimum">0</span></small>
+              </label>
+
+              <div class="rx-model-answer" id="taskModelAnswer" hidden>
+                <div><span>ПРИМЕР СИЛЬНОГО РЕШЕНИЯ</span><small>Не единственный правильный вариант</small></div>
+                <p id="taskModelAnswerText"></p>
+              </div>
+
+              <p class="rx-feedback" id="taskFeedback" role="status" aria-live="polite"></p>
+
+              <footer class="rx-task-actions">
+                <button class="rx-btn rx-btn-secondary" id="previousTaskButton" type="button">Назад</button>
+                <div>
+                  <button class="rx-btn rx-btn-secondary" id="saveTaskButton" type="button">Сохранить</button>
+                  <button class="rx-btn rx-btn-primary" id="nextTaskButton" type="button">Сохранить и продолжить <span>→</span></button>
+                  <button class="rx-btn rx-btn-primary" id="completeExperienceButton" type="button" hidden>Завершить Role Experience <span>→</span></button>
+                </div>
+              </footer>
+            </article>
+          </div>
+
+          <section class="rx-complete-card" id="experienceCompleteCard" hidden>
+            <div class="rx-complete-seal"><span>RX</span><small>COMPLETE</small></div>
+            <div>
+              <span>ROLE EXPERIENCE ЗАВЕРШЁН</span>
+              <h2>Теперь у вас есть не просто навык, а доказательство работы.</h2>
+              <p>Проект добавлен в Career Passport. Откройте его, отредактируйте описание и только потом решите, показывать ли его в Web CV.</p>
+            </div>
+            <a class="rx-btn rx-btn-primary" href="/career-passport#projects">Открыть Career Passport <span>↗</span></a>
+          </section>
+        </section>
+      </div>
+    </main>
+  </section>
+
+  <script src="/card-nav.js" defer></script>
+  <script src="/role-experience.js?v=1" defer></script>
+</body>
+</html>

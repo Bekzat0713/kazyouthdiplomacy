@@ -17,6 +17,11 @@ const {
   normalizePrivacy,
   passportToCareerProfile,
 } = require("./lib/career-passport");
+const {
+  ROLE_EXPERIENCES,
+  getRoleExperience,
+  getRoleExperienceSummary,
+} = require("./lib/role-experiences");
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -648,6 +653,27 @@ async function initDB() {
     `);
 
     await pool.query(`
+      CREATE TABLE IF NOT EXISTS role_experience_progress (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        experience_slug TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'in_progress',
+        answers JSONB NOT NULL DEFAULT '{}'::jsonb,
+        completed_tasks TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[],
+        started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        completed_at TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE (user_id, experience_slug),
+        CHECK (status IN ('in_progress', 'completed'))
+      )
+    `);
+
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS role_experience_progress_user_idx
+      ON role_experience_progress (user_id, updated_at DESC)
+    `);
+
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS interview_attempts (
         id SERIAL PRIMARY KEY,
         user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -1032,6 +1058,7 @@ function normalizePostAuthRedirect(value, fallback = "/dashboard") {
     "/profile",
     "/career-passport",
     "/career-profile",
+    "/role-experience",
     "/internships",
     "/opportunities",
     "/resources",
@@ -1040,7 +1067,7 @@ function normalizePostAuthRedirect(value, fallback = "/dashboard") {
     "/register-survey",
   ]);
 
-  return allowedPaths.has(pathname) ? normalized : fallback;
+  return allowedPaths.has(pathname) || pathname.startsWith("/role-experience/") ? normalized : fallback;
 }
 
 function normalizeProfileText(value) {
@@ -1749,6 +1776,74 @@ function buildCareerPassportResponse(row, user, survey, context) {
     },
     updated_at: row && row.updated_at || null,
   };
+}
+
+function normalizeRoleExperienceAnswer(value) {
+  return String(value || "")
+    .replace(/\u0000/g, "")
+    .replace(/\r\n/g, "\n")
+    .trim()
+    .slice(0, 8000);
+}
+
+function calculateRoleExperienceCompletedTasks(experience, answers) {
+  const source = answers && typeof answers === "object" && !Array.isArray(answers) ? answers : {};
+  return experience.tasks
+    .filter((task) => normalizeRoleExperienceAnswer(source[task.id]).length >= task.min_characters)
+    .map((task) => task.id);
+}
+
+function buildRoleExperienceProgress(row, experience) {
+  const answers = row && row.answers && typeof row.answers === "object" && !Array.isArray(row.answers)
+    ? row.answers
+    : {};
+  const completedTasks = calculateRoleExperienceCompletedTasks(experience, answers);
+  const isCompleted = Boolean(row && row.status === "completed" && completedTasks.length === experience.tasks.length);
+  return {
+    status: isCompleted ? "completed" : completedTasks.length > 0 || row ? "in_progress" : "not_started",
+    answers,
+    completed_tasks: completedTasks,
+    completed_count: completedTasks.length,
+    progress_percent: Math.round((completedTasks.length / experience.tasks.length) * 100),
+    started_at: row && row.started_at || null,
+    completed_at: isCompleted && row && row.completed_at || null,
+    updated_at: row && row.updated_at || null,
+  };
+}
+
+function buildRoleExperienceDetail(experience, progress) {
+  const unlockedAnswers = new Set(progress.completed_tasks || []);
+  return {
+    ...getRoleExperienceSummary(experience),
+    description: experience.description,
+    outcomes: experience.outcomes,
+    tasks: experience.tasks.map((task) => ({
+      id: task.id,
+      number: task.number,
+      title: task.title,
+      duration_minutes: task.duration_minutes,
+      context: task.context,
+      assignment: task.assignment,
+      deliverable: task.deliverable,
+      hints: task.hints,
+      min_characters: task.min_characters,
+      model_answer: unlockedAnswers.has(task.id) ? task.model_answer : null,
+    })),
+  };
+}
+
+async function getRoleExperienceProgressRow(userId, slug, client = pool) {
+  const result = await client.query(
+    `
+    SELECT id, user_id, experience_slug, status, answers, completed_tasks,
+           started_at, completed_at, updated_at
+    FROM role_experience_progress
+    WHERE user_id = $1 AND experience_slug = $2
+    LIMIT 1
+    `,
+    [userId, slug]
+  );
+  return result.rows[0] || null;
 }
 
 function buildCareerPassportMatch(row, entityType, passport) {
@@ -5972,6 +6067,229 @@ app.get("/career/:slug", (req, res) =>
 app.get("/cv/:slug", (req, res) =>
   res.sendFile(path.join(__dirname, "public", "career-public.html"))
 );
+
+app.get("/role-experience", requireAuth, (_req, res) =>
+  res.sendFile(path.join(__dirname, "public", "role-experience.html"))
+);
+
+app.get("/role-experience.html", requireAuth, (_req, res) =>
+  res.redirect("/role-experience")
+);
+
+app.get("/role-experience/:slug", requireAuth, (req, res) => {
+  if (!getRoleExperience(req.params.slug)) {
+    return res.redirect("/role-experience");
+  }
+  return res.sendFile(path.join(__dirname, "public", "role-experience.html"));
+});
+
+app.get("/api/role-experiences", requireAuth, async (req, res) => {
+  try {
+    const progressResult = await pool.query(
+      `
+      SELECT id, user_id, experience_slug, status, answers, completed_tasks,
+             started_at, completed_at, updated_at
+      FROM role_experience_progress
+      WHERE user_id = $1
+      `,
+      [req.session.userId]
+    );
+    const progressBySlug = new Map(progressResult.rows.map((row) => [row.experience_slug, row]));
+    const experiences = ROLE_EXPERIENCES.map((experience) => {
+      const progress = buildRoleExperienceProgress(progressBySlug.get(experience.slug), experience);
+      return {
+        ...getRoleExperienceSummary(experience),
+        progress: {
+          status: progress.status,
+          completed_count: progress.completed_count,
+          progress_percent: progress.progress_percent,
+          completed_at: progress.completed_at,
+        },
+      };
+    });
+    return res.json({ experiences });
+  } catch (err) {
+    console.error("Fetch role experiences error:", err);
+    return res.status(500).json({ error: "Failed to fetch role experiences" });
+  }
+});
+
+app.get("/api/role-experiences/:slug", requireAuth, async (req, res) => {
+  try {
+    const experience = getRoleExperience(req.params.slug);
+    if (!experience) return res.status(404).json({ error: "Role Experience not found" });
+    const row = await getRoleExperienceProgressRow(req.session.userId, experience.slug);
+    const progress = buildRoleExperienceProgress(row, experience);
+    return res.json({ experience: buildRoleExperienceDetail(experience, progress), progress });
+  } catch (err) {
+    console.error("Fetch role experience error:", err);
+    return res.status(500).json({ error: "Failed to fetch role experience" });
+  }
+});
+
+app.put("/api/role-experiences/:slug/progress", requireAuth, async (req, res) => {
+  try {
+    const experience = getRoleExperience(req.params.slug);
+    if (!experience) return res.status(404).json({ error: "Role Experience not found" });
+    const taskId = String(req.body && req.body.task_id || "").trim();
+    const task = experience.tasks.find((item) => item.id === taskId);
+    if (!task) return res.status(400).json({ error: "Unknown task" });
+
+    const answer = normalizeRoleExperienceAnswer(req.body && req.body.answer);
+    if (!answer) return res.status(400).json({ error: "Answer is required" });
+
+    const currentRow = await getRoleExperienceProgressRow(req.session.userId, experience.slug);
+    const currentAnswers = currentRow && currentRow.answers && typeof currentRow.answers === "object" && !Array.isArray(currentRow.answers)
+      ? currentRow.answers
+      : {};
+    const answers = { ...currentAnswers, [taskId]: answer };
+    const completedTasks = calculateRoleExperienceCompletedTasks(experience, answers);
+    const keepCompleted = Boolean(
+      currentRow &&
+      currentRow.status === "completed" &&
+      completedTasks.length === experience.tasks.length
+    );
+    const nextStatus = keepCompleted ? "completed" : "in_progress";
+    const saved = await pool.query(
+      `
+      INSERT INTO role_experience_progress (
+        user_id, experience_slug, status, answers, completed_tasks,
+        started_at, completed_at, updated_at
+      )
+      VALUES ($1, $2, $5, $3::jsonb, $4::text[], CURRENT_TIMESTAMP,
+              CASE WHEN $5 = 'completed' THEN CURRENT_TIMESTAMP ELSE NULL END, CURRENT_TIMESTAMP)
+      ON CONFLICT (user_id, experience_slug) DO UPDATE SET
+        status = EXCLUDED.status,
+        answers = EXCLUDED.answers,
+        completed_tasks = EXCLUDED.completed_tasks,
+        completed_at = CASE
+          WHEN EXCLUDED.status = 'completed' THEN role_experience_progress.completed_at
+          ELSE NULL
+        END,
+        updated_at = CURRENT_TIMESTAMP
+      RETURNING id, user_id, experience_slug, status, answers, completed_tasks,
+                started_at, completed_at, updated_at
+      `,
+      [req.session.userId, experience.slug, JSON.stringify(answers), completedTasks, nextStatus]
+    );
+    const progress = buildRoleExperienceProgress(saved.rows[0], experience);
+    return res.json({
+      experience: buildRoleExperienceDetail(experience, progress),
+      progress,
+      task_complete: completedTasks.includes(taskId),
+      required_characters: task.min_characters,
+    });
+  } catch (err) {
+    console.error("Save role experience progress error:", err);
+    return res.status(500).json({ error: "Failed to save role experience progress" });
+  }
+});
+
+app.post("/api/role-experiences/:slug/complete", requireAuth, async (req, res) => {
+  const experience = getRoleExperience(req.params.slug);
+  if (!experience) return res.status(404).json({ error: "Role Experience not found" });
+
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const progressRow = await getRoleExperienceProgressRow(req.session.userId, experience.slug, client);
+    const progress = buildRoleExperienceProgress(progressRow, experience);
+    if (progress.completed_count !== experience.tasks.length) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        error: "Complete every task first",
+        completed_count: progress.completed_count,
+        task_count: experience.tasks.length,
+      });
+    }
+
+    const completedResult = await client.query(
+      `
+      UPDATE role_experience_progress
+      SET status = 'completed',
+          completed_tasks = $3::text[],
+          completed_at = COALESCE(completed_at, CURRENT_TIMESTAMP),
+          updated_at = CURRENT_TIMESTAMP
+      WHERE user_id = $1 AND experience_slug = $2
+      RETURNING id, user_id, experience_slug, status, answers, completed_tasks,
+                started_at, completed_at, updated_at
+      `,
+      [req.session.userId, experience.slug, progress.completed_tasks]
+    );
+
+    const [userResult, passportResult, surveyResult] = await Promise.all([
+      client.query(
+        `SELECT id, first_name, last_name, university, bio, email FROM users WHERE id = $1 LIMIT 1`,
+        [req.session.userId]
+      ),
+      client.query(
+        `SELECT id, passport_data, privacy_settings FROM career_passports WHERE user_id = $1 LIMIT 1`,
+        [req.session.userId]
+      ),
+      client.query(
+        `SELECT survey_payload, submitted_at FROM registration_surveys WHERE user_id = $1 LIMIT 1`,
+        [req.session.userId]
+      ),
+    ]);
+    if (userResult.rows.length === 0) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const user = userResult.rows[0];
+    const passportRow = passportResult.rows[0] || null;
+    const surveyRow = surveyResult.rows[0] || null;
+    const survey = surveyRow
+      ? { ...(surveyRow.survey_payload || {}), submitted_at: surveyRow.submitted_at }
+      : {};
+    const passport = normalizePassport(passportRow && passportRow.passport_data, user, survey);
+    const projectId = `role-experience-${experience.slug}`;
+    const projectExists = passport.projects.some((project) => project.id === projectId);
+
+    if (!projectExists) {
+      passport.projects.push({
+        id: projectId,
+        title: experience.project.title,
+        role: experience.project.role,
+        description: experience.project.description,
+        team: experience.organization,
+        date: new Date().toISOString().slice(0, 10),
+        result: experience.project.result,
+        skills: experience.skills,
+        link: "",
+      });
+    }
+
+    const normalizedPassport = normalizePassport(passport, user, survey);
+    const privacy = normalizePrivacy(passportRow && passportRow.privacy_settings);
+    await client.query(
+      `
+      INSERT INTO career_passports (user_id, passport_data, privacy_settings, created_at, updated_at)
+      VALUES ($1, $2::jsonb, $3::jsonb, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      ON CONFLICT (user_id) DO UPDATE SET
+        passport_data = EXCLUDED.passport_data,
+        privacy_settings = EXCLUDED.privacy_settings,
+        updated_at = CURRENT_TIMESTAMP
+      `,
+      [req.session.userId, JSON.stringify(normalizedPassport), JSON.stringify(privacy)]
+    );
+
+    await client.query("COMMIT");
+    const completedProgress = buildRoleExperienceProgress(completedResult.rows[0], experience);
+    return res.json({
+      ok: true,
+      progress: completedProgress,
+      passport_project_added: !projectExists,
+      passport_href: "/career-passport#projects",
+    });
+  } catch (err) {
+    await client.query("ROLLBACK").catch(() => {});
+    console.error("Complete role experience error:", err);
+    return res.status(500).json({ error: "Failed to complete role experience" });
+  } finally {
+    client.release();
+  }
+});
 
 app.get("/career-passport", requireAuth, (req, res) =>
   res.sendFile(path.join(__dirname, "public", "career-passport.html"))

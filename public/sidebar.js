@@ -30,6 +30,10 @@ document.addEventListener("DOMContentLoaded", function () {
         '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>' +
         '<span>Возможности</span>' +
       '</a>' +
+      '<a href="/role-experience" class="sidebar-nav-item" data-sidebar-link="role-experience">' +
+        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><rect x="3" y="6" width="18" height="14" rx="2"></rect><path d="M3 11h18"></path><path d="M10 11v2h4v-2"></path></svg>' +
+        '<span>Role Experience</span>' +
+      '</a>' +
       '<a href="/career-passport" class="sidebar-nav-item" data-sidebar-link="career-passport">' +
         '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M5 21v-2a7 7 0 0 1 14 0v2"></path><path d="M18 4l1 1 2-2"></path></svg>' +
         '<span>Career Passport</span>' +
