@@ -4048,7 +4048,7 @@ body.subscribe-page .btn.plan-btn {
   border-radius: 14px !important;
 }
 
-body.subscribe-page .plan-card-boost {
+body.subscribe-page .plan-card.plan-card-boost {
   border-color: #101525 !important;
   background:
     radial-gradient(circle at 88% 6%, rgba(116, 94, 242, .32), transparent 30%),
