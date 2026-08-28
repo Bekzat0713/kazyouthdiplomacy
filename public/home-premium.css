@@ -6145,6 +6145,156 @@ body.home-figma-page .career-document-stamp::before {
   border-color: rgba(239, 113, 70, .22);
 }
 
+/* Strict institutional edition */
+body.home-figma-page .premium-final-cta {
+  background: #eef1f5;
+}
+
+body.home-figma-page .career-document {
+  border-color: #cfd5df;
+  border-radius: 8px;
+  background:
+    repeating-linear-gradient(90deg, rgba(15, 25, 44, .012) 0 1px, transparent 1px 28px),
+    #faf9f6;
+  box-shadow:
+    0 30px 75px rgba(15, 25, 44, .1),
+    0 1px 0 rgba(255, 255, 255, .95) inset;
+}
+
+body.home-figma-page .career-document::before {
+  width: 4px;
+  background: #b99955;
+}
+
+body.home-figma-page .career-document::after {
+  display: none;
+}
+
+body.home-figma-page .career-document-head {
+  border-bottom-color: #d9dde4;
+  color: #19243a;
+}
+
+body.home-figma-page .career-document-head span:first-child {
+  color: #19243a;
+}
+
+body.home-figma-page .career-document-head span:last-child {
+  color: #947638;
+}
+
+body.home-figma-page .career-document-state {
+  padding: 7px 10px;
+  border-color: #d7ccb4;
+  border-radius: 5px;
+  color: #3d4658;
+  background: rgba(255, 255, 255, .58);
+}
+
+body.home-figma-page .career-document-state::before {
+  background: #b99955;
+  box-shadow: 0 0 0 3px rgba(185, 153, 85, .13);
+}
+
+body.home-figma-page .career-document-copy h2 {
+  color: #10192c;
+  font-family: "Syne", "DM Sans", system-ui, sans-serif;
+  font-weight: 750;
+  text-shadow: none;
+}
+
+body.home-figma-page .career-document-copy > p {
+  color: #626d80;
+}
+
+body.home-figma-page .career-document-action .btn {
+  border-color: #10192c;
+  border-radius: 6px;
+  background: #10192c;
+  box-shadow: 0 12px 26px rgba(16, 25, 44, .16);
+}
+
+body.home-figma-page .career-document-action .btn:hover {
+  border-color: #26344f;
+  background: #26344f;
+  box-shadow: 0 16px 30px rgba(16, 25, 44, .2);
+}
+
+body.home-figma-page .career-document-sheet {
+  border: 1px solid #cfc7b7;
+  border-radius: 6px;
+  background:
+    repeating-linear-gradient(0deg, rgba(15, 25, 44, .016) 0 1px, transparent 1px 24px),
+    #fffefb;
+  box-shadow:
+    0 20px 45px rgba(28, 34, 49, .09),
+    0 0 0 5px rgba(255, 255, 255, .7);
+}
+
+body.home-figma-page .career-document-sheet::before,
+body.home-figma-page .career-document-sheet::after {
+  border-color: #b99955;
+}
+
+body.home-figma-page .career-document-field {
+  border-bottom-color: #e2e3e7;
+}
+
+body.home-figma-page .career-document-field:nth-child(1) > span,
+body.home-figma-page .career-document-field:nth-child(2) > span,
+body.home-figma-page .career-document-field:nth-child(3) > span {
+  color: #29354b;
+}
+
+body.home-figma-page .career-document-field:nth-child(1) > i,
+body.home-figma-page .career-document-field:nth-child(2) > i,
+body.home-figma-page .career-document-field:nth-child(3) > i {
+  background: repeating-linear-gradient(90deg, #c5cad3 0 4px, transparent 4px 8px);
+}
+
+body.home-figma-page .career-document:hover .career-document-field:first-child > i {
+  background: #b99955;
+}
+
+body.home-figma-page .career-document-sheet-footer p strong {
+  color: #947638;
+}
+
+body.home-figma-page .career-document-stamp {
+  width: 88px;
+  height: 78px;
+  padding: 9px;
+  border: 1px solid #283651;
+  border-radius: 6px;
+  color: #fff;
+  background: #10192c;
+  box-shadow: 0 8px 18px rgba(16, 25, 44, .16);
+  transform: none;
+}
+
+body.home-figma-page .career-document-stamp::before {
+  display: none;
+}
+
+body.home-figma-page .career-document-stamp img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+body.home-figma-page .career-document:hover .career-document-stamp {
+  transform: translateY(-2px);
+}
+
+@media (max-width: 600px) {
+  body.home-figma-page .career-document-stamp {
+    width: 70px;
+    height: 64px;
+    padding: 7px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   body.home-figma-page .career-document-stamp,
   body.home-figma-page .career-document-action .btn,
